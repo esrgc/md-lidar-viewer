@@ -1,4 +1,5 @@
 $(document).ready(function(){
+
   var lidarViewer = new LidarViewer();
 
   lidarViewer.getServices(function(services){
@@ -9,23 +10,6 @@ $(document).ready(function(){
     $('#services').html(options);
   });
 
-  var map = new L.Map('map', {
-    layers: lidarViewer.layerGroup
-  }).setView(new L.LatLng(38.7, -76.7), 7);
-
-  var popup = new L.popup();
-
-  var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png');
-  mapboxsat.addTo(map);
-
-  map.on("click", function(e){
-    lidarViewer.layer.identify(e.latlng, {} , function(res){
-      popup.setLatLng(e.latlng)
-        .setContent('Elevation: ' + res.value + ' ft')
-        .openOn(map);
-    });
-  });
-
   $('#opacitySlider').change(function(e){
     var opacity = $(this).val()/100;
     lidarViewer.layerGroup.eachLayer(function(layer){
@@ -33,19 +17,29 @@ $(document).ready(function(){
     });
   });
 
+  $('#elevation').click(function(e){
+    if(lidarViewer.identifyElevationTool){
+      $(this).removeClass('active');
+      $('#map').removeClass('active');
+      lidarViewer.map.off('click', lidarViewer.identifyElevation);
+    } else {
+      $(this).addClass('active');
+      $('#map').addClass('active');
+      lidarViewer.map.on('click', lidarViewer.identifyElevation);
+    }
+    lidarViewer.identifyElevationTool = !lidarViewer.identifyElevationTool;
+  });
+
   $('#services').change(function(e){
     var service = $(this).val();
-    lidarViewer.layerGroup.clearLayers();
-    var layer = L.esri.imageServerLayer(lidarViewer.base_url + service, {
-      opacity : 1,
-      transparent: true,
-      format: 'png24',
-      noData: 0
-    });
-    lidarViewer.layerGroup.addLayer(layer);
+    var opacity = $('#opacitySlider').val()/100;
+    lidarViewer.addServiceLayer(service, opacity);
+    $('#elevation').prop('disabled', false);
   });
 
   $("#clear").click(function(){
     lidarViewer.layerGroup.clearLayers();
+    $('#elevation').prop('disabled', true);
+    $('#services').val('');
   });
 });

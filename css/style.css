@@ -1,6 +1,9 @@
 #map { 
   height: 400px;
 }
+#map.active {
+  cursor: pointer;
+}
 #tools {
   margin-top: 20px;
 }
