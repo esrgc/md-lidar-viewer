@@ -1,0 +1,10 @@
+#map { 
+  height: 400px;
+}
+#tools {
+  margin-top: 20px;
+}
+.tool {
+  float: left;
+  margin-right: 20px;
+}
