@@ -21,11 +21,11 @@ $(document).ready(function(){
     if(lidarViewer.identifyElevationTool){
       $(this).removeClass('active');
       $('#map').removeClass('active');
-      lidarViewer.map.off('click', lidarViewer.identifyElevation);
+      lidarViewer.map.off('click', lidarViewer.identifyElevationTool_click);
     } else {
       $(this).addClass('active');
       $('#map').addClass('active');
-      lidarViewer.map.on('click', lidarViewer.identifyElevation);
+      lidarViewer.map.on('click', lidarViewer.identifyElevationTool_click);
     }
     lidarViewer.identifyElevationTool = !lidarViewer.identifyElevationTool;
   });

@@ -8,7 +8,9 @@
     <meta name="viewport" content="width=device-width">
     <link rel="stylesheet" href="lib/leaflet-0.6.4/leaflet.css" />
     <!--[if lte IE 8]> <link rel="stylesheet" href="lib/leaflet-0.6.4/leaflet.ie.css" /> <![endif]-->
+    <link rel="stylesheet" href="lib/leaflet-draw/leaflet.draw.css" />
     <link rel="stylesheet" href="lib/bootstrap-3.0.1/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="lib/geodash/GeoDash.min.css" />
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body>
@@ -35,11 +37,20 @@
           </div>
         </div>
       </div>
+      <div class="row">
+        <div class="col-md-6 col-md-offset-3">
+          <div id="line-chart"></div>
+        </div>
+      </div>
     </div>
     <script src="lib/jquery-1.10.2.min.js"></script>
     <script src="lib/leaflet-0.6.4/leaflet.js"></script>
+    <script src="lib/leaflet-draw/leaflet.draw.js"></script>
     <script src="lib/esri-leaflet.js"></script>
+    <script src="lib/d3.v3.min.js"></script>
+    <script src="lib/geodash/GeoDash.min.js"></script>
     <script src="lib/bootstrap-3.0.1/js/bootstrap.min.js"></script>
+    <script src="lib/async.js"></script>
     <script src="js/LidarViewer.js"></script>
     <script src="js/main.js"></script>
   </body>
