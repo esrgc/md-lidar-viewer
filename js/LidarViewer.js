@@ -100,21 +100,25 @@ LidarViewer.prototype.addControls = function(services){
   this.map.on('draw:created', function (e) {
     var type = e.layerType,
         layer = e.layer;
-        console.log(type, e);
+    self.drawnItems.addLayer(layer);
     if(type === 'marker'){
+      var popup = L.popup()
+        .setContent('...');
+      layer.bindPopup(popup).openPopup();
       self._identifyElevation(layer.getLatLng(), function(elevation){
         if(elevation === 'NoData') {
-          layer.bindPopup('No Data').openPopup();
+          popup.setContent('No Data');
         } else {
-          layer.bindPopup('Elevation: ' + elevation + ' ft').openPopup();
+          popup.setContent('Elevation: ' + elevation + ' ft');
         }
       });
+    } else {
+      var esri_geom = Terraformer.ArcGIS.convert(layer.toGeoJSON());
+      var latlngs = layer.getLatLngs();
+      self.getElevationLine(latlngs);
     }
-    self.drawnItems.addLayer(layer);
-    var esri_geom = Terraformer.ArcGIS.convert(layer.toGeoJSON());
-    console.log(JSON.stringify(esri_geom));
-    var latlngs = layer.getLatLngs();
-    self.getElevationLine(latlngs);
+    
+
   });
 }
 
