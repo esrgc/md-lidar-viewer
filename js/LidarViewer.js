@@ -3,6 +3,9 @@ function LidarViewer(){
   L.esri.get = L.esri.RequestHandlers.JSONP;
   this.layer = false;
   this.services_base_url = 'http://esrgc1.salisbury.edu/ArcGIS/rest/services/';
+  this.services_folder = 'ImageServices';
+  this.services_base_url = 'http://esrgc2.salisbury.edu/ArcGIS/rest/services/';
+  this.services_folder = 'Elevation';
   this.layerGroup = new L.layerGroup();
   this.identifyElevationTool = false;
   this.popup = new L.popup();
@@ -19,22 +22,75 @@ function LidarViewer(){
     time: false
   });
 
-
+  var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png');
+  this.drawnItems = new L.FeatureGroup();
   this.map = new L.Map('map', {
-    layers: this.layerGroup
+    layers: [mapboxsat, this.layerGroup, this.drawnItems]
   }).setView(new L.LatLng(38.7, -76.7), 7);
 
-  var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png');
-  mapboxsat.addTo(this.map);
+  this.getServices();
 
-  this.drawnItems = new L.FeatureGroup();
-  this.map.addLayer(this.drawnItems);
+}
+
+LidarViewer.prototype.getElevationLine = function(latlngs){
+  var self = this;
+  var layer = this.layerGroup.getLayer(this.layerID);
+  var data = [];
+  var count = 1;
+
+  var f = function(latlng, next){
+    layer.identify(latlng, {} , function(res){
+      data.push({
+        distance: count,
+        elevation: res.value
+      });
+      self.linechart.update(data);
+      count++;
+      next();
+    });
+  }
+  async.eachSeries(latlngs, f, function(){
+    //self.linechart.update(data);
+  });
+}
+
+LidarViewer.prototype.addControls = function(services){
+  var self = this;
+  var options = '<select id="services"><option value="">Services</option>';
+  for(var i = 0; i < services.length; i++){
+    options += '<option value="'+ services[i].name + '/' + services[i].type + '">' + services[i].name + '</option>';
+  }
+  options += '</select>';
+  var layerMenu = L.control({position: 'topright'});
+  layerMenu.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'layerMenu');
+      div.innerHTML = options;
+      div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation;
+      return div;
+  };
+  layerMenu.addTo(this.map);
+
+  var opacityControl = L.control({position: 'topright'});
+  opacityControl.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'opacityControl');
+      div.innerHTML = '<input type="range" name="points" min="1" max="100" id="opacitySlider" value="100">';
+      div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation;
+      return div;
+  };
+  opacityControl.addTo(this.map);
+
   var drawControl = new L.Control.Draw({
     draw: {
-      polygon: false,
+      polygon: true,
       rectangle: false,
       circle: false,
-      marker: false
+      marker: true,
+      polyline: {
+        shapeOptions: {
+          color: '#f00',
+          weight: 3
+        }
+      }
     },
     edit: {
       featureGroup: this.drawnItems
@@ -44,71 +100,66 @@ function LidarViewer(){
   this.map.on('draw:created', function (e) {
     var type = e.layerType,
         layer = e.layer;
-    self.drawnItems.addLayer(layer);
-    var latlngs = layer.getLatLngs();
-    self.getElevationLine(latlngs);
-
-  });
-
-  this.getElevationLine = function(latlngs){
-    var layer = this.layerGroup.getLayer(this.layerID);
-    var data = [];
-    var count = 0;
-    var f = function(latlng, next){
-      layer.identify(latlng, {} , function(res){
-        data.push({
-          distance: count,
-          elevation: res.value
-        });
-        count++;
-        next();
+        console.log(type, e);
+    if(type === 'marker'){
+      self._identifyElevation(layer.getLatLng(), function(elevation){
+        if(elevation === 'NoData') {
+          layer.bindPopup('No Data').openPopup();
+        } else {
+          layer.bindPopup('Elevation: ' + elevation + ' ft').openPopup();
+        }
       });
     }
-    async.each(latlngs, f, function(){
-      self.linechart.update(data);
-    });
-  }
-
-  this.getServices = function(next){
-    $.ajax({ 
-      type: 'GET',
-      url: this.services_base_url + 'ImageServices?f=json' ,
-      dataType: 'jsonp', 
-      success: function(data) {
-        next(data.services);
-      }
-    });
-  }
-
-  this.addServiceLayer = function(service, opacity){
-    this.layerGroup.clearLayers();
-    var layer = L.esri.imageServerLayer(this.services_base_url + service, {
-      opacity : opacity,
-      transparent: true,
-      format: 'png24',
-      noData: 0
-    });
-    this.layerGroup.addLayer(layer);
-    this.layerID = this.layerGroup.getLayerId(layer);
-  }
-
-  this.identifyElevationTool_click = function(e){
-    self.popup.setLatLng(e.latlng)
-      .setContent('Loading...')
-      .openOn(self.map);
-    self._identifyElevation(e.latlng, function(elevation){
-      if(elevation === 'NoData') {
-        self.popup.setContent('No Data');
-      } else {
-        self.popup.setContent('Elevation: ' + elevation + ' ft')
-      }
-    });
-  }
-
-  this._identifyElevation = function(latlng, next){
-    var layer = self.layerGroup.getLayer(self.layerID);
-    layer.identify(latlng, {} , function(res){
-      next(res.value);
-    });
-  }
+    self.drawnItems.addLayer(layer);
+    var esri_geom = Terraformer.ArcGIS.convert(layer.toGeoJSON());
+    console.log(JSON.stringify(esri_geom));
+    var latlngs = layer.getLatLngs();
+    self.getElevationLine(latlngs);
+  });
 }
+
+LidarViewer.prototype.getServices = function(next){
+  var self = this;
+  $.ajax({ 
+    type: 'GET',
+    url: this.services_base_url + this.services_folder + '?f=json',
+    dataType: 'jsonp', 
+    success: function(data) {
+      self.addControls(data.services);
+    }
+  });
+}
+
+LidarViewer.prototype.addServiceLayer = function(service, opacity){
+  this.layerGroup.clearLayers();
+  var layer = L.esri.imageServerLayer(this.services_base_url + service, {
+    opacity : opacity,
+    transparent: true,
+    format: 'png24',
+    noData: 0
+  });
+  this.layerGroup.addLayer(layer);
+  this.layerID = this.layerGroup.getLayerId(layer);
+}
+
+LidarViewer.prototype.identifyElevationTool_click = function(e){
+  var self = this;
+  this.popup.setLatLng(e.latlng)
+    .setContent('Loading...')
+    .openOn(self.map);
+  this._identifyElevation(e.latlng, function(elevation){
+    if(elevation === 'NoData') {
+      self.popup.setContent('No Data');
+    } else {
+      self.popup.setContent('Elevation: ' + elevation + ' ft')
+    }
+  });
+}
+
+LidarViewer.prototype._identifyElevation = function(latlng, next){
+  var layer = this.layerGroup.getLayer(this.layerID);
+  layer.identify(latlng, {} , function(res){
+    next(res.value);
+  });
+}
+
