@@ -117,8 +117,6 @@ LidarViewer.prototype.addControls = function(services){
       var latlngs = layer.getLatLngs();
       self.getElevationLine(latlngs);
     }
-    
-
   });
 }
 
@@ -141,6 +139,9 @@ LidarViewer.prototype.addServiceLayer = function(service, opacity){
     transparent: true,
     format: 'png24',
     noData: 0
+  });
+  layer.on('metadata', function(res){
+    console.log(res);
   });
   this.layerGroup.addLayer(layer);
   this.layerID = this.layerGroup.getLayerId(layer);
@@ -166,4 +167,5 @@ LidarViewer.prototype._identifyElevation = function(latlng, next){
     next(res.value);
   });
 }
+
 
