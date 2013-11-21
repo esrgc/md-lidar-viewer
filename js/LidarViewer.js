@@ -2,8 +2,8 @@ function LidarViewer(){
   var self = this;
   L.esri.get = L.esri.RequestHandlers.JSONP;
   this.layer = false;
-  this.services_base_url = 'http://esrgc1.salisbury.edu/ArcGIS/rest/services/';
-  this.services_folder = 'ImageServices';
+  //this.services_base_url = 'http://esrgc1.salisbury.edu/ArcGIS/rest/services/';
+  //this.services_folder = 'ImageServices';
   this.services_base_url = 'http://esrgc2.salisbury.edu/ArcGIS/rest/services/';
   this.services_folder = 'Elevation';
   this.layerGroup = new L.layerGroup();
@@ -24,8 +24,18 @@ function LidarViewer(){
 
   var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png');
   this.drawnItems = new L.FeatureGroup();
+
+  var statewide = L.esri.dynamicMapLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/statewide13/MapServer', {
+    opacity : 1,
+    transparent: true,
+    format: 'png24',
+    noData: 0,
+    layers: [15]
+  });
+
   this.map = new L.Map('map', {
-    layers: [mapboxsat, this.layerGroup, this.drawnItems]
+    layers: [mapboxsat, this.layerGroup, this.drawnItems],
+    attributionControl: false
   }).setView(new L.LatLng(38.7, -76.7), 7);
 
   this.getServices();
@@ -79,6 +89,14 @@ LidarViewer.prototype.addControls = function(services){
   };
   opacityControl.addTo(this.map);
 
+  var legendControl = L.control({position: 'bottomright'});
+  legendControl.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'legendControl');
+      div.innerHTML = '';
+      return div;
+  };
+  legendControl.addTo(this.map);
+
   var drawControl = new L.Control.Draw({
     draw: {
       polygon: true,
@@ -86,6 +104,7 @@ LidarViewer.prototype.addControls = function(services){
       circle: false,
       marker: true,
       polyline: {
+        zIndexOffset: 9999,
         shapeOptions: {
           color: '#f00',
           weight: 3
@@ -145,6 +164,7 @@ LidarViewer.prototype.addServiceLayer = function(service, opacity){
   });
   this.layerGroup.addLayer(layer);
   this.layerID = this.layerGroup.getLayerId(layer);
+  this.getLegend();
 }
 
 LidarViewer.prototype.identifyElevationTool_click = function(e){
@@ -168,4 +188,19 @@ LidarViewer.prototype._identifyElevation = function(latlng, next){
   });
 }
 
+LidarViewer.prototype.getLegend = function(){
+  var layer = this.layerGroup.getLayer(this.layerID);
+  L.esri.get(layer.serviceUrl + 'legend/', {}, function(res){
+    var legend = '<table>';
+    for (var i = 0; i < res.layers[0].legend.length; i++) {
+      legend += '<tr>';
+      var img = '<img src="data:' + res.layers[0].legend[i].contentType + ';base64, ' + res.layers[0].legend[i].imageData + '" alt="Red dot" />';
+      legend += '<td>' + img + '</td><td>'+ res.layers[0].legend[i].label + '</td>';
+      legend += '</tr>';
+    };
+    legend += "</table>";
+    $('.legendControl').html(legend);
+    $('.legendControl').show();
+  }, this);
+}
 

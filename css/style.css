@@ -22,3 +22,12 @@
   height: 200px;
   margin-top: 20px;
 }
+
+.legendControl {
+  background: white;
+  padding: 5px;
+  display: none;
+}
+.legendControl img {
+  float: left;
+}
