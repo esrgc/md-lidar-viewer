@@ -23,7 +23,6 @@ $(document).ready(function(){
   });
 
   $('#map').on('change', '#services', function(e){
-    console.log('change');
     var service = $(this).val();
     var opacity = $('#opacitySlider').val()/100;
     lidarViewer.addServiceLayer(service, opacity);

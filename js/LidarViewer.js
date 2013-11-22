@@ -50,9 +50,10 @@ LidarViewer.prototype.getElevationLine = function(latlngs){
 
   var f = function(latlng, next){
     layer.identify(latlng, {} , function(res){
+      var value = self.getPixelValue(res);
       data.push({
         distance: count,
-        elevation: res.value
+        elevation: value
       });
       self.linechart.update(data);
       count++;
@@ -64,11 +65,11 @@ LidarViewer.prototype.getElevationLine = function(latlngs){
   });
 }
 
-LidarViewer.prototype.addControls = function(services){
+LidarViewer.prototype.addControls = function(){
   var self = this;
   var options = '<select id="services"><option value="">Services</option>';
-  for(var i = 0; i < services.length; i++){
-    options += '<option value="'+ services[i].name + '/' + services[i].type + '">' + services[i].name + '</option>';
+  for(var i = 0; i < self.services.length; i++){
+    options += '<option value="'+ self.services[i].name + '/' + self.services[i].type + '">' + self.services[i].name + '</option>';
   }
   options += '</select>';
   var layerMenu = L.control({position: 'topright'});
@@ -97,6 +98,7 @@ LidarViewer.prototype.addControls = function(services){
   };
   legendControl.addTo(this.map);
 
+  L.drawLocal.draw.handlers.marker.tooltip.start = 'Click map to identify.';
   var drawControl = new L.Control.Draw({
     draw: {
       polygon: true,
@@ -146,19 +148,31 @@ LidarViewer.prototype.getServices = function(next){
     url: this.services_base_url + this.services_folder + '?f=json',
     dataType: 'jsonp', 
     success: function(data) {
-      self.addControls(data.services);
+      self.services = data.services;
+      self.addControls();
     }
   });
 }
 
 LidarViewer.prototype.addServiceLayer = function(service, opacity){
   this.layerGroup.clearLayers();
-  var layer = L.esri.imageServerLayer(this.services_base_url + service, {
-    opacity : opacity,
-    transparent: true,
-    format: 'png24',
-    noData: 0
-  });
+  this.layertype = service.split('/')[2];
+  var layer;
+  if(this.layertype === 'ImageServer'){
+    layer = L.esri.imageServerLayer(this.services_base_url + service, {
+      opacity : opacity,
+      transparent: true,
+      format: 'png24',
+      noData: 0
+    });
+  } else if(this.layertype === 'MapServer'){
+    layer = L.esri.dynamicMapLayer(this.services_base_url + service, {
+      opacity : 1,
+      transparent: true,
+      format: 'png24',
+      noData: 0
+    });
+  }
   layer.on('metadata', function(res){
     console.log(res);
   });
@@ -167,24 +181,12 @@ LidarViewer.prototype.addServiceLayer = function(service, opacity){
   this.getLegend();
 }
 
-LidarViewer.prototype.identifyElevationTool_click = function(e){
-  var self = this;
-  this.popup.setLatLng(e.latlng)
-    .setContent('Loading...')
-    .openOn(self.map);
-  this._identifyElevation(e.latlng, function(elevation){
-    if(elevation === 'NoData') {
-      self.popup.setContent('No Data');
-    } else {
-      self.popup.setContent('Elevation: ' + elevation + ' ft')
-    }
-  });
-}
-
 LidarViewer.prototype._identifyElevation = function(latlng, next){
+  var self = this;
   var layer = this.layerGroup.getLayer(this.layerID);
   layer.identify(latlng, {} , function(res){
-    next(res.value);
+    var value = self.getPixelValue(res);
+    next(value);
   });
 }
 
@@ -202,5 +204,15 @@ LidarViewer.prototype.getLegend = function(){
     $('.legendControl').html(legend);
     $('.legendControl').show();
   }, this);
+}
+
+LidarViewer.prototype.getPixelValue = function(res){
+  var value;
+  if(this.layertype === 'ImageServer'){
+    value = res.value;
+  } else if(this.layertype === 'MapServer'){
+    value = res.results[0].attributes['Pixel Value'];
+  }
+  return value;
 }
 
