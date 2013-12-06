@@ -31,3 +31,13 @@
 .legendControl img {
   float: left;
 }
+
+.metaDataControl {
+  background: white;
+  padding: 5px;
+  display: none;
+  max-width: 200px;
+  max-height: 200px;
+  overflow-x: none;
+  overflow-y: scroll;
+}

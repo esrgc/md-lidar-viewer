@@ -37,6 +37,9 @@ function LidarViewer(){
     layers: [mapboxsat, this.layerGroup, this.drawnItems],
     attributionControl: false
   }).setView(new L.LatLng(38.7, -76.7), 7);
+  
+  var tiles = L.tileLayer('http://localhost:8888/v2/allegany/{z}/{x}/{y}.png', {opacity: 1});
+  tiles.addTo(this.map);
 
   this.getServices();
 
@@ -97,6 +100,14 @@ LidarViewer.prototype.addControls = function(){
       return div;
   };
   legendControl.addTo(this.map);
+
+  var metaDataControl = L.control({position: 'bottomleft'});
+  metaDataControl.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'metaDataControl');
+      div.innerHTML = '';
+      return div;
+  };
+  metaDataControl.addTo(this.map);
 
   L.drawLocal.draw.handlers.marker.tooltip.start = 'Click map to identify.';
   var drawControl = new L.Control.Draw({
@@ -174,7 +185,10 @@ LidarViewer.prototype.addServiceLayer = function(service, opacity){
     });
   }
   layer.on('metadata', function(res){
+    console.log(JSON.stringify(res.metadata));
     console.log(res);
+    $('.metaDataControl').html(res.metadata.description);
+    $('.metaDataControl').show();
   });
   this.layerGroup.addLayer(layer);
   this.layerID = this.layerGroup.getLayerId(layer);
