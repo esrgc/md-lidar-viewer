@@ -10,36 +10,49 @@ function LidarViewer(){
   this.identifyElevationTool = false;
   this.popup = new L.popup();
 
-  this.linechart = new GeoDash.LineChart("#line-chart", {
-    x: 'distance',
-    y: 'elevation',
-    width: 'auto',
-    height: 'auto',
-    colors: ["#f00"],
-    title: 'Elevation',
-    interpolate: 'monotone',
-    dotRadius: 3,
-    time: false
-  });
+  // this.linechart = new GeoDash.LineChart("#line-chart", {
+  //   x: 'distance',
+  //   y: 'elevation',
+  //   width: 'auto',
+  //   height: 'auto',
+  //   colors: ["#f00"],
+  //   title: 'Elevation',
+  //   interpolate: 'monotone',
+  //   dotRadius: 3,
+  //   time: false
+  // });
 
   var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png');
   this.drawnItems = new L.FeatureGroup();
 
-  var statewide = L.esri.dynamicMapLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/statewide13/MapServer', {
+  var world_imagery = L.esri.dynamicMapLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer', {
     opacity : 1,
     transparent: true,
     format: 'png24',
-    noData: 0,
-    layers: [15]
+  });
+  var world_street = L.esri.dynamicMapLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer', {
+    opacity : 1,
+    transparent: true,
+    format: 'png24',
+  });
+  var world_topo = L.esri.dynamicMapLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer', {
+    opacity : 1,
+    transparent: true,
+    format: 'png24',
   });
 
+  var baseMaps = {
+      "World Imagery": world_imagery,
+      "World Street Map": world_street,
+      "World Topo Map": world_topo
+  };
+
   this.map = new L.Map('map', {
-    layers: [mapboxsat, this.layerGroup, this.drawnItems],
+    layers: [world_imagery, this.layerGroup, this.drawnItems],
     attributionControl: false
   }).setView(new L.LatLng(38.7, -76.7), 7);
   
-  var tiles = L.tileLayer('http://localhost:8888/v2/allegany/{z}/{x}/{y}.png', {opacity: 1});
-  tiles.addTo(this.map);
+  L.control.layers(baseMaps).addTo(this.map);
 
   this.getServices();
 
