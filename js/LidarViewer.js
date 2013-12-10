@@ -2,44 +2,52 @@ function LidarViewer(){
   var self = this;
   L.esri.get = L.esri.RequestHandlers.JSONP;
   this.layer = false;
-  //this.services_base_url = 'http://esrgc1.salisbury.edu/ArcGIS/rest/services/';
-  //this.services_folder = 'ImageServices';
   this.services_base_url = 'http://esrgc2.salisbury.edu/ArcGIS/rest/services/';
   this.services_folder = 'Elevation';
   this.layerGroup = new L.layerGroup();
   this.identifyElevationTool = false;
+  this.hasLabels = true;
   this.popup = new L.popup();
-
-  // this.linechart = new GeoDash.LineChart("#line-chart", {
-  //   x: 'distance',
-  //   y: 'elevation',
-  //   width: 'auto',
-  //   height: 'auto',
-  //   colors: ["#f00"],
-  //   title: 'Elevation',
-  //   interpolate: 'monotone',
-  //   dotRadius: 3,
-  //   time: false
-  // });
 
   var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png');
   this.drawnItems = new L.FeatureGroup();
 
-  var world_imagery = L.esri.dynamicMapLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer', {
+  var world_imagery = L.esri.basemapLayer("Imagery");
+  var world_street = L.esri.basemapLayer("Streets");
+  var world_topo = L.esri.basemapLayer("Topographic");
+
+  this.labels = L.esri.basemapLayer("ImageryLabels");
+
+  this.statewide_stretched = L.esri.dynamicMapLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/Statewide_stretched/MapServer', {
     opacity : 1,
     transparent: true,
     format: 'png24',
+    noData: 0,
+    name: 'Statewide Stretched'
   });
-  var world_street = L.esri.dynamicMapLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer', {
+  this.statewide_hillshade = L.esri.dynamicMapLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/SW_hillshade/MapServer', {
     opacity : 1,
     transparent: true,
     format: 'png24',
+    noData: 0,
+    name: 'Statewide Hillshade'
   });
-  var world_topo = L.esri.dynamicMapLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer', {
+  this.statewide_slope = L.esri.dynamicMapLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/SW_slope/MapServer', {
     opacity : 1,
     transparent: true,
     format: 'png24',
+    noData: 0,
+    name: 'Statewide Slope'
   });
+  this.identifyLayer = L.esri.imageServerLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/Statewide_dem_m/ImageServer', {
+    opacity : 0,
+    transparent: true,
+    format: 'png24',
+    noData: 0
+  });
+  this.terrainGroup = L.layerGroup([this.statewide_stretched, this.statewide_hillshade, this.statewide_slope]);
+
+  this.countylayer = L.geoJson(mdcnty);
 
   var baseMaps = {
       "World Imagery": world_imagery,
@@ -47,26 +55,65 @@ function LidarViewer(){
       "World Topo Map": world_topo
   };
 
-  this.map = new L.Map('map', {
-    layers: [world_imagery, this.layerGroup, this.drawnItems],
-    attributionControl: false
-  }).setView(new L.LatLng(38.7, -76.7), 7);
-  
-  L.control.layers(baseMaps).addTo(this.map);
+  var overlays = {
+    "Labels": this.labels,
+    'Statewide Stretched': this.statewide_stretched,
+    'Statewide Hillshade': this.statewide_hillshade,
+    'Statewide Slope': this.statewide_slope
+  };
 
-  this.getServices();
+  this.map = new L.Map('map', {
+    layers: [world_imagery, this.identifyLayer, this.statewide_stretched, this.drawnItems]
+  }).setView(new L.LatLng(38.7, -76.7), 8);
+  
+  L.control.layers(baseMaps, overlays, {
+    collapsed: false
+  }).addTo(this.map); 
+  L.control.scale().addTo(this.map);
+
+  $('.leaflet-tile-pane').css("z-index", "auto");
+
+  //change z-index of labels overlay
+  this.map.on('overlayadd', function(layer){
+    if(layer.name === 'Labels'){
+      self.hasLabels = true;
+      var el = self.labels.getContainer();
+      el.style['z-index'] = 5;
+    } else if(layer.name.indexOf('Statewide') >= 0) {
+      self.map.removeLayer(self.labels);
+      self.drawnItems.bringToFront();
+    }
+  });
+  //change z-index of labels overlay
+  this.map.on('overlayremove', function(layer){
+    if(layer.name === 'Labels'){
+      self.hasLabels = false;
+    }
+  });
+  this.identifyLayer.on('metadata', function(res){
+    
+  });
+  this.terrainGroup.eachLayer(function(layer){
+    layer.on('load', function(l){
+      if(self.hasLabels){
+        self.map.addLayer(self.labels);
+      }
+    });
+  });
+
+  this.addControls();
 
 }
 
 LidarViewer.prototype.getElevationLine = function(latlngs){
   var self = this;
-  var layer = this.layerGroup.getLayer(this.layerID);
   var data = [];
   var count = 1;
-
+  $('.chartControl').css('opacity', 1);
   var f = function(latlng, next){
-    layer.identify(latlng, {} , function(res){
-      var value = self.getPixelValue(res);
+    self.identifyLayer.identify(latlng, {} , function(res){
+      //var value = self.getPixelValue(res);
+      var value = res.value;
       data.push({
         distance: count,
         elevation: value
@@ -83,10 +130,36 @@ LidarViewer.prototype.getElevationLine = function(latlngs){
 
 LidarViewer.prototype.addControls = function(){
   var self = this;
-  var options = '<select id="services"><option value="">Services</option>';
-  for(var i = 0; i < self.services.length; i++){
-    options += '<option value="'+ self.services[i].name + '/' + self.services[i].type + '">' + self.services[i].name + '</option>';
-  }
+
+  // var options = '<select id="services"><option value="">Services</option>';
+  // for(var i = 0; i < self.services.length; i++){
+  //   options += '<option value="'+ self.services[i].name + '/' + self.services[i].type + '">' + self.services[i].name + '</option>';
+  // }
+  // options += '</select>';
+  // var layerMenu = L.control({position: 'topright'});
+  // layerMenu.onAdd = function (map) {
+  //     var div = L.DomUtil.create('div', 'layerMenu');
+  //     div.innerHTML = options;
+  //     div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation;
+  //     return div;
+  // };
+  // layerMenu.addTo(this.map);
+
+  var opacityControl = L.control({position: 'topright'});
+  opacityControl.onAdd = function (map) {
+    var div = L.DomUtil.create('div', 'opacityControl');
+    self.terrainGroup.eachLayer(function(layer){
+      div.innerHTML += '<p><span class="terrain-layer">' + layer.options.name + '</span><input type="range" name="points" min="1" max="100" class="opacitySlider" value="'+ layer.options.opacity*100 + '"></p>';
+    });
+    div.onmousedown = div.ondblclick = L.DomEvent.stopPropagation;
+    return div;
+  };
+  opacityControl.addTo(this.map);
+
+  var options = '<select id="counties"><option value="">Counties</option>';
+  self.countylayer.eachLayer(function(layer){
+    options += '<option value="'+ layer.feature.properties.name + '">' + layer.feature.properties.name + '</option>';
+  });
   options += '</select>';
   var layerMenu = L.control({position: 'topright'});
   layerMenu.onAdd = function (map) {
@@ -97,15 +170,6 @@ LidarViewer.prototype.addControls = function(){
   };
   layerMenu.addTo(this.map);
 
-  var opacityControl = L.control({position: 'topright'});
-  opacityControl.onAdd = function (map) {
-      var div = L.DomUtil.create('div', 'opacityControl');
-      div.innerHTML = '<input type="range" name="points" min="1" max="100" id="opacitySlider" value="100">';
-      div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation;
-      return div;
-  };
-  opacityControl.addTo(this.map);
-
   var legendControl = L.control({position: 'bottomright'});
   legendControl.onAdd = function (map) {
       var div = L.DomUtil.create('div', 'legendControl');
@@ -114,18 +178,39 @@ LidarViewer.prototype.addControls = function(){
   };
   legendControl.addTo(this.map);
 
-  var metaDataControl = L.control({position: 'bottomleft'});
-  metaDataControl.onAdd = function (map) {
-      var div = L.DomUtil.create('div', 'metaDataControl');
-      div.innerHTML = '';
+  var chartControl = L.control({position: 'bottomleft'});
+  chartControl.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'chartControl');
+      div.innerHTML = '<div class="line-chart"></div><button type="button" class="close" aria-hidden="true">&times;</button>';
+      var closeButton = $('.close');
+      L.DomEvent
+        .addListener(div, 'mousedown', function (e) {
+          L.DomEvent.stopPropagation(e);
+        })
+        .addListener(div, 'mousedown', function (e) {
+          L.DomEvent.preventDefault(e);
+        });
       return div;
   };
-  metaDataControl.addTo(this.map);
+  chartControl.addTo(this.map);
+
+
+  this.linechart = new GeoDash.LineChart(".line-chart", {
+    x: 'distance',
+    y: 'elevation',
+    width: 'auto',
+    height: 'auto',
+    colors: ["#f00"],
+    title: 'Elevation',
+    interpolate: 'monotone',
+    dotRadius: 3,
+    time: false
+  });
 
   L.drawLocal.draw.handlers.marker.tooltip.start = 'Click map to identify.';
   var drawControl = new L.Control.Draw({
     draw: {
-      polygon: true,
+      polygon: false,
       rectangle: false,
       circle: false,
       marker: true,
@@ -154,7 +239,14 @@ LidarViewer.prototype.addControls = function(){
         if(elevation === 'NoData') {
           popup.setContent('No Data');
         } else {
-          popup.setContent('Elevation: ' + elevation + ' ft');
+          var vintage = '11/21/2013';
+          var accuracy = '0.13';
+          var content = '<table class="table table-condensed table-bordered result">'
+              + '<tr><td><strong>Elevation</strong></td><td> ' + elevation + ' meters</td></tr>'
+              + '<tr><td><strong>Vintage</strong></td><td> ' + vintage + '</td></tr>'
+              + '<tr><td><strong>Accuracy</strong></td><td> ' + accuracy + ' meters</td></tr>'
+              + '</table>';
+          popup.setContent(content);
         }
       });
     } else {
@@ -198,8 +290,6 @@ LidarViewer.prototype.addServiceLayer = function(service, opacity){
     });
   }
   layer.on('metadata', function(res){
-    console.log(JSON.stringify(res.metadata));
-    console.log(res);
     $('.metaDataControl').html(res.metadata.description);
     $('.metaDataControl').show();
   });
@@ -210,9 +300,10 @@ LidarViewer.prototype.addServiceLayer = function(service, opacity){
 
 LidarViewer.prototype._identifyElevation = function(latlng, next){
   var self = this;
-  var layer = this.layerGroup.getLayer(this.layerID);
-  layer.identify(latlng, {} , function(res){
-    var value = self.getPixelValue(res);
+  //var layer = this.layerGroup.getLayer(this.layerID);
+  self.identifyLayer.identify(latlng, {} , function(res){
+    //var value = self.getPixelValue(res);
+    var value = res.value;
     next(value);
   });
 }

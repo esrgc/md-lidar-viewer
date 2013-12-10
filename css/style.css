@@ -4,12 +4,12 @@ html, body {
 }
 
 .wrap {
-  width: 900px;
-  margin: 0 auto;
+  height: 100%;
+  width: 100%;
 }
 #map { 
-  height: 500px;
-  width: 800px;
+  height: 100%;
+  width: 100%;
   margin: 0 auto;
 }
 #map.active {
@@ -23,9 +23,41 @@ html, body {
   margin-right: 20px;
 }
 
-#line-chart {
+.opacityControl {
+  background: white;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+.opacityControl input {
+  float: right;
+}
+
+.terrain-layer {
+  font-weight: bold;
+  padding-right: 5px;
+}
+
+.chartControl {
+  padding: 10px;
+  background: #fff;
+  border-radius:5px;
+  opacity: 0;
+  -webkit-transition: opacity 200ms ease-out 100ms;
+  -moz-transition: opacity 200ms ease-out 100ms;
+  -o-transition: opacity 200ms ease-out 100ms;
+  transition: opacity 200ms ease-out 100ms;
+}
+
+.chartControl .close {
+  position: absolute;
+  top: 5px;
+  right: 10px;
+}
+
+.line-chart {
   height: 200px;
-  margin-top: 20px;
+  width: 600px;
 }
 
 .legendControl {
@@ -45,4 +77,8 @@ html, body {
   max-height: 200px;
   overflow-x: none;
   overflow-y: scroll;
+}
+
+.result p {
+  margin: 0;
 }

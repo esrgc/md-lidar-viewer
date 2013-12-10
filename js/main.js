@@ -2,24 +2,11 @@ $(document).ready(function(){
 
   var lidarViewer = new LidarViewer();
 
-  $('#map').on('change', '#opacitySlider', function(e){
+  $('#map').on('change', '.opacitySlider', function(e){
+    var index = $('.opacitySlider').index(this);
+    var layer = lidarViewer.terrainGroup.getLayers()[index];
     var opacity = $(this).val()/100;
-    lidarViewer.layerGroup.eachLayer(function(layer){
-      layer.setOpacity(opacity);
-    });
-  });
-
-  $('#elevation').click(function(e){
-    if(lidarViewer.identifyElevationTool){
-      $(this).removeClass('active');
-      $('#map').removeClass('active');
-      lidarViewer.map.off('click', lidarViewer.identifyElevationTool_click, lidarViewer);
-    } else {
-      $(this).addClass('active');
-      $('#map').addClass('active');
-      lidarViewer.map.on('click', lidarViewer.identifyElevationTool_click, lidarViewer);
-    }
-    lidarViewer.identifyElevationTool = !lidarViewer.identifyElevationTool;
+    layer.setOpacity(opacity);
   });
 
   $('#map').on('change', '#services', function(e){
@@ -29,11 +16,25 @@ $(document).ready(function(){
     $('#elevation').prop('disabled', false);
   });
 
+  $('#map').on('change', '#counties', function(e){
+    var county = $(this).val();
+    lidarViewer.countylayer.eachLayer(function(layer){
+      if(layer.feature.properties.name === county){
+        lidarViewer.map.fitBounds(layer.getBounds());
+      }
+    });
+  });
+
   $("#clear").click(function(){
     lidarViewer.layerGroup.clearLayers();
     lidarViewer.drawnItems.clearLayers();
     lidarViewer.linechart.update([]);
     $('#elevation').prop('disabled', true);
     $('#services').val('');
+  });
+
+  $('#map').on('click', '.chartControl .close', function(e){
+    $('.chartControl').css('opacity', 0);
+    lidarViewer.linechart.update([]);
   });
 });
