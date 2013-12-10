@@ -149,7 +149,7 @@ LidarViewer.prototype.addControls = function(){
   opacityControl.onAdd = function (map) {
     var div = L.DomUtil.create('div', 'opacityControl');
     self.terrainGroup.eachLayer(function(layer){
-      div.innerHTML += '<p><span class="terrain-layer">' + layer.options.name + '</span><input type="range" name="points" min="1" max="100" class="opacitySlider" value="'+ layer.options.opacity*100 + '"></p>';
+      div.innerHTML += '<p><span class="terrain-layer">' + layer.options.name + '</span><br><input type="range" name="points" min="1" max="100" class="opacitySlider" value="'+ layer.options.opacity*100 + '"></p>';
     });
     div.onmousedown = div.ondblclick = L.DomEvent.stopPropagation;
     return div;
