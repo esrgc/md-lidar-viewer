@@ -64,7 +64,7 @@ function LidarViewer(){
 
   this.map = new L.Map('map', {
     layers: [world_imagery, this.identifyLayer, this.statewide_stretched, this.drawnItems]
-  }).setView(new L.LatLng(38.7, -76.7), 8);
+  }).setView(new L.LatLng(38.8, -77.3), 8);
   
   L.control.layers(baseMaps, overlays, {
     collapsed: false
