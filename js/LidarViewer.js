@@ -39,13 +39,20 @@ function LidarViewer(){
     noData: 0,
     name: 'Statewide Slope'
   });
+  this.statewide_aspect = L.esri.dynamicMapLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/SW_aspect/MapServer', {
+    opacity : 1,
+    transparent: true,
+    format: 'png24',
+    noData: 0,
+    name: 'Statewide Aspect'
+  });
   this.identifyLayer = L.esri.imageServerLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/Statewide_dem_m/ImageServer', {
     opacity : 0,
     transparent: true,
     format: 'png24',
     noData: 0
   });
-  this.terrainGroup = L.layerGroup([this.statewide_stretched, this.statewide_hillshade, this.statewide_slope]);
+  this.terrainGroup = L.layerGroup([this.statewide_stretched, this.statewide_hillshade, this.statewide_slope, this.statewide_aspect]);
 
   this.countylayer = L.geoJson(mdcnty);
 
@@ -59,7 +66,8 @@ function LidarViewer(){
     "Labels": this.labels,
     'Statewide Stretched': this.statewide_stretched,
     'Statewide Hillshade': this.statewide_hillshade,
-    'Statewide Slope': this.statewide_slope
+    'Statewide Slope': this.statewide_slope,
+    'Statewide Aspect': this.statewide_aspect
   };
 
   this.map = new L.Map('map', {
@@ -149,7 +157,12 @@ LidarViewer.prototype.addControls = function(){
   opacityControl.onAdd = function (map) {
     var div = L.DomUtil.create('div', 'opacityControl');
     self.terrainGroup.eachLayer(function(layer){
-      div.innerHTML += '<p><span class="terrain-layer">' + layer.options.name + '</span><br><input type="range" name="points" min="1" max="100" class="opacitySlider" value="'+ layer.options.opacity*100 + '"></p>';
+      console.log(layer.options.name);
+      div.innerHTML += '<div class="opacity-layer">'
+        + '<div class="terrain-layer">' + layer.options.name + '</div>'
+        + '<input type="range" name="points" min="0" max="100" class="opacity-slider" value="'+ layer.options.opacity*100 + '">'
+        + '<div class="opacity-value">'+ layer.options.opacity*100 + '%</div>'
+        + '</div>';
     });
     div.onmousedown = div.ondblclick = L.DomEvent.stopPropagation;
     return div;

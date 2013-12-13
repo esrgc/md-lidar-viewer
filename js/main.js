@@ -2,10 +2,11 @@ $(document).ready(function(){
 
   var lidarViewer = new LidarViewer();
 
-  $('#map').on('change', '.opacitySlider', function(e){
-    var index = $('.opacitySlider').index(this);
+  $('#map').on('change', '.opacity-slider', function(e){
+    var index = $('.opacity-slider').index(this);
     var layer = lidarViewer.terrainGroup.getLayers()[index];
     var opacity = $(this).val()/100;
+    $($('.opacity-value').get(index)).html(parseInt(opacity*100) + '%');
     layer.setOpacity(opacity);
   });
 

@@ -30,7 +30,13 @@ html, body {
 }
 
 .opacityControl input {
-  float: right;
+  float: left;
+  width: 70%;
+  margin-right: 5px;
+}
+
+.opacityControl .opacity-value {
+  color: #999;
 }
 
 .terrain-layer {
