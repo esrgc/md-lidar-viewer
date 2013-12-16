@@ -110,7 +110,11 @@ function LidarViewer(){
   });
 
   $.get('data/metadata.json', function(res){
-    self.metadata = JSON.parse(res);
+    if(typeof res === 'string') {
+      self.metadata = JSON.parse(res);
+    } else {
+      self.metadata = res;
+    }
   });
 
   this.addControls();
