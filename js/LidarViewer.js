@@ -251,8 +251,8 @@ LidarViewer.prototype.addControls = function(){
     var type = e.layerType,
         layer = e.layer;
     self.drawnItems.addLayer(layer);
-    var point = layer.getLatLng();
     if(type === 'marker'){
+      var point = layer.getLatLng();
       var popup = L.popup()
         .setContent('...');
       layer.bindPopup(popup).openPopup();
