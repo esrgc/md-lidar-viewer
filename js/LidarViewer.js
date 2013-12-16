@@ -269,9 +269,11 @@ LidarViewer.prototype.addControls = function(){
               + '<tr><td><strong>County</strong></td><td> ' + metadata["County"] + '</td></tr>'
               + '<tr><td><strong>Date</strong></td><td> ' + metadata["Date"] + '</td></tr>'
               + '<tr><td><strong>Vertical Accuracy</strong></td><td> ' + metadata["Vertical Accuracy"] + '</td></tr>'
-              + '<tr><td><strong>Project Partners</strong></td><td> ' + metadata["Project Partners"] + '</td></tr>'
-              + '<tr><td><strong>Planned Acquisitions</strong></td><td> ' + metadata["Planned Acquisitions"] + '</td></tr>'
-              + '</table>';
+              + '<tr><td><strong>Project Partners</strong></td><td> ' + metadata["Project Partners"] + '</td></tr>';
+              if(metadata["Planned Acquisitions"]) {
+                content += '<tr><td><strong>Planned Acquisitions</strong></td><td> ' + metadata["Planned Acquisitions"] + '</td></tr>';
+              }
+              content += '</table>';
           popup.setContent(content);
         }
       });
