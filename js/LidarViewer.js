@@ -265,6 +265,7 @@ LidarViewer.prototype.addControls = function(){
           var accuracy = '0.13';
           var content = '<table class="table table-condensed table-bordered result">'
               + '<tr><td><strong>Elevation</strong></td><td> ' + elevation + ' meters</td></tr>'
+              + '<tr><td><strong>Location</strong></td><td> ' + point.lng.toFixed(5) + ', ' + point.lat.toFixed(5) + '</td></tr>'
               + '<tr><td><strong>County</strong></td><td> ' + metadata["County"] + '</td></tr>'
               + '<tr><td><strong>Date</strong></td><td> ' + metadata["Date"] + '</td></tr>'
               + '<tr><td><strong>Vertical Accuracy</strong></td><td> ' + metadata["Vertical Accuracy"] + '</td></tr>'
