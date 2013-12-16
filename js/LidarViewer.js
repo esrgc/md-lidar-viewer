@@ -109,6 +109,10 @@ function LidarViewer(){
     });
   });
 
+  $.get('data/metadata.json', function(res){
+    self.metadata = JSON.parse(res);
+  });
+
   this.addControls();
 
 }
@@ -157,7 +161,6 @@ LidarViewer.prototype.addControls = function(){
   opacityControl.onAdd = function (map) {
     var div = L.DomUtil.create('div', 'opacityControl');
     self.terrainGroup.eachLayer(function(layer){
-      console.log(layer.options.name);
       div.innerHTML += '<div class="opacity-layer">'
         + '<div class="terrain-layer">' + layer.options.name + '</div>'
         + '<input type="range" name="points" min="0" max="100" class="opacity-slider" value="'+ layer.options.opacity*100 + '">'
@@ -244,11 +247,13 @@ LidarViewer.prototype.addControls = function(){
     var type = e.layerType,
         layer = e.layer;
     self.drawnItems.addLayer(layer);
+    var point = layer.getLatLng();
     if(type === 'marker'){
       var popup = L.popup()
         .setContent('...');
       layer.bindPopup(popup).openPopup();
-      self._identifyElevation(layer.getLatLng(), function(elevation){
+      var metadata = self.getMetadataFromPoint(point);
+      self._identifyElevation(point, function(elevation){
         if(elevation === 'NoData') {
           popup.setContent('No Data');
         } else {
@@ -256,8 +261,11 @@ LidarViewer.prototype.addControls = function(){
           var accuracy = '0.13';
           var content = '<table class="table table-condensed table-bordered result">'
               + '<tr><td><strong>Elevation</strong></td><td> ' + elevation + ' meters</td></tr>'
-              + '<tr><td><strong>Vintage</strong></td><td> ' + vintage + '</td></tr>'
-              + '<tr><td><strong>Accuracy</strong></td><td> ' + accuracy + ' meters</td></tr>'
+              + '<tr><td><strong>County</strong></td><td> ' + metadata["County"] + '</td></tr>'
+              + '<tr><td><strong>Date</strong></td><td> ' + metadata["Date"] + '</td></tr>'
+              + '<tr><td><strong>Vertical Accuracy</strong></td><td> ' + metadata["Vertical Accuracy"] + '</td></tr>'
+              + '<tr><td><strong>Project Partners</strong></td><td> ' + metadata["Project Partners"] + '</td></tr>'
+              + '<tr><td><strong>Planned Acquisitions</strong></td><td> ' + metadata["Planned Acquisitions"] + '</td></tr>'
               + '</table>';
           popup.setContent(content);
         }
@@ -268,6 +276,21 @@ LidarViewer.prototype.addControls = function(){
       self.getElevationLine(latlngs);
     }
   });
+}
+
+LidarViewer.prototype.getMetadataFromPoint = function(point){
+  var results = leafletPip.pointInLayer(point, this.countylayer);
+  if(results.length){
+    var countyname = results[0].feature.properties.name;
+    for(var i = 0; i < this.metadata.length; i++){
+      if(this.metadata[i].County === countyname){
+        return this.metadata[i];
+      }
+    }
+  } else {
+    return false;
+  }
+  return false;
 }
 
 LidarViewer.prototype.getServices = function(next){
