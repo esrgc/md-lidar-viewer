@@ -4,74 +4,96 @@ function LidarViewer(){
   this.layer = false;
   this.services_base_url = 'http://esrgc2.salisbury.edu/ArcGIS/rest/services/';
   this.services_folder = 'Elevation';
-  this.layerGroup = new L.layerGroup();
   this.identifyElevationTool = false;
   this.hasLabels = true;
   this.popup = new L.popup();
-
-  var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png');
+  this.geocoder = new GeoCoder();
+  this.lidarLayer = false;
+  this.lidarGroup = new L.layerGroup();
   this.drawnItems = new L.FeatureGroup();
+  this.polystyle = {
+    color: '#333',
+    fillOpacity: 0,
+    weight: 2
+  }
+  this.load();
+}
 
+LidarViewer.prototype.load = function(){
+  var self = this;
+  async.parallel([
+    function(next){
+      $.getJSON('data/mdcnty.json', function(res){
+        self.mdcnty = res;
+        next(null);
+      });
+    },
+    function(next){
+      $.getJSON('data/watershed4.json', function(res){
+        self.watershed = res;
+        next(null);
+      });
+    },
+    function(next){
+      $.getJSON('data/metadata.json', function(res){
+        self.metadata = res;
+        next(null);
+      });
+    },
+    function(next){
+      $.getJSON('data/services.json', function(res){
+        self.services = res;
+        next(null);
+      });
+    }
+  ],
+  function(err, res){
+    self.makeMap();
+  });
+}
+
+LidarViewer.prototype.makeMap = function(){
+  var self = this;
+  var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png');
   var world_imagery = L.esri.basemapLayer("Imagery");
-  var world_street = L.esri.basemapLayer("Streets");
-  var world_topo = L.esri.basemapLayer("Topographic");
+  var imap_labels = L.esri.dynamicMapLayer("http://www.mdimap.us/ArcGIS/rest/services/ImageryBaseMapsEarthCover/MD.State.MDiMap_Gazetteer83M/MapServer");
+  var imap_6in = L.esri.dynamicMapLayer("http://www.mdimap.us/ArcGIS/rest/services/ImageryBaseMapsEarthCover/MD.State.6InchImagery/MapServer");
+  var imap_6incir = L.esri.dynamicMapLayer("http://www.mdimap.us/ArcGIS/rest/services/ImageryBaseMapsEarthCover/MD.State.6InchCIRImagery/MapServer");
+  var imap_layers = [imap_labels, imap_6in, imap_6incir];
+  var baseMaps = {
+      "World Imagery": world_imagery,
+      "iMap": imap_labels,
+      "iMap 6 Inch Imagery": imap_6in,
+      "iMap 6 Inch CIR": imap_6incir
+  };
 
   this.labels = L.esri.basemapLayer("ImageryLabels");
 
-  this.statewide_stretched = L.esri.dynamicMapLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/Statewide_stretched/MapServer', {
+  this.statewide_stretched = L.esri.dynamicMapLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/MD_statewide_demStretched_m/MapServer', {
     opacity : 1,
     transparent: true,
     format: 'png24',
     noData: 0,
     name: 'Statewide Stretched'
   });
-  this.statewide_hillshade = L.esri.dynamicMapLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/SW_hillshade/MapServer', {
-    opacity : 1,
-    transparent: true,
-    format: 'png24',
-    noData: 0,
-    name: 'Statewide Hillshade'
-  });
-  this.statewide_slope = L.esri.dynamicMapLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/SW_slope/MapServer', {
-    opacity : 1,
-    transparent: true,
-    format: 'png24',
-    noData: 0,
-    name: 'Statewide Slope'
-  });
-  this.statewide_aspect = L.esri.dynamicMapLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/SW_aspect/MapServer', {
-    opacity : 1,
-    transparent: true,
-    format: 'png24',
-    noData: 0,
-    name: 'Statewide Aspect'
-  });
-  this.identifyLayer = L.esri.imageServerLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/Statewide_dem_m/ImageServer', {
+
+  this.identifyLayer = L.esri.imageServerLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/MD_wicomico_dem_m/ImageServer', {
     opacity : 0,
     transparent: true,
     format: 'png24',
     noData: 0
   });
-  this.terrainGroup = L.layerGroup([this.statewide_stretched, this.statewide_hillshade, this.statewide_slope, this.statewide_aspect]);
 
-  this.countylayer = L.geoJson(mdcnty);
-
-  var baseMaps = {
-      "World Imagery": world_imagery,
-      "World Street Map": world_street,
-      "World Topo Map": world_topo
-  };
+  this.countylayer = L.geoJson(this.mdcnty, { style: this.polystyle });
+  this.watershedlayer = L.geoJson(this.watershed, { style: this.polystyle });
 
   var overlays = {
-    "Labels": this.labels,
-    'Statewide Stretched': this.statewide_stretched,
-    'Statewide Hillshade': this.statewide_hillshade,
-    'Statewide Slope': this.statewide_slope,
-    'Statewide Aspect': this.statewide_aspect
+    "Counties": this.countylayer,
+    "Watersheds": this.watershedlayer
   };
 
   this.map = new L.Map('map', {
-    layers: [world_imagery, this.identifyLayer, this.statewide_stretched, this.drawnItems]
+    layers: [imap_labels, this.identifyLayer, this.lidarGroup, this.drawnItems]
   }).setView(new L.LatLng(38.8, -77.3), 8);
   
   L.control.layers(baseMaps, overlays, {
@@ -81,44 +103,20 @@ function LidarViewer(){
 
   $('.leaflet-tile-pane').css("z-index", "auto");
 
-  //change z-index of labels overlay
-  this.map.on('overlayadd', function(layer){
-    if(layer.name === 'Labels'){
-      self.hasLabels = true;
-      var el = self.labels.getContainer();
-      el.style['z-index'] = 5;
-    } else if(layer.name.indexOf('Statewide') >= 0) {
-      self.map.removeLayer(self.labels);
-      self.drawnItems.bringToFront();
-    }
-  });
-  //change z-index of labels overlay
-  this.map.on('overlayremove', function(layer){
-    if(layer.name === 'Labels'){
-      self.hasLabels = false;
-    }
-  });
-  this.identifyLayer.on('metadata', function(res){
-    
-  });
-  this.terrainGroup.eachLayer(function(layer){
-    layer.on('load', function(l){
-      if(self.hasLabels){
-        self.map.addLayer(self.labels);
+  //since imap is treated as an overlay, move it to the back on load
+  for(var i = 0; i < imap_layers.length; i++){
+    var l = imap_layers[i];
+    l.on('load', function(e){
+      if(!self.lidarGroup.getLayers().length){
+        self.lidarGroup.addLayer(self.statewide_stretched);
+        self.lidarLayer = self.statewide_stretched;
+        $($('#statewide option').get(1)).prop('selected', true);
+      } else {
+        e.target.bringToBack();
       }
     });
-  });
-
-  $.get('data/metadata.json', function(res){
-    if(typeof res === 'string') {
-      self.metadata = JSON.parse(res);
-    } else {
-      self.metadata = res;
-    }
-  });
-
+  }
   this.addControls();
-
 }
 
 LidarViewer.prototype.getElevationLine = function(latlngs){
@@ -146,57 +144,51 @@ LidarViewer.prototype.getElevationLine = function(latlngs){
 
 LidarViewer.prototype.addControls = function(){
   var self = this;
+  var options = '<div><h4>Choose Lidar Layer</h4><div class="options">';
+  options += '<div class="layer-select"><div class="layer-name">Statewide</div><select id="statewide" class="services"><option value="">---</option>';
+  for(var i = 0; i < self.services.statewide.length; i++){
+    options += '<option value="'+ self.services.statewide[i].service + '">' + self.services.statewide[i].name + '</option>';
+  }
+  options += '</select></div>';
+  options += '<div class="layer-select"><div class="layer-name">County Stretched</div><select id="county-stretched" class="services"><option value="">---</option>';
+  for(var i = 0; i < self.services.stretched.length; i++){
+    options += '<option value="'+ self.services.stretched[i].service + '">' + self.services.stretched[i].name + '</option>';
+  }
+  options += '</select></div>';
+  options += '<div class="layer-select"><div class="layer-name">County Slope</div><select id="county-slope" class="services"><option value="">---</option>';
+  for(var i = 0; i < self.services.slope.length; i++){
+    options += '<option value="'+ self.services.slope[i].service + '">' + self.services.slope[i].name + '</option>';
+  }
+  options += '</select></div>';
+  options += '<div class="layer-name">Opacity</div><input type="range" name="points" min="0" max="100" class="opacity-slider" value="100">';
 
-  // var options = '<select id="services"><option value="">Services</option>';
-  // for(var i = 0; i < self.services.length; i++){
-  //   options += '<option value="'+ self.services[i].name + '/' + self.services[i].type + '">' + self.services[i].name + '</option>';
-  // }
-  // options += '</select>';
-  // var layerMenu = L.control({position: 'topright'});
-  // layerMenu.onAdd = function (map) {
-  //     var div = L.DomUtil.create('div', 'layerMenu');
-  //     div.innerHTML = options;
-  //     div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation;
-  //     return div;
-  // };
-  // layerMenu.addTo(this.map);
-
-  var opacityControl = L.control({position: 'topright'});
-  opacityControl.onAdd = function (map) {
-    var div = L.DomUtil.create('div', 'opacityControl');
-    self.terrainGroup.eachLayer(function(layer){
-      div.innerHTML += '<div class="opacity-layer">'
-        + '<div class="terrain-layer">' + layer.options.name + '</div>'
-        + '<input type="range" name="points" min="0" max="100" class="opacity-slider" value="'+ layer.options.opacity*100 + '">'
-        + '<div class="opacity-value">'+ layer.options.opacity*100 + '%</div>'
-        + '</div>';
-    });
-    div.onmousedown = div.ondblclick = L.DomEvent.stopPropagation;
-    return div;
-  };
-  opacityControl.addTo(this.map);
-
-  var options = '<select id="counties"><option value="">Counties</option>';
-  self.countylayer.eachLayer(function(layer){
-    options += '<option value="'+ layer.feature.properties.name + '">' + layer.feature.properties.name + '</option>';
-  });
-  options += '</select>';
+  options += '</div></div>';
   var layerMenu = L.control({position: 'topright'});
   layerMenu.onAdd = function (map) {
       var div = L.DomUtil.create('div', 'layerMenu');
+      div.className = div.className + " leaflet-control-layers";
       div.innerHTML = options;
       div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation;
+
       return div;
   };
   layerMenu.addTo(this.map);
 
-  var legendControl = L.control({position: 'bottomright'});
-  legendControl.onAdd = function (map) {
-      var div = L.DomUtil.create('div', 'legendControl');
-      div.innerHTML = '';
+  var addressform = '<div class="row"><div class="col-lg-12"><div class="input-group">';
+  addressform += '<input type="text" class="form-control" id="geocode-input" placeholder="Address Search">';
+  addressform += '<span class="input-group-btn">';
+  addressform += '<button type="submit" class="geocode btn btn-default" type="button">Search</button>';
+  addressform += '</span>';
+  addressform += '</div></div></div>';
+  var addressControl = L.control({position: 'topright'});
+  addressControl.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'addressControl');
+      div.className = div.className + " leaflet-control-layers";
+      div.innerHTML = addressform;
+      div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation;
       return div;
   };
-  legendControl.addTo(this.map);
+  addressControl.addTo(this.map);
 
   var chartControl = L.control({position: 'bottomleft'});
   chartControl.onAdd = function (map) {
@@ -254,33 +246,38 @@ LidarViewer.prototype.addControls = function(){
     if(type === 'marker'){
       var point = layer.getLatLng();
       var popup = L.popup()
-        .setContent('...');
+        .setContent('<i class="fa fa-refresh fa-spin"></i>');
       layer.bindPopup(popup).openPopup();
-      var metadata = self.getMetadataFromPoint(point);
-      self._identifyElevation(point, function(elevation){
-        if(elevation === 'NoData') {
-          popup.setContent('No Data');
-        } else {
-          var vintage = '11/21/2013';
-          var accuracy = '0.13';
-          var content = '<table class="table table-condensed table-bordered result">'
-              + '<tr><td><strong>Elevation</strong></td><td> ' + elevation + ' meters</td></tr>'
-              + '<tr><td><strong>Location</strong></td><td> ' + point.lng.toFixed(5) + ', ' + point.lat.toFixed(5) + '</td></tr>'
-              + '<tr><td><strong>County</strong></td><td> ' + metadata["County"] + '</td></tr>'
-              + '<tr><td><strong>Date</strong></td><td> ' + metadata["Date"] + '</td></tr>'
-              + '<tr><td><strong>Vertical Accuracy</strong></td><td> ' + metadata["Vertical Accuracy"] + '</td></tr>'
-              + '<tr><td><strong>Project Partners</strong></td><td> ' + metadata["Project Partners"] + '</td></tr>';
-              if(metadata["Planned Acquisitions"]) {
-                content += '<tr><td><strong>Planned Acquisitions</strong></td><td> ' + metadata["Planned Acquisitions"] + '</td></tr>';
-              }
-              content += '</table>';
-          popup.setContent(content);
-        }
+      self.identifyContent(point, function(content){
+        popup.setContent(content);
       });
     } else {
       var esri_geom = Terraformer.ArcGIS.convert(layer.toGeoJSON());
       var latlngs = layer.getLatLngs();
       self.getElevationLine(latlngs);
+    }
+  });
+}
+
+LidarViewer.prototype.identifyContent = function(point, next){
+  var self = this;
+  this._identifyElevation(point, function(elevation){
+    if(elevation === 'NoData') {
+      next('No Data');
+    } else {
+      var metadata = self.getMetadataFromPoint(point);
+      var content = '<table class="table table-condensed table-bordered result">'
+        + '<tr><td><strong>Elevation</strong></td><td> ' + elevation + ' meters</td></tr>'
+        + '<tr><td><strong>Location</strong></td><td> ' + point.lng.toFixed(5) + ', ' + point.lat.toFixed(5) + '</td></tr>'
+        + '<tr><td><strong>County</strong></td><td> ' + metadata["County"] + '</td></tr>'
+        + '<tr><td><strong>Date</strong></td><td> ' + metadata["Date"] + '</td></tr>'
+        + '<tr><td><strong>Vertical Accuracy</strong></td><td> ' + metadata["Vertical Accuracy"] + '</td></tr>'
+        + '<tr><td><strong>Project Partners</strong></td><td> ' + metadata["Project Partners"] + '</td></tr>';
+        if(metadata["Planned Acquisitions"]) {
+          content += '<tr><td><strong>Planned Acquisitions</strong></td><td> ' + metadata["Planned Acquisitions"] + '</td></tr>';
+        }
+        content += '</table>';
+      next(content);
     }
   });
 }
@@ -302,19 +299,14 @@ LidarViewer.prototype.getMetadataFromPoint = function(point){
 
 LidarViewer.prototype.getServices = function(next){
   var self = this;
-  $.ajax({ 
-    type: 'GET',
-    url: this.services_base_url + this.services_folder + '?f=json',
-    dataType: 'jsonp', 
-    success: function(data) {
-      self.services = data.services;
-      self.addControls();
-    }
+  $.getJSON('data/services.json', function(res){
+    self.services = res;
+    self.addControls();
   });
 }
 
 LidarViewer.prototype.addServiceLayer = function(service, opacity){
-  this.layerGroup.clearLayers();
+  this.lidarGroup.clearLayers();
   this.layertype = service.split('/')[2];
   var layer;
   if(this.layertype === 'ImageServer'){
@@ -332,13 +324,8 @@ LidarViewer.prototype.addServiceLayer = function(service, opacity){
       noData: 0
     });
   }
-  layer.on('metadata', function(res){
-    $('.metaDataControl').html(res.metadata.description);
-    $('.metaDataControl').show();
-  });
-  this.layerGroup.addLayer(layer);
-  this.layerID = this.layerGroup.getLayerId(layer);
-  this.getLegend();
+  this.lidarGroup.addLayer(layer);
+  this.lidarLayer = layer;
 }
 
 LidarViewer.prototype._identifyElevation = function(latlng, next){
