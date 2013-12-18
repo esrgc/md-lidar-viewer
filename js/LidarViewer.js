@@ -56,7 +56,9 @@ LidarViewer.prototype.makeMap = function(){
   var self = this;
   var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png');
   var world_imagery = L.esri.basemapLayer("Imagery");
-  var imap_labels = L.esri.dynamicMapLayer("http://www.mdimap.us/ArcGIS/rest/services/ImageryBaseMapsEarthCover/MD.State.MDiMap_Gazetteer83M/MapServer");
+  var imap_labels = L.esri.dynamicMapLayer("http://www.mdimap.us/ArcGIS/rest/services/ImageryBaseMapsEarthCover/MD.State.MDiMap_Gazetteer83M/MapServer", {
+    pane: 'tilePane'
+  });
   var imap_6in = L.esri.dynamicMapLayer("http://www.mdimap.us/ArcGIS/rest/services/ImageryBaseMapsEarthCover/MD.State.6InchImagery/MapServer");
   var imap_6incir = L.esri.dynamicMapLayer("http://www.mdimap.us/ArcGIS/rest/services/ImageryBaseMapsEarthCover/MD.State.6InchCIRImagery/MapServer");
   var imap_layers = [imap_labels, imap_6in, imap_6incir];
@@ -87,21 +89,40 @@ LidarViewer.prototype.makeMap = function(){
   this.countylayer = L.geoJson(this.mdcnty, { style: this.polystyle });
   this.watershedlayer = L.geoJson(this.watershed, { style: this.polystyle });
 
+  this.countyoverlay = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.CountyCompare/{z}/{x}/{y}.png', {
+    pane: 'overlayPane',
+    errorTileUrl: 'img/emptytile.png'
+  });
+  this.watershedoverlay = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.watersheds2/{z}/{x}/{y}.png', {
+    pane: 'overlayPane',
+    errorTileUrl: 'img/emptytile.png'
+  });
+
   var overlays = {
-    "Counties": this.countylayer,
-    "Watersheds": this.watershedlayer
+    "Counties": this.countyoverlay,
+    "Watersheds": this.watershedoverlay
   };
 
   this.map = new L.Map('map', {
-    layers: [imap_labels, this.identifyLayer, this.lidarGroup, this.drawnItems]
-  }).setView(new L.LatLng(38.8, -77.3), 8);
-  
+    layers: [imap_labels, this.lidarGroup, this.drawnItems]
+  });
+  self.map.setView([38.8, -77.3], 7);
+  self.map.addLayer(this.identifyLayer);
+
   L.control.layers(baseMaps, overlays, {
     collapsed: false
-  }).addTo(this.map); 
+  }).addTo(this.map);
   L.control.scale().addTo(this.map);
 
   $('.leaflet-tile-pane').css("z-index", "auto");
+
+  this.map.on('overlayadd', function(e){
+    if(e.name === 'Watersheds' || e.name === 'Counties'){
+      var topPane = self.map._createPane('leaflet-top-pane', self.map.getPanes().mapPane);
+      topPane.appendChild(e.layer.getContainer());
+      e.layer.setZIndex(9);
+    }
+  });
 
   //since imap is treated as an overlay, move it to the back on load
   for(var i = 0; i < imap_layers.length; i++){
