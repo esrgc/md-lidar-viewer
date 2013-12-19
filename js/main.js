@@ -1,3 +1,7 @@
+/*
+ * Author: Frank Rowe, ESRGC
+ */
+
 $(document).ready(function(){
 
   window.lidarViewer = new LidarViewer()

@@ -1,3 +1,7 @@
+/*
+ * Author: Frank Rowe, ESRGC
+ */
+
 function LidarViewer() {
   L.esri.get = L.esri.RequestHandlers.JSONP
   this.layer = false

@@ -1,4 +1,8 @@
-function GeoCoder() {
+/*
+ * Author: Frank Rowe, ESRGC
+ */
+
+ function GeoCoder() {
   this.url = 'http://mdimap.us/ArcGIS/rest/services/'
     + 'GeocodeServices/MD.State.MDCascadingLocatorWithZIPCodes/GeocodeServer/'
     + 'findAddressCandidates'
