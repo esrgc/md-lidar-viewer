@@ -10,7 +10,6 @@ $(document).ready(function(){
   $('#map').on('change', '.services', function(e){
     var service = $(this).val();
     var name = $(this).find('option:selected').text();
-    console.log(name);
     var opacity = $('.opacity-slider').val()/100;
     lidarViewer.addServiceLayer(service, opacity);
     lidarViewer.countylayer.eachLayer(function(layer){

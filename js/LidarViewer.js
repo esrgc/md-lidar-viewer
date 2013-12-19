@@ -87,20 +87,20 @@ LidarViewer.prototype.makeMap = function(){
 
   this.labels = L.esri.basemapLayer("ImageryLabels");
 
-  this.statewide_stretched = L.esri.dynamicMapLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/MD_statewide_demStretched_m/MapServer', {
-    opacity : 1,
-    transparent: true,
-    format: 'png24',
-    noData: 0,
-    name: 'Statewide Stretched'
-  });
-
-  // this.statewide_stretched = L.tileLayer.wms("http://esrgc2.salisbury.edu/arcgis/services/Elevation/MD_statewide_dem_m/ImageServer/WMSServer", {
-  //   layers: '0',
-  //   format: 'image/png',
+  // this.statewide_stretched = L.esri.dynamicMapLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/MD_statewide_demStretched_m/MapServer', {
+  //   opacity : 1,
   //   transparent: true,
-  //   attribution: "Weather data © 2012 IEM Nexrad"
+  //   format: 'png24',
+  //   noData: 0,
+  //   name: 'Statewide Stretched'
   // });
+
+  this.statewide_stretched = L.tileLayer.wms("http://esrgc2.salisbury.edu/arcgis/services/Elevation/MD_statewide_demStretched_m/ImageServer/WMSServer", {
+    layers: '0',
+    format: 'image/png',
+    transparent: true,
+    attribution: "Weather data © 2012 IEM Nexrad"
+  });
 
   this.countylayer = L.geoJson(this.mdcnty, { style: this.polystyle });
   this.watershedlayer = L.geoJson(this.watershed, { style: this.polystyle });
@@ -124,12 +124,18 @@ LidarViewer.prototype.makeMap = function(){
   });
   self.map.setView([38.8, -77.3], 7);
   self.lidarGroup.addLayer(self.statewide_stretched);
+  //self.statewide_stretched.bringToFront();
+  //self.lidarGroup.bringToFront();
   self.lidarLayer = self.statewide_stretched;
   
   L.control.layers(baseMaps, overlays, {
     collapsed: false
   }).addTo(this.map);
   L.control.scale().addTo(this.map);
+
+  imap_labels.on('load', function(e){
+    e.target.bringToBack();
+  });
 
   this.map.on('overlayadd', function(e){
     if(e.name === 'Watersheds' || e.name === 'Counties'){
@@ -320,7 +326,8 @@ LidarViewer.prototype.addServiceLayer = function(service, opacity){
       layers: service.split('/')[1],
       format: 'image/png',
       transparent: true,
-      attribution: "ESRGC"
+      attribution: "ESRGC",
+      opacity : opacity
     });
   } else if(this.layertype === 'MapServer'){
     layer = L.esri.dynamicMapLayer(this.services_base_url_rest + service, {
@@ -364,6 +371,7 @@ LidarViewer.prototype._identifyElevation = function(latlng, next){
   for(var i = 0; i < self.services.stretched.length; i++){
     if(metadata.County === self.services.stretched[i].name){
       var url = self.services.stretched[i].service;
+      console.log(self.identifyLayer);
       if(self.identifyLayer) self.map.removeLayer(self.identifyLayer);
       self.identifyLayer = L.esri.imageServerLayer(self.services_base_url_rest + url, {
         opacity : 0,
