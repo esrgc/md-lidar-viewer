@@ -110,3 +110,7 @@ html, body {
 .services {
 
 }
+
+.leaflet-top-pane {
+  pointer-events: none;
+}

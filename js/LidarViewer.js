@@ -2,7 +2,8 @@ function LidarViewer(){
   var self = this;
   L.esri.get = L.esri.RequestHandlers.JSONP;
   this.layer = false;
-  this.services_base_url = 'http://esrgc2.salisbury.edu/ArcGIS/rest/services/';
+  this.services_base_url = 'http://esrgc2.salisbury.edu/ArcGIS/services/';
+  this.services_base_url_rest = 'http://esrgc2.salisbury.edu/ArcGIS/rest/services/';
   this.services_folder = 'Elevation';
   this.identifyElevationTool = false;
   this.hasLabels = true;
@@ -56,14 +57,29 @@ LidarViewer.prototype.makeMap = function(){
   var self = this;
   var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png');
   var world_imagery = L.esri.basemapLayer("Imagery");
-  var imap_labels = L.esri.dynamicMapLayer("http://www.mdimap.us/ArcGIS/rest/services/ImageryBaseMapsEarthCover/MD.State.MDiMap_Gazetteer83M/MapServer", {
-    pane: 'tilePane'
+  var imap_labels = L.tileLayer.wms("http://www.mdimap.us/arcgis/services/ImageryBaseMapsEarthCover/MD.State.MDiMap_Gazetteer83M/MapServer/WMSServer", {
+    layers: '0',
+    format: 'image/png',
+    transparent: true,
+    attribution: "MD iMap"
   });
-  var imap_6in = L.esri.dynamicMapLayer("http://www.mdimap.us/ArcGIS/rest/services/ImageryBaseMapsEarthCover/MD.State.6InchImagery/MapServer");
-  var imap_6incir = L.esri.dynamicMapLayer("http://www.mdimap.us/ArcGIS/rest/services/ImageryBaseMapsEarthCover/MD.State.6InchCIRImagery/MapServer");
+  var imap_6in = L.tileLayer.wms("http://mdimap.us/arcgis/services/ImageryBaseMapsEarthCover/MD.State.6InchImagery/MapServer/WMSServer", {
+    layers: '0',
+    format: 'image/png',
+    transparent: true,
+    attribution: "MD iMap"
+  });
+  var imap_6incir = L.tileLayer.wms("http://mdimap.us/arcgis/services/ImageryBaseMapsEarthCover/MD.State.6InchCIRImagery/WMSServer", {
+    layers: '0',
+    format: 'image/png',
+    transparent: true,
+    attribution: "MD iMap"
+  });
+  
   var imap_layers = [imap_labels, imap_6in, imap_6incir];
   var baseMaps = {
       "World Imagery": world_imagery,
+      "World Imagery with Labels": mapboxsat,
       "iMap": imap_labels,
       "iMap 6 Inch Imagery": imap_6in,
       "iMap 6 Inch CIR": imap_6incir
@@ -79,12 +95,12 @@ LidarViewer.prototype.makeMap = function(){
     name: 'Statewide Stretched'
   });
 
-  this.identifyLayer = L.esri.imageServerLayer('http://esrgc2.salisbury.edu/arcgis/rest/services/Elevation/MD_wicomico_dem_m/ImageServer', {
-    opacity : 0,
-    transparent: true,
-    format: 'png24',
-    noData: 0
-  });
+  // this.statewide_stretched = L.tileLayer.wms("http://esrgc2.salisbury.edu/arcgis/services/Elevation/MD_statewide_dem_m/ImageServer/WMSServer", {
+  //   layers: '0',
+  //   format: 'image/png',
+  //   transparent: true,
+  //   attribution: "Weather data © 2012 IEM Nexrad"
+  // });
 
   this.countylayer = L.geoJson(this.mdcnty, { style: this.polystyle });
   this.watershedlayer = L.geoJson(this.watershed, { style: this.polystyle });
@@ -107,60 +123,27 @@ LidarViewer.prototype.makeMap = function(){
     layers: [imap_labels, this.lidarGroup, this.drawnItems]
   });
   self.map.setView([38.8, -77.3], 7);
-  self.map.addLayer(this.identifyLayer);
-
+  self.lidarGroup.addLayer(self.statewide_stretched);
+  self.lidarLayer = self.statewide_stretched;
+  
   L.control.layers(baseMaps, overlays, {
     collapsed: false
   }).addTo(this.map);
   L.control.scale().addTo(this.map);
 
-  $('.leaflet-tile-pane').css("z-index", "auto");
-
   this.map.on('overlayadd', function(e){
     if(e.name === 'Watersheds' || e.name === 'Counties'){
       var topPane = self.map._createPane('leaflet-top-pane', self.map.getPanes().mapPane);
       topPane.appendChild(e.layer.getContainer());
-      e.layer.setZIndex(9);
+      e.layer.setZIndex(5);
     }
   });
 
-  //since imap is treated as an overlay, move it to the back on load
-  for(var i = 0; i < imap_layers.length; i++){
-    var l = imap_layers[i];
-    l.on('load', function(e){
-      if(!self.lidarGroup.getLayers().length){
-        self.lidarGroup.addLayer(self.statewide_stretched);
-        self.lidarLayer = self.statewide_stretched;
-        $($('#statewide option').get(1)).prop('selected', true);
-      } else {
-        e.target.bringToBack();
-      }
-    });
-  }
-  this.addControls();
-}
-
-LidarViewer.prototype.getElevationLine = function(latlngs){
-  var self = this;
-  var data = [];
-  var count = 1;
-  $('.chartControl').css('opacity', 1);
-  var f = function(latlng, next){
-    self.identifyLayer.identify(latlng, {} , function(res){
-      //var value = self.getPixelValue(res);
-      var value = res.value;
-      data.push({
-        distance: count,
-        elevation: value
-      });
-      self.linechart.update(data);
-      count++;
-      next();
-    });
-  }
-  async.eachSeries(latlngs, f, function(){
-    //self.linechart.update(data);
+  this.map.on('baselayerchange', function(layer){
+    layer.layer.bringToBack();
   });
+
+  this.addControls();
 }
 
 LidarViewer.prototype.addControls = function(){
@@ -194,6 +177,7 @@ LidarViewer.prototype.addControls = function(){
       return div;
   };
   layerMenu.addTo(this.map);
+  $($('#statewide option').get(1)).prop('selected', true);
 
   var addressform = '<div class="row"><div class="col-lg-12"><div class="input-group">';
   addressform += '<input type="text" class="form-control" id="geocode-input" placeholder="Address Search">';
@@ -282,13 +266,13 @@ LidarViewer.prototype.addControls = function(){
 
 LidarViewer.prototype.identifyContent = function(point, next){
   var self = this;
-  this._identifyElevation(point, function(elevation){
+  this._identifyElevation(point, function(elevation, metadata){
     if(elevation === 'NoData') {
       next('No Data');
     } else {
-      var metadata = self.getMetadataFromPoint(point);
       var content = '<table class="table table-condensed table-bordered result">'
-        + '<tr><td><strong>Elevation</strong></td><td> ' + elevation + ' meters</td></tr>'
+        + '<tr><td><strong>Elevation (m)</strong></td><td> ' + elevation + ' meters</td></tr>'
+        + '<tr><td><strong>Elevation (ft)</strong></td><td> ' + parseFloat(elevation) * 3.28084 + ' feet</td></tr>'
         + '<tr><td><strong>Location</strong></td><td> ' + point.lng.toFixed(5) + ', ' + point.lat.toFixed(5) + '</td></tr>'
         + '<tr><td><strong>County</strong></td><td> ' + metadata["County"] + '</td></tr>'
         + '<tr><td><strong>Date</strong></td><td> ' + metadata["Date"] + '</td></tr>'
@@ -330,15 +314,16 @@ LidarViewer.prototype.addServiceLayer = function(service, opacity){
   this.lidarGroup.clearLayers();
   this.layertype = service.split('/')[2];
   var layer;
+
   if(this.layertype === 'ImageServer'){
-    layer = L.esri.imageServerLayer(this.services_base_url + service, {
-      opacity : opacity,
+    layer = L.tileLayer.wms(this.services_base_url + service + "/WMSServer", {
+      layers: service.split('/')[1],
+      format: 'image/png',
       transparent: true,
-      format: 'png24',
-      noData: 0
+      attribution: "ESRGC"
     });
   } else if(this.layertype === 'MapServer'){
-    layer = L.esri.dynamicMapLayer(this.services_base_url + service, {
+    layer = L.esri.dynamicMapLayer(this.services_base_url_rest + service, {
       opacity : 1,
       transparent: true,
       format: 'png24',
@@ -347,15 +332,51 @@ LidarViewer.prototype.addServiceLayer = function(service, opacity){
   }
   this.lidarGroup.addLayer(layer);
   this.lidarLayer = layer;
+  this.lidarGroup.eachLayer(function(l){
+    l.bringToFront();
+  });
+}
+
+LidarViewer.prototype.getElevationLine = function(latlngs){
+  var self = this;
+  var data = [];
+  var count = 1;
+  $('.chartControl').css('opacity', 1);
+  var f = function(latlng, next){
+    self._identifyElevation(latlng, function(value, metadata){
+      data.push({
+        distance: count,
+        elevation: value
+      });
+      self.linechart.update(data);
+      count++;
+      next();
+    });
+  }
+  async.eachSeries(latlngs, f, function(){
+    //self.linechart.update(data);
+  });
 }
 
 LidarViewer.prototype._identifyElevation = function(latlng, next){
   var self = this;
-  //var layer = this.layerGroup.getLayer(this.layerID);
+  var metadata = self.getMetadataFromPoint(latlng);
+  for(var i = 0; i < self.services.stretched.length; i++){
+    if(metadata.County === self.services.stretched[i].name){
+      var url = self.services.stretched[i].service;
+      if(self.identifyLayer) self.map.removeLayer(self.identifyLayer);
+      self.identifyLayer = L.esri.imageServerLayer(self.services_base_url_rest + url, {
+        opacity : 0,
+        transparent: true,
+        format: 'png24',
+        noData: 0
+      });
+      self.map.addLayer(self.identifyLayer);
+    }
+  }
   self.identifyLayer.identify(latlng, {} , function(res){
-    //var value = self.getPixelValue(res);
     var value = res.value;
-    next(value);
+    next(value, metadata);
   });
 }
 
