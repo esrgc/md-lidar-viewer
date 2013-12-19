@@ -32,23 +32,14 @@ $(document).ready(function(){
     });
   });
 
+  $('#map').on('keydown', '#geocode-input', function(e){
+    if(e.keyCode === 13){
+      lidarViewer.geocodeSubmit();
+    }
+  });
+
   $('#map').on('click', '.geocode', function(e){
-    var term = $('#geocode-input').val();
-    lidarViewer.geocoder.search(term, function(res){
-      console.log(res);
-      if(res){
-        lidarViewer.map.setView(res, 13);
-        var point = L.latLng(res);
-        var marker = L.marker(point);
-        lidarViewer.drawnItems.addLayer(marker);
-        var popup = L.popup()
-          .setContent('<i class="fa fa-refresh fa-spin"></i>');
-        marker.bindPopup(popup).openPopup();
-        lidarViewer.identifyContent(point, function(content){
-          popup.setContent(content);
-        });
-      }
-    })
+    lidarViewer.geocodeSubmit();
   });
 
   $("#clear").click(function(){

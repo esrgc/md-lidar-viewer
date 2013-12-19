@@ -184,7 +184,7 @@ LidarViewer.prototype.addControls = function(){
   addressform += '<span class="input-group-btn">';
   addressform += '<button type="submit" class="geocode btn btn-default" type="button">Search</button>';
   addressform += '</span>';
-  addressform += '</div></div></div>';
+  addressform += '</div></div></div><div class="row"><div class="col-lg-12"><div class="geocode-error"></div></div></div>';
   var addressControl = L.control({position: 'topright'});
   addressControl.onAdd = function (map) {
       var div = L.DomUtil.create('div', 'addressControl');
@@ -404,5 +404,27 @@ LidarViewer.prototype.getPixelValue = function(res){
     value = res.results[0].attributes['Pixel Value'];
   }
   return value;
+}
+
+LidarViewer.prototype.geocodeSubmit = function(){
+  var self = this;
+  var term = $('#geocode-input').val();
+  self.geocoder.search(term, function(res){
+    if(res){
+      $('.geocode-error').html('');
+      self.map.setView(res, 13);
+      var point = L.latLng(res);
+      var marker = L.marker(point);
+      lidarViewer.drawnItems.addLayer(marker);
+      var popup = L.popup()
+        .setContent('<i class="fa fa-refresh fa-spin"></i>');
+      marker.bindPopup(popup).openPopup();
+      self.identifyContent(point, function(content){
+        popup.setContent(content);
+      });
+    } else {
+      $('.geocode-error').html('<p>Address Not Found</p>');
+    }
+  });
 }
 

@@ -56,6 +56,16 @@ html, body {
 
 .addressControl {
   width: 250px;
+  padding: 10px;
+}
+
+.geocode-error {
+  color: #D9534F;
+  font-weight: bold;
+}
+
+.geocode-error p {
+  margin: 5px 0 0 0;
 }
 
 .chartControl {
