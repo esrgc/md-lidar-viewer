@@ -341,7 +341,7 @@ LidarViewer.prototype.getElevationLine = function(latlngs){
   var self = this;
   var data = [];
   var count = 1;
-  $('.chartControl').css('opacity', 1);
+  $('.chartControl').show();
   var f = function(latlng, next){
     self._identifyElevation(latlng, function(value, metadata){
       data.push({

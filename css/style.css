@@ -72,7 +72,7 @@ html, body {
   padding: 10px;
   background: #fff;
   border-radius:5px;
-  opacity: 0;
+  display: none;
   -webkit-transition: opacity 200ms ease-out 100ms;
   -moz-transition: opacity 200ms ease-out 100ms;
   -o-transition: opacity 200ms ease-out 100ms;

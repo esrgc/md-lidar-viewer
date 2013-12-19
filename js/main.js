@@ -51,7 +51,8 @@ $(document).ready(function(){
   });
 
   $('#map').on('click', '.chartControl .close', function(e){
-    $('.chartControl').css('opacity', 0);
+    //$('.chartControl').css('opacity', 0);
+    $('.chartControl').hide();
     lidarViewer.linechart.update([]);
   });
 });
