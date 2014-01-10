@@ -318,6 +318,8 @@ LidarViewer.prototype.identifyContent = function (point, next) {
         + metadata["Date"] + '</td></tr>'
         + '<tr><td><strong>Vertical Accuracy</strong></td><td> '
         + metadata["Vertical Accuracy"] + '</td></tr>'
+        + '<tr><td><strong>Vertical Datum</strong></td><td> '
+        + metadata["Vertical Datum"] + '</td></tr>'
         + '<tr><td><strong>Project Partners</strong></td><td> '
         + metadata["Project Partners"] + '</td></tr>'
         if (metadata["Planned Acquisitions"]) {
