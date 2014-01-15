@@ -195,8 +195,25 @@ LidarViewer.prototype.addControls = function() {
     + '<div class="layer-name">Opacity</div>'
     + '<input type="range" name="points" min="0" max="100"'
     + ' class="opacity-slider" value="100">'
-    + '</div>'
-    + '</div>'
+    //+ '</div>'
+//    + '</div>'
+
+
+  var addressform = '<div class="addressControl"><div class="row">'
+    + '<div class="col-lg-12">'
+    + '<div class="input-group">'
+    + '<input type="text" class="form-control" '
+    + 'id="geocode-input" placeholder="Address Search">'
+    + '<span class="input-group-btn">'
+    + '<button type="submit" class="geocode btn btn-default" type="button">Search</button>'
+    + '</span>'
+    + '</div></div></div>'
+    + '<div class="row"><div class="col-lg-12">'
+    + '<div class="geocode-error"></div>'
+    + '</div></div></div>'
+
+  options += addressform
+  options += '</div>'
 
   var layerMenu = L.control({position: 'topright'})
   layerMenu.onAdd = function (map) {
@@ -222,16 +239,16 @@ LidarViewer.prototype.addControls = function() {
     + '<div class="row"><div class="col-lg-12">'
     + '<div class="geocode-error"></div>'
     + '</div></div>'
-  var addressControl = L.control({position: 'topright'})
-  addressControl.onAdd = function (map) {
-      var div = L.DomUtil.create('div', 'addressControl')
-      div.className = div.className + " leaflet-control-layers"
-      div.innerHTML = addressform
-      div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation
-      L.DomEvent.disableClickPropagation(div)
-      return div
-  }
-  addressControl.addTo(this.map)
+  // var addressControl = L.control({position: 'topright'})
+  // addressControl.onAdd = function (map) {
+  //     var div = L.DomUtil.create('div', 'addressControl')
+  //     div.className = div.className + " leaflet-control-layers"
+  //     div.innerHTML = addressform
+  //     div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation
+  //     L.DomEvent.disableClickPropagation(div)
+  //     return div
+  // }
+  // addressControl.addTo(this.map)
 
   var chartControl = L.control({position: 'bottomleft'})
   chartControl.onAdd = function (map) {
