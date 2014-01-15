@@ -204,6 +204,7 @@ LidarViewer.prototype.addControls = function() {
       div.className = div.className + " leaflet-control-layers"
       div.innerHTML = options
       div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation
+      L.DomEvent.disableClickPropagation(div)
       return div
   }
   layerMenu.addTo(this.map)
@@ -227,6 +228,7 @@ LidarViewer.prototype.addControls = function() {
       div.className = div.className + " leaflet-control-layers"
       div.innerHTML = addressform
       div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation
+      L.DomEvent.disableClickPropagation(div)
       return div
   }
   addressControl.addTo(this.map)
