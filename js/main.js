@@ -43,6 +43,11 @@ $(document).ready(function(){
     lidarViewer.geocodeSubmit()
   })
 
+  $('#map').on('click', '.toggle', function(e) {
+    $('.options').toggle()
+    $('.layerMenu .title h4').toggle()
+  })
+
   $("#clear").click(function() {
     lidarViewer.layerGroup.clearLayers()
     lidarViewer.drawnItems.clearLayers()
