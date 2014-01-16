@@ -65,32 +65,10 @@ LidarViewer.prototype.makeMap = function() {
     , grayLabels = L.esri.basemapLayer("GrayLabels")
     , esriGray = L.layerGroup([gray, grayLabels])
 
-  var imap_labels = L.tileLayer.wms("http://www.mdimap.us/arcgis/services/ImageryBaseMapsEarthCover/MD.State.MDiMap_Gazetteer83M/MapServer/WMSServer", { 
-    layers: '0'
-    , format: 'image/png'
-    , transparent: true
-    , attribution: "MD iMap"
-  })
-  var imap_6in = L.tileLayer.wms("http://mdimap.us/arcgis/services/ImageryBaseMapsEarthCover/MD.State.6InchImagery/MapServer/WMSServer", {
-    layers: '0'
-    , format: 'image/png'
-    , transparent: true
-    , attribution: "MD iMap"
-  })
-  var imap_6incir = L.tileLayer.wms("http://mdimap.us/arcgis/services/ImageryBaseMapsEarthCover/MD.State.6InchCIRImagery/WMSServer", {
-    layers: '0'
-    , format: 'image/png'
-    , transparent: true
-    , attribution: "MD iMap"
-  })
-
   var baseMaps = { 
     "Gray": gray
     , "World Imagery": world_imagery
     , "World Imagery with Labels": mapboxsat
-    , "MD iMap": imap_labels
-    , "MD iMap 6 Inch Imagery": imap_6in
-    , "MD iMap 6 Inch CIR": imap_6incir
   }
 
   this.labels = L.esri.basemapLayer("ImageryLabels")
