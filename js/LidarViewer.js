@@ -78,6 +78,7 @@ LidarViewer.prototype.makeMap = function() {
     , format: 'image/png'
     , transparent: true
     , attribution: "ESRGC"
+    , pane: 'overlayPane'
   })
 
   this.countylayer = L.geoJson(this.mdcnty, { style: this.polystyle })
@@ -115,10 +116,6 @@ LidarViewer.prototype.makeMap = function() {
 
   L.control.scale().addTo(this.map)
 
-  gray.on('load', function(e) {
-    e.target.bringToBack()
-  })
-
   this.map.on('overlayadd', function(e) {
     if (e.name === 'Watersheds' || e.name === 'Counties') {
       var topPane = self.map._createPane(
@@ -128,11 +125,6 @@ LidarViewer.prototype.makeMap = function() {
       topPane.appendChild(e.layer.getContainer())
       e.layer.setZIndex(5)
     }
-  })
-
-  this.map.on('baselayerchange', function(layer) {
-    console.log(layer)
-    layer.layer.bringToBack()
   })
 
   this.addControls()
