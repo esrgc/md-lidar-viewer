@@ -132,6 +132,7 @@ LidarViewer.prototype.makeMap = function() {
   
   L.control.layers(baseMaps, overlays, {
     collapsed: true
+    , click: true
   }).addTo(this.map)
 
   L.control.scale().addTo(this.map)

@@ -1,15 +1,10 @@
 /* required styles */
 
-.leaflet-map-pane,
+.leaflet-pane,
 .leaflet-tile,
 .leaflet-marker-icon,
 .leaflet-marker-shadow,
-.leaflet-tile-pane,
 .leaflet-tile-container,
-.leaflet-overlay-pane,
-.leaflet-shadow-pane,
-.leaflet-marker-pane,
-.leaflet-popup-pane,
 .leaflet-map-pane svg,
 .leaflet-map-pane canvas,
 .leaflet-zoom-box,
@@ -53,14 +48,18 @@
 .leaflet-zoom-box {
 	width: 0;
 	height: 0;
+	-moz-box-sizing: border-box;
+	     box-sizing: border-box;
+	z-index: 8;
 	}
 /* workaround for https://bugzilla.mozilla.org/show_bug.cgi?id=888319 */
 .leaflet-overlay-pane svg {
 	-moz-user-select: none;
 	}
 
+.leaflet-pane         { z-index: 4; }
+
 .leaflet-tile-pane    { z-index: 2; }
-.leaflet-objects-pane { z-index: 3; }
 .leaflet-overlay-pane { z-index: 4; }
 .leaflet-shadow-pane  { z-index: 5; }
 .leaflet-marker-pane  { z-index: 6; }
@@ -148,8 +147,7 @@
 	        transition:         transform 0.25s cubic-bezier(0,0,0.25,1);
 	}
 .leaflet-zoom-anim .leaflet-tile,
-.leaflet-pan-anim .leaflet-tile,
-.leaflet-touching .leaflet-zoom-animated {
+.leaflet-pan-anim .leaflet-tile {
 	-webkit-transition: none;
 	   -moz-transition: none;
 	     -o-transition: none;
@@ -169,6 +167,10 @@
 .leaflet-container {
 	cursor: -webkit-grab;
 	cursor:    -moz-grab;
+	}
+.leaflet-crosshair,
+.leaflet-crosshair .leaflet-clickable {
+	cursor: crosshair;
 	}
 .leaflet-popup-pane,
 .leaflet-control {
