@@ -30,10 +30,24 @@ html, body {
   padding: 0px;
 }
 
+.layerMenu.closed .title {
+  width: 36px;
+  height: 36px;
+}
+
+.leaflet-touch .layerMenu.closed .title {
+  width: 44px;
+  height: 44px;
+}
+
 .layerMenu .title {
   overflow: hidden;
   padding: 5px 10px 5px 10px;
-  
+  text-align: center;
+}
+
+.layerMenu.closed .title {
+  padding: 0;
 }
 
 .layerMenu .title h4 {
@@ -44,6 +58,19 @@ html, body {
 .layerMenu .title .toggle {
   float: right;
   font-size: 18px;
+  line-height: 18px;
+  cursor: pointer;
+  color: #999;
+}
+
+.layerMenu.closed .title .toggle {
+  float: none;
+  line-height: 36px;
+}
+
+.leaflet-touch .layerMenu.closed .title .toggle {
+  line-height: 44px;
+  font-size: 24px;
 }
 
 .layerMenu .options {

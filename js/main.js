@@ -44,6 +44,15 @@ $(document).ready(function(){
   })
 
   $('#map').on('click', '.toggle', function(e) {
+    if($('.layerMenu').hasClass('closed')) {
+      $('.layerMenu').removeClass('closed')
+      $(this).find('i').removeClass('fa-bars')
+      $(this).find('i').addClass('fa-toggle-right')
+    } else {
+      $('.layerMenu').addClass('closed')
+      $(this).find('i').removeClass('fa-toggle-right')
+      $(this).find('i').addClass('fa-bars')
+    }
     $('.options').toggle()
     $('.layerMenu .title h4').toggle()
   })

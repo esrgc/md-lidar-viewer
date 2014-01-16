@@ -161,7 +161,8 @@ LidarViewer.prototype.makeMap = function() {
 
 LidarViewer.prototype.addControls = function() {
   var self = this
-  var options = '<div class="title"><h4>Choose Lidar Layer</h4><i class="toggle fa fa-bars"></i></div>'
+  var options = '<div class="title"><h4>Choose Lidar Layer</h4>'
+    + '<div class="toggle"><i class="fa fa-toggle-right"></i></div></div>'
     + '<div class="options">'
     + '<div class="layer-select">'
     + '<div class="layer-name">Statewide</div>'
