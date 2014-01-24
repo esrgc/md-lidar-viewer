@@ -223,6 +223,25 @@ LidarViewer.prototype.addControls = function() {
   // }
   // addressControl.addTo(this.map)
 
+  var legend = L.control({position: 'bottomleft'});
+
+  legend.onAdd = function (map) {
+      var div = L.DomUtil.create('div', 'info legend')
+
+      div.innerHTML += '<p class="legendDesc">Elevation (m)</p>'
+        + '<img src="img/legend.jpg" alt="legend" class="legendImg" height="180px" width="30px">'
+        + '<div class="legendLabel">'
+        + '<p id="legendMax"></p>'
+        + '<p id="legendMid"></p>'
+        + '<p id="legendMin"></p>'
+
+      self.updateLegend("Elevation/MD_statewide_demStretched_m/ImageServer")
+
+      return div;
+  };
+
+  legend.addTo(this.map);
+
   var chartControl = L.control({position: 'bottomleft'})
   chartControl.onAdd = function (map) {
       var div = L.DomUtil.create('div', 'chartControl')
@@ -366,11 +385,56 @@ LidarViewer.prototype.addServiceLayer = function (service, opacity) {
       , noData: 0
     })
   }
+  this.updateLegend(service)
   this.lidarGroup.addLayer(layer)
   this.lidarLayer = layer
   this.lidarGroup.eachLayer(function(l) {
     l.bringToFront()
   })
+}
+
+LidarViewer.prototype.updateLegend = function (service) {
+  var max, min, mid
+
+  if(service.length == 0 || service == "Elevation/MD_statewide_demStretched_m/ImageServer"){
+    service = "default"
+    max = 1024
+    min = -51
+  }
+
+    console.log(typeof service)
+  console.log(service)
+  console.log()
+
+  if(service == "default" || service.search("Stretched") >= 0){
+    $('.legend').css("visibility", "visible");
+
+    url = 'http://esrgc2.salisbury.edu/arcgis/rest/services/'
+      + service
+      + '/ImageServer?f=pjson'
+
+    console.log(url)
+
+    $.getJSON(url, function(res) {
+      if(service != "default"){
+        min = res.minValues[0]
+        max = res.maxValues[0]
+      }
+      mid = (min+max)/2.0
+
+      min = min.toFixed(2)
+      max = max.toFixed(2)
+      mid = mid.toFixed(2)
+
+      $("#legendMin").html(min)
+      $("#legendMid").html(mid)
+      $("#legendMax").html(max)
+    })
+  }
+  else{
+      console.log("in else")
+      $('.legend').css("visibility", "hidden");
+  }
 }
 
 LidarViewer.prototype.getElevationLine = function (latlngs) {
