@@ -413,8 +413,6 @@ LidarViewer.prototype.updateLegend = function (service) {
       + service
       + '/ImageServer?f=pjson'
 
-    console.log(url)
-
     $.getJSON(url, function(res) {
       if(service != "default"){
         min = res.minValues[0]
@@ -432,7 +430,6 @@ LidarViewer.prototype.updateLegend = function (service) {
     })
   }
   else{
-      console.log("in else")
       $('.legend').css("visibility", "hidden");
   }
 }
