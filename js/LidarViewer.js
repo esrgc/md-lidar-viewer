@@ -73,14 +73,6 @@ LidarViewer.prototype.makeMap = function() {
 
   this.labels = L.esri.basemapLayer("ImageryLabels")
 
-  // this.statewide_stretched = L.tileLayer.wms("http://esrgc2.salisbury.edu/arcgis/services/Elevation/MD_statewide_demStretched_m/ImageServer/WMSServer", {
-  //   layers: '0'
-  //   , format: 'image/png'
-  //   , transparent: true
-  //   , attribution: "ESRGC"
-  //   , pane: 'overlayPane'
-  // })
-
   this.countylayer = L.geoJson(this.mdcnty, { style: this.polystyle })
   this.watershedlayer = L.geoJson(this.watershed, { style: this.polystyle })
 
