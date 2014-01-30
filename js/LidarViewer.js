@@ -207,6 +207,11 @@ LidarViewer.prototype.addControls = function() {
     + '</div></div></div>'
 
   options += addressform
+
+  options += '<div class="identifyControl">'
+  + '<button type="submit" class="identify btn btn-default" type="button" data-toggle="button">Identify</button>'
+  + '</div>'
+
   options += '</div>'
 
   var layerMenu = L.control({position: 'topright'})
@@ -220,6 +225,7 @@ LidarViewer.prototype.addControls = function() {
   }
   layerMenu.addTo(this.map)
   $($('#statewide option').get(1)).prop('selected', true)
+  $('.identify').button()
 
   var legend = L.control({position: 'bottomleft'});
 
@@ -268,43 +274,6 @@ LidarViewer.prototype.addControls = function() {
     , interpolate: 'monotone'
     , dotRadius: 3
     , time: false
-  })
-
-  L.drawLocal.draw.handlers.marker.tooltip.start = 'Click map to identify.'
-  var drawControl = new L.Control.Draw({ 
-    draw: { 
-      polygon: false
-      , rectangle: false
-      , circle: false
-      , marker: true
-      , polyline: {
-        zIndexOffset: 9999
-        , shapeOptions: {
-          color: '#f00'
-          , weight: 3
-        }
-      }
-    }
-    , edit: { featureGroup: this.drawnItems }
-  })
-  this.map.addControl(drawControl)
-  this.map.on('draw:created', function (e) {
-    var type = e.layerType
-      , layer = e.layer
-    self.drawnItems.addLayer(layer)
-    if (type === 'marker') {
-      var point = layer.getLatLng()
-      var popup = L.popup()
-        .setContent('<i class="fa fa-refresh fa-spin"></i>')
-      layer.bindPopup(popup).openPopup()
-      self.identifyContent(point, function(content) {
-        popup.setContent(content)
-      })
-    } else {
-      var esri_geom = Terraformer.ArcGIS.convert(layer.toGeoJSON())
-      var latlngs = layer.getLatLngs()
-      self.getElevationLine(latlngs)
-    }
   })
 }
 
@@ -509,3 +478,30 @@ LidarViewer.prototype.geocodeSubmit = function() {
   })
 }
 
+LidarViewer.prototype.identify = function() {
+  var self=this
+  self.marker
+
+  //'.active' is toggled in main.js right before this function is called
+  if($('.identify').hasClass('active')){
+    self.map.on('click', function (e){
+      if(typeof self.marker != "undefined"){
+        self.drawnItems.removeLayer(self.marker)
+      }
+      self.marker = new L.marker(e.latlng)
+      self.drawnItems.addLayer(self.marker)
+      var popup = L.popup().setContent('<i class="fa fa-refresh fa-spin"></i>')
+      self.marker.bindPopup(popup).openPopup()
+      self.identifyContent(e.latlng, function(content) {
+        popup.setContent(content)
+      })
+    });
+  }
+  else{
+    //clears the map of markers and kills the click event in the if statement once the identify button isn't marked as active
+    if(typeof self.marker != "undefined"){
+      self.drawnItems.removeLayer(self.marker)
+    }
+    self.map.off('click')
+  }
+}

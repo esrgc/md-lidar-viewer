@@ -44,6 +44,11 @@ $(document).ready(function(){
     if (e.keyCode === 13) lidarViewer.geocodeSubmit()
   })
 
+  $('#map').on('click', '.identify', function(e) {
+    $(this).toggleClass('active')
+    lidarViewer.identify()
+  })
+
   $('#map').on('click', '.geocode', function(e) {
     lidarViewer.geocodeSubmit()
   })
