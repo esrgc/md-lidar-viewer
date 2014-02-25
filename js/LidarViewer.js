@@ -305,18 +305,6 @@ LidarViewer.prototype.addControls = function() {
       return div
   }
   chartControl.addTo(this.map)
-
-  // this.linechart = new GeoDash.LineChart(".line-chart", {
-  //   x: 'distance'
-  //   , y: 'elevation'
-  //   , width: 'auto'
-  //   , height: 'auto'
-  //   , colors: ["#f00"]
-  //   , title: 'Elevation'
-  //   , interpolate: 'monotone'
-  //   , dotRadius: 3
-  //   , time: false
-  // })
 }
 
 LidarViewer.prototype.identifyContent = function (latlng, next) {
@@ -332,7 +320,7 @@ LidarViewer.prototype.identifyContent = function (latlng, next) {
           + '<tr><td><strong>Elevation (ft)</strong></td><td> '
           + '<span class="elevationft"><i class="fa fa-refresh fa-spin"></i></span></td></tr>'
           + '<tr><td><strong>Lat, Lng</strong></td><td> '
-          + latlng.lng.toFixed(5) + ', ' + latlng.lat.toFixed(5) + '</td></tr>'
+          + latlng.lat.toFixed(3) + ', ' + latlng.lng.toFixed(3) + '</td></tr>'
           + '<tr><td><strong>County</strong></td><td> '
           + metadata["County"] + '</td></tr>'
           + '<tr><td><strong>Date</strong></td><td> '
