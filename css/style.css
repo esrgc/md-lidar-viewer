@@ -137,6 +137,10 @@ html, body {
   float: left;
 }
 
+.legend .status-legend {
+  display: none;
+}
+
 .metaDataControl {
   background: white;
   padding: 5px;

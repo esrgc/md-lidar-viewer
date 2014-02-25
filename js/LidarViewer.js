@@ -111,10 +111,13 @@ LidarViewer.prototype.makeMap = function() {
       layer.bindPopup(L.Util.template(template_current, feature.properties));
     }
   }).on('add', function(e){
-    self.legendtemp = $('.legend').html()
-    $('.legend').html('<img src="img/status.png" />')
+    $('.legend .lidar-legend').hide()
+    $('.legend .status-legend').show().html('<img src="img/status.png" />')
   }).on('remove', function(e){
-    $('.legend').html(self.legendtemp)
+    if(!self.map.hasLayer(self.futurestatus)){
+      $('.legend .status-legend').hide()
+      $('.legend .lidar-legend').show()
+    }
   })
 
   this.futurestatus = L.esri.featureLayer("http://services1.arcgis.com/X3lKekbdaBmNjCHu/arcgis/rest/services/FutureStatus/FeatureServer/0", {
@@ -126,9 +129,13 @@ LidarViewer.prototype.makeMap = function() {
     }
   }).on('add', function(e){
     self.legendtemp = $('.legend').html()
-    $('.legend').html('<img src="img/status.png" />')
+    $('.legend .lidar-legend').hide()
+    $('.legend .status-legend').show().html('<img src="img/status.png" />')
   }).on('remove', function(e){
-    $('.legend').html(self.legendtemp)
+    if(!self.map.hasLayer(self.currentstatus)){
+      $('.legend .status-legend').hide()
+      $('.legend .lidar-legend').show()
+    }
   })
 
   var overlays = {
@@ -267,12 +274,12 @@ LidarViewer.prototype.addControls = function() {
   legend.onAdd = function (map) {
       var div = L.DomUtil.create('div', 'info legend')
 
-      div.innerHTML += '<p class="legendDesc">Elevation (m)</p>'
+      div.innerHTML += '<div class="status-legend"></div><div class="lidar-legend"><p class="legendDesc">Elevation (m)</p>'
         + '<img src="img/legend.jpg" alt="legend" class="legendImg" height="180px" width="30px">'
         + '<div class="legendLabel">'
         + '<p id="legendMax"></p>'
         + '<p id="legendMid"></p>'
-        + '<p id="legendMin"></p>'
+        + '<p id="legendMin"></p></div>'
 
       self.updateLegend(self.services.statewide[0].service)
 
@@ -423,7 +430,6 @@ LidarViewer.prototype.updateLegend = function (service) {
     $("#legendMid").html(mid)
     $("#legendMax").html(max)
   }
-  console.log(service, self.services.statewide[0].service)
   if(service.length == 0 || service == self.services.statewide[0].service){
     max = 1024
     min = -51
