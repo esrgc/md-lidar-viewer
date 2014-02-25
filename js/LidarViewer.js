@@ -141,8 +141,8 @@ LidarViewer.prototype.makeMap = function() {
   var overlays = {
     "Counties": this.countyoverlay
     , "Watersheds": this.watershedoverlay
-    , "Current Status": this.currentstatus
-    , "Future Status": this.futurestatus
+    , "Most Recent Acquisitions": this.currentstatus
+    , "Future Acquisitions": this.futurestatus
   }
 
   this.map = new L.Map('map', {
