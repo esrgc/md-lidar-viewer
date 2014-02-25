@@ -84,6 +84,7 @@ LidarViewer.prototype.makeMap = function() {
     pane: 'overlayPane',
     errorTileUrl: 'img/emptytile.png'
   })
+
   var template_current = '<h6>County: {COUNTY}</h6>'+
   '<h6>Date: {DATE}</h6>'+
   '<h6>Partners: {PROJ_PARTN}</h6>'+
@@ -336,7 +337,14 @@ LidarViewer.prototype.addServiceLayer = function (service, opacity) {
   this.lidarGroup.clearLayers()
   this.layertype = service.split('/')[2]
   var layer
-  if (this.layertype === 'ImageServer') {
+  if(service.split('/')[1].indexOf('statewide_demStretched') > 0) {
+    layer = L.tileLayer('http://apps.esrgc.org/tilestream/v2/MD_statewide_demStretched_m/{z}/{x}/{y}.png', {
+      pane: 'overlayPane',
+      errorTileUrl: 'img/emptytile.png',
+      maxNativeZoom: 12,
+      reuseTiles: true
+    })
+  } else if (this.layertype === 'ImageServer') {
     layer = L.tileLayer.wms(this.services_base_url + service + "/WMSServer", {
       layers: service.split('/')[1]
       , format: 'image/png'
