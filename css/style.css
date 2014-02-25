@@ -12,9 +12,11 @@ html, body {
   width: 100%;
   margin: 0 auto;
 }
-#map.active {
-  cursor: pointer;
+
+#map:hover {
+  cursor: auto;
 }
+
 #tools {
   margin-top: 20px;
 }
@@ -205,4 +207,8 @@ html, body {
     background: rgba(255,255,255,1);
     box-shadow: 0 0 15px rgba(0,0,0,0.2);
     border-radius: 5px;
+}
+
+.instructions {
+  margin-top: 10px;
 }

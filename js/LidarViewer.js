@@ -140,7 +140,30 @@ LidarViewer.prototype.makeMap = function() {
       , this.drawnItems
     ]
   })
-  self.map.setView([38.8, -77.3], 7)
+  this.map.setView([38.8, -77.3], 8)
+
+  this.map.on('click', function (e){
+    var marker = new L.marker(e.latlng).addTo(self.map).bindPopup('<i class="fa fa-refresh fa-spin"></i>').openPopup()
+    self.identifyContent(e.latlng, function(content, service) {
+      marker.getPopup().setContent(content)
+      if(service) {
+        self._identifyElevation(e.latlng, service, function(elevation){
+          if(!parseFloat(elevation)) {
+            var m = elevation
+              , ft = elevation
+          } else {
+            var m = Math.round(parseFloat(elevation) * 100) / 100
+              , ft =  Math.round((m * 3.28084) * 100) / 100
+          }
+          var content = $(marker.getPopup().getContent())
+          var popupContent = $('<div/>').html(content).contents()
+          $(popupContent.find('.elevationm')[0]).html(m)
+          $(popupContent.find('.elevationft')[0]).html(ft)
+          marker.getPopup().setContent(popupContent[0].outerHTML)
+        })
+      }
+    })
+  })
   
   L.control.layers(baseMaps, overlays, {
     collapsed: true
@@ -209,9 +232,7 @@ LidarViewer.prototype.addControls = function() {
 
   options += addressform
 
-  options += '<div class="identifyControl">'
-  + '<button type="submit" class="identify btn btn-default" type="button" data-toggle="button">Identify</button>'
-  + '</div>'
+  options += '<div class="instructions"><p>Click anywhere on the map to identify elevation.</p></div>'
 
   options += '</div>'
 
@@ -278,37 +299,41 @@ LidarViewer.prototype.addControls = function() {
   })
 }
 
-LidarViewer.prototype.identifyContent = function (point, next) {
+LidarViewer.prototype.identifyContent = function (latlng, next) {
   var self = this
-  this._identifyElevation(point, function(elevation, metadata) {
-    if (elevation === 'NoData') {
-      next('No Data')
-    } else {
-      var content = '<table class="table table-condensed table-bordered result">'
-        + '<tr><td><strong>Elevation (m)</strong></td><td> '
-        + elevation + ' meters</td></tr>'
-        + '<tr><td><strong>Elevation (ft)</strong></td><td> '
-        + parseFloat(elevation) * 3.28084 + ' feet</td></tr>'
-        + '<tr><td><strong>Location</strong></td><td> '
-        + point.lng.toFixed(5) + ', ' + point.lat.toFixed(5) + '</td></tr>'
-        + '<tr><td><strong>County</strong></td><td> '
-        + metadata["County"] + '</td></tr>'
-        + '<tr><td><strong>Date</strong></td><td> '
-        + metadata["Date"] + '</td></tr>'
-        + '<tr><td><strong>Vertical Accuracy</strong></td><td> '
-        + metadata["Vertical Accuracy"] + '</td></tr>'
-        + '<tr><td><strong>Vertical Datum</strong></td><td> '
-        + metadata["Vertical Datum"] + '</td></tr>'
-        + '<tr><td><strong>Project Partners</strong></td><td> '
-        + metadata["Project Partners"] + '</td></tr>'
-        if (metadata["Planned Acquisitions"]) {
-          content += '<tr><td><strong>Planned Acquisitions</strong></td><td> '
-            + metadata["Planned Acquisitions"] + '</td></tr>'
-        }
+  var metadata = self.getMetadataFromPoint(latlng)
+  if(metadata) {
+    for (var i = 0; i < self.services.stretched.length; i++) {
+      if (metadata.County === self.services.stretched[i].name) {
+        var service = self.services.stretched[i].service
+        var content = '<table class="table table-condensed table-bordered result">'
+          + '<tr><td><strong>Elevation (m)</strong></td><td> '
+          + '<span class="elevationm"><i class="fa fa-refresh fa-spin"></i></span></td></tr>'
+          + '<tr><td><strong>Elevation (ft)</strong></td><td> '
+          + '<span class="elevationft"><i class="fa fa-refresh fa-spin"></i></span></td></tr>'
+          + '<tr><td><strong>Location</strong></td><td> '
+          + latlng.lng.toFixed(5) + ', ' + latlng.lat.toFixed(5) + '</td></tr>'
+          + '<tr><td><strong>County</strong></td><td> '
+          + metadata["County"] + '</td></tr>'
+          + '<tr><td><strong>Date</strong></td><td> '
+          + metadata["Date"] + '</td></tr>'
+          + '<tr><td><strong>Vertical Accuracy</strong></td><td> '
+          + metadata["Vertical Accuracy"] + '</td></tr>'
+          + '<tr><td><strong>Vertical Datum</strong></td><td> '
+          + metadata["Vertical Datum"] + '</td></tr>'
+          + '<tr><td><strong>Project Partners</strong></td><td> '
+          + metadata["Project Partners"] + '</td></tr>'
+          if (metadata["Planned Acquisitions"]) {
+            content += '<tr><td><strong>Planned Acquisitions</strong></td><td> '
+              + metadata["Planned Acquisitions"] + '</td></tr>'
+          }
         content += '</table>'
-      next(content)
+        next(content, service)
+      }
     }
-  })
+  } else {
+    next('Not in Maryland', false)
+  }
 }
 
 LidarViewer.prototype.getMetadataFromPoint = function (point) {
@@ -337,14 +362,15 @@ LidarViewer.prototype.addServiceLayer = function (service, opacity) {
   this.lidarGroup.clearLayers()
   this.layertype = service.split('/')[2]
   var layer
-  if(service.split('/')[1].indexOf('statewide_demStretched') > 0) {
-    layer = L.tileLayer('http://apps.esrgc.org/tilestream/v2/MD_statewide_demStretched_m/{z}/{x}/{y}.png', {
-      pane: 'overlayPane',
-      errorTileUrl: 'img/emptytile.png',
-      maxNativeZoom: 12,
-      reuseTiles: true
-    })
-  } else if (this.layertype === 'ImageServer') {
+  // if(service.split('/')[1].indexOf('statewide_demStretched') > 0) {
+  //   layer = L.tileLayer('http://apps.esrgc.org/tilestream/v2/MD_statewide_demStretched_m/{z}/{x}/{y}.png', {
+  //     pane: 'overlayPane',
+  //     errorTileUrl: 'img/emptytile.png',
+  //     maxNativeZoom: 12,
+  //     reuseTiles: true
+  //   })
+  // } else 
+  if (this.layertype === 'ImageServer') {
     layer = L.tileLayer.wms(this.services_base_url + service + "/WMSServer", {
       layers: service.split('/')[1]
       , format: 'image/png'
@@ -430,27 +456,22 @@ LidarViewer.prototype.getElevationLine = function (latlngs) {
   })
 }
 
-LidarViewer.prototype._identifyElevation = function (latlng, next) {
+LidarViewer.prototype._identifyElevation = function (latlng, service, next) {
   var self = this
-  var metadata = self.getMetadataFromPoint(latlng)
-  for (var i = 0; i < self.services.stretched.length; i++) {
-    if (metadata.County === self.services.stretched[i].name) {
-      var url = self.services.stretched[i].service
-      if (self.identifyLayer) { 
-        self.map.removeLayer(self.identifyLayer)
-      }
-      self.identifyLayer = L.esri.imageServerLayer(self.services_base_url_rest + url, {
-        opacity : 0
-        , transparent: true
-        , format: 'png24'
-        , noData: 0
-      })
-      self.map.addLayer(self.identifyLayer)
-    }
+  var id_url = self.services_base_url_rest + service + '/identify'
+  var data = {
+    geometryType: 'esriGeometryPoint',
+    geometry:'{"x":' + latlng.lng + ',"y":' + latlng.lat + ',"spatialReference":{"wkid":4265}}',
+    f: 'json'
   }
-  self.identifyLayer.identify(latlng, {} , function(res) {
+  $.ajax({
+    url: id_url,
+    type: "GET",
+    data: data,
+    dataType: "jsonp"
+  }).done(function(res){
     var value = res.value
-    next(value, metadata)
+    next(value)
   })
 }
 
@@ -484,32 +505,4 @@ LidarViewer.prototype.geocodeSubmit = function() {
       $('.geocode-error').html('<p>Address Not Found</p>')
     }
   })
-}
-
-LidarViewer.prototype.identify = function() {
-  var self=this
-  self.marker
-
-  //'.active' is toggled in main.js right before this function is called
-  if($('.identify').hasClass('active')){
-    self.map.on('click', function (e){
-      if(typeof self.marker != "undefined"){
-        self.drawnItems.removeLayer(self.marker)
-      }
-      self.marker = new L.marker(e.latlng)
-      self.drawnItems.addLayer(self.marker)
-      var popup = L.popup().setContent('<i class="fa fa-refresh fa-spin"></i>')
-      self.marker.bindPopup(popup).openPopup()
-      self.identifyContent(e.latlng, function(content) {
-        popup.setContent(content)
-      })
-    });
-  }
-  else{
-    //clears the map of markers and kills the click event in the if statement once the identify button isn't marked as active
-    if(typeof self.marker != "undefined"){
-      self.drawnItems.removeLayer(self.marker)
-    }
-    self.map.off('click')
-  }
 }
