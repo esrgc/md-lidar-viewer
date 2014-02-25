@@ -1,6 +1,6 @@
 {
     "statewide": [
-        {"name": "Statewide Stretched DEM", "service": "Elevation/MD_statewide_demStretched_m/ImageServer"},
+        {"name": "Statewide Shaded Relief", "service": "Elevation/MD_statewide_shadedRelief_m/MapServer"},
         {"name": "Statewide Aspect", "service": "Elevation/MD_statewide_aspect_m/ImageServer"}
     ],
     "slope": [

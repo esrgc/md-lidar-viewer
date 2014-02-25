@@ -3,7 +3,6 @@
  */
 
 function LidarViewer() {
-  L.esri.get = L.esri.RequestHandlers.JSONP
   this.layer = false
   this.services_base_url = 'http://esrgc2.salisbury.edu/ArcGIS/services/'
   this.services_base_url_rest = 'http://esrgc2.salisbury.edu/ArcGIS/rest/services/'
@@ -60,18 +59,14 @@ LidarViewer.prototype.makeMap = function() {
   var self = this
 
   var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png')
-    , world_imagery = L.esri.basemapLayer("Imagery")
-    , gray = L.esri.basemapLayer("Gray")
-    , grayLabels = L.esri.basemapLayer("GrayLabels")
-    , esriGray = L.layerGroup([gray, grayLabels])
+    , world_imagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/')
+    , gray = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}/')
 
   var baseMaps = { 
     "Gray": gray
     , "World Imagery": world_imagery
     , "World Imagery with Labels": mapboxsat
   }
-
-  this.labels = L.esri.basemapLayer("ImageryLabels")
 
   this.countylayer = L.geoJson(this.mdcnty, { style: this.polystyle })
   this.watershedlayer = L.geoJson(this.watershed, { style: this.polystyle })
@@ -92,7 +87,7 @@ LidarViewer.prototype.makeMap = function() {
   '<h6>Vertical Accuracy: {VERT_ACC}</h6>'+
   '<h6>Vertical Datum: {VERT_DATUM}</h6>'
 
-  var template_future = '<h6>County: {COUNTY}</h6>'+
+  var template_future = '<h6>County: {NAME}</h6>'+
   '<h6>Delivery: {DELIVERY}</h6>' +
   '<h6>Acquistion: {ACQ_DETAIL}</h6>'
 
@@ -107,19 +102,28 @@ LidarViewer.prototype.makeMap = function() {
     ' ': '#FFD700'
   }
 
-  this.statusoverlay = L.esri.featureLayer("http://services1.arcgis.com/X3lKekbdaBmNjCHu/arcgis/rest/services/LidarStatus/FeatureServer/0", {
+  this.currentstatus = L.esri.featureLayer("http://services1.arcgis.com/X3lKekbdaBmNjCHu/arcgis/rest/services/CurrentStatus/FeatureServer/0", {
     style: function (feature) {
       var color = statuscolors[feature.properties.DATE]
       return { fillColor: color, weight: 1, color: '#333', fillOpacity: 1 };
     },
     onEachFeature: function (feature, layer) {
-      if(feature.properties.DELIVERY !== ' ' || feature.properties.ACQ_DETAIL !== ' ') {
-        layer.bindPopup(L.Util.template(template_future, feature.properties));
-      } else {
-        layer.bindPopup(L.Util.template(template_current, feature.properties));
-      }
+      layer.bindPopup(L.Util.template(template_current, feature.properties));
+    }
+  }).on('add', function(e){
+    self.legendtemp = $('.legend').html()
+    $('.legend').html('<img src="img/status.png" />')
+  }).on('remove', function(e){
+    $('.legend').html(self.legendtemp)
+  })
+
+  this.futurestatus = L.esri.featureLayer("http://services1.arcgis.com/X3lKekbdaBmNjCHu/arcgis/rest/services/FutureStatus/FeatureServer/0", {
+    style: function (feature) {
+      return { fillColor: '#FFD700', weight: 1, color: '#333', fillOpacity: 1 };
     },
-    name: 'Status'
+    onEachFeature: function (feature, layer) {
+      layer.bindPopup(L.Util.template(template_future, feature.properties));
+    }
   }).on('add', function(e){
     self.legendtemp = $('.legend').html()
     $('.legend').html('<img src="img/status.png" />')
@@ -130,7 +134,8 @@ LidarViewer.prototype.makeMap = function() {
   var overlays = {
     "Counties": this.countyoverlay
     , "Watersheds": this.watershedoverlay
-    , "Status": this.statusoverlay
+    , "Current Status": this.currentstatus
+    , "Future Status": this.futurestatus
   }
 
   this.map = new L.Map('map', {
@@ -142,42 +147,45 @@ LidarViewer.prototype.makeMap = function() {
   })
   this.map.setView([38.8, -77.3], 8)
 
-  this.map.on('click', function (e){
-    var marker = new L.marker(e.latlng).addTo(self.map).bindPopup('<i class="fa fa-refresh fa-spin"></i>').openPopup()
-    self.identifyContent(e.latlng, function(content, service) {
-      marker.getPopup().setContent(content)
-      if(service) {
-        self._identifyElevation(e.latlng, service, function(elevation){
-          if(!parseFloat(elevation)) {
-            var m = elevation
-              , ft = elevation
-          } else {
-            var m = Math.round(parseFloat(elevation) * 100) / 100
-              , ft =  Math.round((m * 3.28084) * 100) / 100
-            m += ' m'
-            ft += ' ft'
-          }
-          var content = $(marker.getPopup().getContent())
-          var popupContent = $('<div/>').html(content).contents()
-          $(popupContent.find('.elevationm')[0]).html(m)
-          $(popupContent.find('.elevationft')[0]).html(ft)
-          marker.getPopup().setContent(popupContent[0].outerHTML)
-        })
-      }
-    })
-  })
+  this.map.on('click', this.identify, this)
   
   L.control.layers(baseMaps, overlays, {
     collapsed: true
-    , click: true
+    , click: false
   }).addTo(this.map)
 
   L.control.scale().addTo(this.map)
 
   this.addControls()
 
-  self.activeService = "Elevation/MD_statewide_demStretched_m/ImageServer"
+  self.activeService = self.services.statewide[0].service
   self.addServiceLayer(self.activeService, 1)
+}
+
+LidarViewer.prototype.identify = function(e) {
+  var self = this
+  var marker = new L.marker(e.latlng).addTo(self.map).bindPopup('<i class="fa fa-refresh fa-spin"></i>').openPopup()
+  self.identifyContent(e.latlng, function(content, service) {
+    marker.getPopup().setContent(content)
+    if(service) {
+      self._identifyElevation(e.latlng, service, function(elevation){
+        if(!parseFloat(elevation)) {
+          var m = elevation
+            , ft = elevation
+        } else {
+          var m = Math.round(parseFloat(elevation) * 100) / 100
+            , ft =  Math.round((m * 3.28084) * 100) / 100
+          m += ' m'
+          ft += ' ft'
+        }
+        var content = $(marker.getPopup().getContent())
+        var popupContent = $('<div/>').html(content).contents()
+        $(popupContent.find('.elevationm')[0]).html(m)
+        $(popupContent.find('.elevationft')[0]).html(ft)
+        marker.getPopup().setContent(popupContent[0].outerHTML)
+      })
+    }
+  })
 }
 
 LidarViewer.prototype.addControls = function() {
@@ -236,7 +244,7 @@ LidarViewer.prototype.addControls = function() {
 
   var instructions = '<div class="instructions"><ul>'
     + '<li>Click anywhere on the map to identify elevation.</li>'
-    + '<li>Elevation units represent bare earth values</li>'
+    + '<li>Elevation units represent bare earth values.</li>'
     + '</ul></div>'
 
   options += instructions
@@ -266,7 +274,7 @@ LidarViewer.prototype.addControls = function() {
         + '<p id="legendMid"></p>'
         + '<p id="legendMin"></p>'
 
-      self.updateLegend("Elevation/MD_statewide_demStretched_m/ImageServer")
+      self.updateLegend(self.services.statewide[0].service)
 
       return div;
   };
@@ -375,6 +383,7 @@ LidarViewer.prototype.addServiceLayer = function (service, opacity) {
   //     reuseTiles: true
   //   })
   // } else 
+
   if (this.layertype === 'ImageServer') {
     layer = L.tileLayer.wms(this.services_base_url + service + "/WMSServer", {
       layers: service.split('/')[1]
@@ -382,13 +391,12 @@ LidarViewer.prototype.addServiceLayer = function (service, opacity) {
       , transparent: true
       , attribution: "ESRGC"
       , opacity : opacity
+      , pane: 'overlayPane'
     })
   } else if (this.layertype === 'MapServer') {
-    layer = L.esri.dynamicMapLayer(this.services_base_url_rest + service, {
-      opacity : 1
-      , transparent: true
-      , format: 'png24'
-      , noData: 0
+    layer = L.tileLayer(this.services_base_url_rest + service + '/tile/{z}/{y}/{x}/', {
+      pane: 'overlayPane',
+      errorTileUrl: 'img/emptytile.png'
     })
   }
   this.updateLegend(service)
@@ -401,6 +409,7 @@ LidarViewer.prototype.addServiceLayer = function (service, opacity) {
 }
 
 LidarViewer.prototype.updateLegend = function (service) {
+  var self = this
   var max, min, mid
 
   var update = function(min, max) {
@@ -414,13 +423,13 @@ LidarViewer.prototype.updateLegend = function (service) {
     $("#legendMid").html(mid)
     $("#legendMax").html(max)
   }
-
-  if(service.length == 0 || service == "Elevation/MD_statewide_demStretched_m/ImageServer"){
+  console.log(service, self.services.statewide[0].service)
+  if(service.length == 0 || service == self.services.statewide[0].service){
     max = 1024
     min = -51
     update(min, max)
   } else {
-    if(service.search("Stretched") >= 0){
+    if(service.search("Stretched") >= 0 || service.search("shadedRelief") >= 0){
       $('.legend').css("visibility", "visible")
 
       url = 'http://esrgc2.salisbury.edu/arcgis/rest/services/'
