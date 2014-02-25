@@ -154,6 +154,8 @@ LidarViewer.prototype.makeMap = function() {
           } else {
             var m = Math.round(parseFloat(elevation) * 100) / 100
               , ft =  Math.round((m * 3.28084) * 100) / 100
+            m += ' m'
+            ft += ' ft'
           }
           var content = $(marker.getPopup().getContent())
           var popupContent = $('<div/>').html(content).contents()
@@ -232,9 +234,12 @@ LidarViewer.prototype.addControls = function() {
 
   options += addressform
 
-  options += '<div class="instructions"><p>Click anywhere on the map to identify elevation.</p></div>'
+  var instructions = '<div class="instructions"><ul>'
+    + '<li>Click anywhere on the map to identify elevation.</li>'
+    + '<li>Elevation units represent bare earth values</li>'
+    + '</ul></div>'
 
-  options += '</div>'
+  options += instructions
 
   var layerMenu = L.control({position: 'topright'})
   layerMenu.onAdd = function (map) {
@@ -286,17 +291,17 @@ LidarViewer.prototype.addControls = function() {
   }
   chartControl.addTo(this.map)
 
-  this.linechart = new GeoDash.LineChart(".line-chart", {
-    x: 'distance'
-    , y: 'elevation'
-    , width: 'auto'
-    , height: 'auto'
-    , colors: ["#f00"]
-    , title: 'Elevation'
-    , interpolate: 'monotone'
-    , dotRadius: 3
-    , time: false
-  })
+  // this.linechart = new GeoDash.LineChart(".line-chart", {
+  //   x: 'distance'
+  //   , y: 'elevation'
+  //   , width: 'auto'
+  //   , height: 'auto'
+  //   , colors: ["#f00"]
+  //   , title: 'Elevation'
+  //   , interpolate: 'monotone'
+  //   , dotRadius: 3
+  //   , time: false
+  // })
 }
 
 LidarViewer.prototype.identifyContent = function (latlng, next) {
@@ -311,7 +316,7 @@ LidarViewer.prototype.identifyContent = function (latlng, next) {
           + '<span class="elevationm"><i class="fa fa-refresh fa-spin"></i></span></td></tr>'
           + '<tr><td><strong>Elevation (ft)</strong></td><td> '
           + '<span class="elevationft"><i class="fa fa-refresh fa-spin"></i></span></td></tr>'
-          + '<tr><td><strong>Location</strong></td><td> '
+          + '<tr><td><strong>Lat, Lng</strong></td><td> '
           + latlng.lng.toFixed(5) + ', ' + latlng.lat.toFixed(5) + '</td></tr>'
           + '<tr><td><strong>County</strong></td><td> '
           + metadata["County"] + '</td></tr>'

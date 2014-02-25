@@ -212,3 +212,7 @@ html, body {
 .instructions {
   margin-top: 10px;
 }
+
+.instructions ul {
+  padding-left: 15px;
+}
