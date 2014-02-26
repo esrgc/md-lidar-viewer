@@ -16,16 +16,6 @@ $(document).ready(function(){
     var name = $(this).find('option:selected').text()
     var opacity = $('.opacity-slider').val()/100
     lidarViewer.addServiceLayer(service, opacity)
-    if(service.search('statewide') >= 0) {
-      lidarViewer.map.setView([38.8, -77.3], 8, {animate: false})
-    } else {
-      lidarViewer.countylayer.eachLayer(function(layer){
-        if (layer.feature.properties.name === name) {
-          var bounds = layer.getBounds()
-          lidarViewer.map.fitBounds(bounds, {animate: false})
-        }
-      })
-    }
     $('.services').not(this).each(function(idx){
       $($(this).find('option').get(0)).prop('selected', true)
     })
