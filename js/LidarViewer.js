@@ -169,32 +169,6 @@ LidarViewer.prototype.makeMap = function() {
   self.addServiceLayer(self.activeService, 1)
 }
 
-LidarViewer.prototype.identify = function(e) {
-  var self = this
-  var marker = new L.marker(e.latlng).addTo(self.map).bindPopup('<i class="fa fa-refresh fa-spin"></i>').openPopup()
-  self.identifyContent(e.latlng, function(content, service) {
-    marker.getPopup().setContent(content)
-    if(service) {
-      self._identifyElevation(e.latlng, service, function(elevation){
-        if(!parseFloat(elevation)) {
-          var m = elevation
-            , ft = elevation
-        } else {
-          var m = Math.round(parseFloat(elevation) * 100) / 100
-            , ft =  Math.round((m * 3.28084) * 100) / 100
-          m += ' m'
-          ft += ' ft'
-        }
-        var content = $(marker.getPopup().getContent())
-        var popupContent = $('<div/>').html(content).contents()
-        $(popupContent.find('.elevationm')[0]).html(m)
-        $(popupContent.find('.elevationft')[0]).html(ft)
-        marker.getPopup().setContent(popupContent[0].outerHTML)
-      })
-    }
-  })
-}
-
 LidarViewer.prototype.addControls = function() {
   var self = this
   var options = '<div class="title"><h4>Choose Lidar Layer</h4>'
@@ -307,6 +281,32 @@ LidarViewer.prototype.addControls = function() {
   chartControl.addTo(this.map)
 }
 
+LidarViewer.prototype.identify = function(e) {
+  var self = this
+  var marker = new L.marker(e.latlng).addTo(self.map).bindPopup('<i class="fa fa-refresh fa-spin"></i>').openPopup()
+  self.identifyContent(e.latlng, function(content, service) {
+    marker.getPopup().setContent(content)
+    if(service) {
+      self._identifyElevation(e.latlng, service, function(elevation){
+        var elevation_display = ''
+        if(!parseFloat(elevation)) {
+          elevation_display = elevation
+        } else {
+          var m = Math.round(parseFloat(elevation) * 100) / 100
+            , ft =  Math.round((m * 3.28084) * 100) / 100
+          m += ' m'
+          ft += ' ft'
+          elevation_display = m + '<br>' + ft
+        }
+        var content = $(marker.getPopup().getContent())
+        var popupContent = $('<div/>').html(content).contents()
+        $(popupContent.find('.elevationm')[0]).html(elevation_display)
+        marker.getPopup().setContent(popupContent[0].outerHTML)
+      })
+    }
+  })
+}
+
 LidarViewer.prototype.identifyContent = function (latlng, next) {
   var self = this
   var metadata = self.getMetadataFromPoint(latlng)
@@ -315,10 +315,8 @@ LidarViewer.prototype.identifyContent = function (latlng, next) {
       if (metadata.County === self.services.stretched[i].name) {
         var service = self.services.stretched[i].service
         var content = '<table class="table table-condensed table-bordered result">'
-          + '<tr><td><strong>Elevation (m)</strong></td><td> '
+          + '<tr><td><strong>Elevation</strong></td><td> '
           + '<span class="elevationm"><i class="fa fa-refresh fa-spin"></i></span></td></tr>'
-          + '<tr><td><strong>Elevation (ft)</strong></td><td> '
-          + '<span class="elevationft"><i class="fa fa-refresh fa-spin"></i></span></td></tr>'
           + '<tr><td><strong>Lat, Lng</strong></td><td> '
           + latlng.lat.toFixed(3) + ', ' + latlng.lng.toFixed(3) + '</td></tr>'
           + '<tr><td><strong>County</strong></td><td> '
@@ -369,16 +367,7 @@ LidarViewer.prototype.getServices = function (next) {
 LidarViewer.prototype.addServiceLayer = function (service, opacity) {
   this.lidarGroup.clearLayers()
   this.layertype = service.split('/')[2]
-  var layer
-  // if(service.split('/')[1].indexOf('statewide_demStretched') > 0) {
-  //   layer = L.tileLayer('http://apps.esrgc.org/tilestream/v2/MD_statewide_demStretched_m/{z}/{x}/{y}.png', {
-  //     pane: 'overlayPane',
-  //     errorTileUrl: 'img/emptytile.png',
-  //     maxNativeZoom: 12,
-  //     reuseTiles: true
-  //   })
-  // } else 
-
+  var layer = {}
   if (this.layertype === 'ImageServer') {
     layer = L.tileLayer.wms(this.services_base_url + service + "/WMSServer", {
       layers: service.split('/')[1]
