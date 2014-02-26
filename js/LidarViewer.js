@@ -4,8 +4,8 @@
 
 function LidarViewer() {
   this.layer = false
-  this.services_base_url = 'http://esrgc2.salisbury.edu/ArcGIS/services/'
-  this.services_base_url_rest = 'http://esrgc2.salisbury.edu/ArcGIS/rest/services/'
+  this.services_base_url = 'http://lidar.salisbury.edu/ArcGIS/services/'
+  this.services_base_url_rest = 'http://lidar.salisbury.edu/ArcGIS/rest/services/'
   this.services_folder = 'Elevation'
   this.identifyElevationTool = false
   this.hasLabels = true
@@ -152,8 +152,8 @@ LidarViewer.prototype.makeMap = function() {
       , this.drawnItems
     ]
   })
+  var hash = new L.Hash(this.map);
   this.map.setView([38.8, -77.3], 8)
-
   this.map.on('click', this.identify, this)
   
   L.control.layers(baseMaps, overlays, {
@@ -426,7 +426,7 @@ LidarViewer.prototype.updateLegend = function (service) {
     if(service.search("Stretched") >= 0 || service.search("shadedRelief") >= 0){
       $('.legend').css("visibility", "visible")
 
-      url = 'http://esrgc2.salisbury.edu/arcgis/rest/services/'
+      url = self.services_base_url_rest
         + service
         + '?f=pjson'
 
