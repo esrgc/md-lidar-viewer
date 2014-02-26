@@ -92,6 +92,10 @@ html, body {
   padding-right: 5px;
 }
 
+.layerMenu .options .opacity-control {
+  padding: 10px 0 10px 0;
+}
+
 .addressControl {
   width: 250px;
   padding-bottom:5px;

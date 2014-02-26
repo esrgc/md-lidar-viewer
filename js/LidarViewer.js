@@ -204,9 +204,11 @@ LidarViewer.prototype.addControls = function() {
       + self.services.slope[i].name + '</option>'
   }
   options += '</select></div>'
+    + '<div class="opacity-control">'
     + '<div class="layer-name">Opacity</div>'
     + '<input type="range" name="points" min="0" max="100"'
     + ' class="opacity-slider" value="100">'
+    + '</div>'
 
   var addressform = '<div class="addressControl"><div class="row">'
     + '<div class="col-lg-12">'
@@ -316,7 +318,7 @@ LidarViewer.prototype.identifyContent = function (latlng, next) {
         var service = self.services.stretched[i].service
         var content = '<table class="table table-condensed table-bordered result">'
           + '<tr><td><strong>Elevation</strong></td><td> '
-          + '<span class="elevationm"><i class="fa fa-refresh fa-spin"></i></span></td></tr>'
+          + '<span class="elevationm"><img src="img/ajax.gif"></span></td></tr>'
           + '<tr><td><strong>Lat, Lng</strong></td><td> '
           + latlng.lat.toFixed(3) + ', ' + latlng.lng.toFixed(3) + '</td></tr>'
           + '<tr><td><strong>County</strong></td><td> '
