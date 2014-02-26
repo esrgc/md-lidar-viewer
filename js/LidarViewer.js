@@ -340,7 +340,7 @@ LidarViewer.prototype.identifyContent = function (latlng, next) {
       }
     }
   } else {
-    next('Not in Maryland', false)
+    next('No Data', false)
   }
 }
 
