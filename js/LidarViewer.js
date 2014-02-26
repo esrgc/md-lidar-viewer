@@ -461,7 +461,9 @@ LidarViewer.prototype._identifyElevation = function (latlng, service, next) {
   var data = {
     geometryType: 'esriGeometryPoint',
     geometry:'{"x":' + latlng.lng + ',"y":' + latlng.lat + ',"spatialReference":{"wkid":4265}}',
-    f: 'json'
+    f: 'json',
+    returnGeometry: false,
+    returnCatalogItems: false
   }
   $.ajax({
     url: id_url,
