@@ -1,6 +1,6 @@
 {
   "statewide": [
-    {"name": "Statewide Shaded Relief", "service": "Elevation/MD_statewide_shadedRelief_m/MapServer"},
+    {"name": "Statewide Shaded Relief", "service": "Statewide/MD_statewide_shadedRelief_m/MapServer"},
     {"name": "Statewide Aspect", "service": "Elevation/MD_statewide_aspect_m/ImageServer"}
   ],
   "slope": [
