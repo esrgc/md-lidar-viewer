@@ -24,7 +24,7 @@ function LidarViewer() {
 
 LidarViewer.prototype.load = function() {
   var self = this
-  async.parallel([ 
+  async.parallel([
     function(next) {
       $.getJSON('data/mdcnty.json', function(res) {
         self.mdcnty = res
@@ -49,6 +49,18 @@ LidarViewer.prototype.load = function() {
         next(null)
       })
     }
+    , function(next) {
+      $.getJSON('data/currentstatus.geojson', function(res) {
+        self.currentstatusgeojson = res
+        next(null)
+      })
+    }
+    , function(next) {
+      $.getJSON('data/futurestatus.geojson', function(res) {
+        self.futurestatusgeojson = res
+        next(null)
+      })
+    }
   ]
   , function(err, res) {
     self.makeMap()
@@ -62,7 +74,7 @@ LidarViewer.prototype.makeMap = function() {
     , world_imagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/')
     , gray = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}/')
 
-  var baseMaps = { 
+  this.baseMaps = {
     "Gray": gray
     , "World Imagery": world_imagery
     , "World Imagery with Labels": mapboxsat
@@ -81,15 +93,15 @@ LidarViewer.prototype.makeMap = function() {
   })
 
   var template_current = '<h6>County: {COUNTY}</h6>'+
-  '<h6>Date: {DATE}</h6>'+
-  '<h6>Partners: {PROJ_PARTN}</h6>'+
-  '<h6>Point spacing: {POINT_SPAC}</h6>'+
-  '<h6>Vertical Accuracy: {VERT_ACC}</h6>'+
-  '<h6>Vertical Datum: {VERT_DATUM}</h6>'
+    '<h6>Date: {DATE}</h6>'+
+    '<h6>Partners: {PROJ_PARTN}</h6>'+
+    '<h6>Point spacing: {POINT_SPAC}</h6>'+
+    '<h6>Vertical Accuracy: {VERT_ACC}</h6>'+
+    '<h6>Vertical Datum: {VERT_DATUM}</h6>'
 
   var template_future = '<h6>County: {NAME}</h6>'+
-  '<h6>Delivery: {DELIVERY}</h6>' +
-  '<h6>Acquistion: {ACQ_DETAIL}</h6>'
+    '<h6>Delivery: {DELIVERY}</h6>' +
+    '<h6>Acquistion: {ACQ_DETAIL}</h6>'
 
   var statuscolors = {
     '2012': '#018571',
@@ -98,19 +110,21 @@ LidarViewer.prototype.makeMap = function() {
     '2007': '#F5F5F5',
     '2006': '#DBC4AC',
     '2005': '#C09263',
-    '2004': '#A6611A',
-    ' ': '#FFD700'
+    '2004': '#A6611A'
   }
 
-  this.currentstatus = L.esri.featureLayer("http://services1.arcgis.com/X3lKekbdaBmNjCHu/arcgis/rest/services/CurrentStatus/FeatureServer/0", {
+  this.currentstatus = L.geoJson(this.currentstatusgeojson, {
     style: function (feature) {
       var color = statuscolors[feature.properties.DATE]
-      return { fillColor: color, weight: 1, color: '#333', fillOpacity: 1 };
+      return { fillColor: color, weight: 1, color: '#333', fillOpacity: 1 }
     },
     onEachFeature: function (feature, layer) {
-      layer.bindPopup(L.Util.template(template_current, feature.properties));
+      layer.bindPopup(L.Util.template(template_current, feature.properties))
     }
   }).on('add', function(e){
+    if(self.map.hasLayer(self.futurestatus)){
+      self.futurestatus.bringToFront()
+    }
     $('.legend .lidar-legend').hide()
     $('.legend .status-legend').show().html('<img src="img/status.png" />')
   }).on('remove', function(e){
@@ -120,15 +134,15 @@ LidarViewer.prototype.makeMap = function() {
     }
   })
 
-  this.futurestatus = L.esri.featureLayer("http://services1.arcgis.com/X3lKekbdaBmNjCHu/arcgis/rest/services/FutureStatus/FeatureServer/0", {
+  this.futurestatus = L.geoJson(this.futurestatusgeojson, {
     style: function (feature) {
-      return { fillColor: '#FFD700', weight: 1, color: '#333', fillOpacity: 1 };
+      return { fillColor: '#FFD700', weight: 1, color: '#333', fillOpacity: 1 }
     },
     onEachFeature: function (feature, layer) {
-      layer.bindPopup(L.Util.template(template_future, feature.properties));
+      layer.bindPopup(L.Util.template(template_future, feature.properties))
     }
   }).on('add', function(e){
-    self.legendtemp = $('.legend').html()
+    self.futurestatus.bringToFront()
     $('.legend .lidar-legend').hide()
     $('.legend .status-legend').show().html('<img src="img/status.png" />')
   }).on('remove', function(e){
@@ -138,11 +152,11 @@ LidarViewer.prototype.makeMap = function() {
     }
   })
 
-  var overlays = {
+  this.overlays = {
     "Counties": this.countyoverlay
     , "Watersheds": this.watershedoverlay
-    , "Most Recent Acquisitions": this.currentstatus
     , "Future Acquisitions": this.futurestatus
+    , "Most Recent Acquisitions": this.currentstatus
   }
 
   this.map = new L.Map('map', {
@@ -152,11 +166,11 @@ LidarViewer.prototype.makeMap = function() {
       , this.drawnItems
     ]
   })
-  var hash = new L.Hash(this.map);
+  var hash = new L.Hash(this.map)
   this.map.setView([38.8, -77.3], 8)
   this.map.on('click', this.identify, this)
-  
-  L.control.layers(baseMaps, overlays, {
+
+  L.control.layers(this.baseMaps, this.overlays, {
     collapsed: true
     , click: false
   }).addTo(this.map)
@@ -171,7 +185,23 @@ LidarViewer.prototype.makeMap = function() {
 
 LidarViewer.prototype.addControls = function() {
   var self = this
-  var options = '<div class="title"><h4>Choose Lidar Layer</h4>'
+  var options = ''
+
+  // options += '<form class="leaflet-control-layers-list2">'
+  //   + '<div class="leaflet-control-layers-base">'
+  //   for (var i in this.baseMaps) {
+	// 		options += '<label><input type="radio" class="leaflet-control-layers-selector" name="leaflet-base-layers"><span> ' + i + '</span></label>'
+	// 	}
+  //   options += '</div>'
+  //   + '<div class="leaflet-control-layers-separator"></div>'
+  //   + '<div class="leaflet-control-layers-overlays">'
+  //   for (var i in this.overlays) {
+  //     options += '<label><input type="checkbox" class="leaflet-control-layers-selector"><span> ' + i + '</span></label>'
+  //   }
+  //   options += '</div>'
+  //   + '</form>'
+  //   + '</div>'
+  options += '<div class="title"><h4>Choose Lidar Layer</h4>'
     + '<div class="toggle"><i class="fa fa-toggle-right"></i></div></div>'
     + '<div class="options">'
     + '<div class="layer-select">'
@@ -289,16 +319,20 @@ LidarViewer.prototype.identify = function(e) {
   self.identifyContent(e.latlng, function(content, service) {
     marker.getPopup().setContent(content)
     if(service) {
-      self._identifyElevation(e.latlng, service, function(elevation){
+      self._identifyElevation(e.latlng, service, function(elevation, err){
         var elevation_display = ''
-        if(!parseFloat(elevation)) {
-          elevation_display = elevation
+        if(err) {
+          elevation_display = 'Error loading elevation data'
         } else {
-          var m = Math.round(parseFloat(elevation) * 100) / 100
-            , ft =  Math.round((m * 3.28084) * 100) / 100
-          m += ' m'
-          ft += ' ft'
-          elevation_display = m + '<br>' + ft
+          if(!parseFloat(elevation)) {
+            elevation_display = elevation
+          } else {
+            var m = Math.round(parseFloat(elevation) * 100) / 100
+              , ft =  Math.round((m * 3.28084) * 100) / 100
+            m += ' m'
+            ft += ' ft'
+            elevation_display = m + '<br>' + ft
+          }
         }
         var content = $(marker.getPopup().getContent())
         var popupContent = $('<div/>').html(content).contents()
@@ -370,7 +404,14 @@ LidarViewer.prototype.addServiceLayer = function (service, opacity) {
   this.lidarGroup.clearLayers()
   this.layertype = service.split('/')[2]
   var layer = {}
-  if (this.layertype === 'ImageServer') {
+  if(service.split('/')[1].indexOf('statewide_shadedRelief') > 0) {
+    layer = L.tileLayer('http://apps.esrgc.org/tilestream/v2/MD_statewide_shadedRelief_m/{z}/{x}/{y}.png', {
+      pane: 'overlayPane',
+      errorTileUrl: 'img/emptytile.png',
+      maxNativeZoom: 12,
+      reuseTiles: true
+    })
+  } else if (this.layertype === 'ImageServer') {
     layer = L.tileLayer.wms(this.services_base_url + service + "/WMSServer", {
       layers: service.split('/')[1]
       , format: 'image/png'
@@ -433,28 +474,6 @@ LidarViewer.prototype.updateLegend = function (service) {
   }
 }
 
-LidarViewer.prototype.getElevationLine = function (latlngs) {
-  var self = this
-    , data = []
-    , count = 1
-
-  $('.chartControl').show()
-  var f = function (latlng, next) {
-    self._identifyElevation(latlng, function(value, metadata) {
-      data.push({
-        distance: count
-        , elevation: value
-      })
-      self.linechart.update(data)
-      count++;
-      next()
-    })
-  }
-  async.eachSeries(latlngs, f, function() {
-    //self.linechart.update(data)
-  })
-}
-
 LidarViewer.prototype._identifyElevation = function (latlng, service, next) {
   var self = this
   var id_url = self.services_base_url_rest + service + '/identify'
@@ -472,7 +491,9 @@ LidarViewer.prototype._identifyElevation = function (latlng, service, next) {
     dataType: "jsonp"
   }).done(function(res){
     var value = res.value
-    next(value)
+    next(value, null)
+  }).fail(function(res){
+    next(null, 'Error')
   })
 }
 
