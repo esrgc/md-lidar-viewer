@@ -6,6 +6,7 @@ html, body {
 .wrap {
   height: 100%;
   width: 100%;
+  font-family: Tahoma, Verdana, sans-serif;
 }
 #map {
   height: 100%;
@@ -61,10 +62,10 @@ html, body {
 
 .layerMenu .title .toggle {
   float: right;
-  font-size: 18px;
-  line-height: 18px;
+  font-size: 20px;
+  line-height: 20px;
   cursor: pointer;
-  color: #444;
+  color: #000;
 }
 
 .layerMenu.closed .title .toggle {
@@ -229,6 +230,18 @@ html, body {
   padding: 0px;
 }
 
+#map .leaflet-popup-close-button {
+  padding: 4px 0 0 0;
+  width: 24px;
+  height: 20px;
+  font: 21px/18px Tahoma, Verdana, sans-serif;
+}
+
+#map .leaflet-control-scale {
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+
 .section {
 
 }
@@ -238,7 +251,7 @@ html, body {
   border-top: 1px solid #ddd;
   border-bottom: 1px solid #ddd;
   padding-left: 5px;
-  font-size: 14px;
+  font: 14px/22px Tahoma, Verdana, sans-serif;
   font-weight: bold;
 }
 
