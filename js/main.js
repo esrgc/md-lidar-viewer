@@ -64,4 +64,8 @@ $(document).ready(function(){
     $('.chartControl').hide()
     lidarViewer.linechart.update([])
   })
+
+  $(window).resize(function(){
+    $('.layerMenu').css('max-height', $(window).height()-20)
+  })
 })
