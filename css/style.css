@@ -31,7 +31,8 @@ html, body {
   padding: 10px;
   border-radius: 5px;
   padding: 0px;
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
 .layerMenu.closed {
