@@ -7,7 +7,7 @@ html, body {
   height: 100%;
   width: 100%;
 }
-#map { 
+#map {
   height: 100%;
   width: 100%;
   margin: 0 auto;
@@ -44,12 +44,14 @@ html, body {
 
 .layerMenu .title {
   overflow: hidden;
-  padding: 5px 10px 5px 10px;
+  padding: 5px 5px 5px 5px;
   text-align: center;
+  margin-bottom: 10px;
 }
 
 .layerMenu.closed .title {
   padding: 0;
+  margin-bottom: 0px;
 }
 
 .layerMenu .title h4 {
@@ -75,10 +77,6 @@ html, body {
   font-size: 24px;
 }
 
-.layerMenu .options {
-  padding: 10px;
-}
-
 .layer-select {
   padding-bottom: 5px;
 }
@@ -90,10 +88,6 @@ html, body {
 .terrain-layer {
   font-weight: bold;
   padding-right: 5px;
-}
-
-.layerMenu .options .opacity-control {
-  padding: 10px 0 10px 0;
 }
 
 .addressControl {
@@ -208,19 +202,46 @@ html, body {
 }
 
 .info {
-    font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
-    font-weight:bold;
-    padding: 6px 8px;
-    background: white;
-    background: rgba(255,255,255,1);
-    box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    border-radius: 5px;
-}
-
-.instructions {
-  margin-top: 10px;
+  font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+  font-weight:bold;
+  padding: 6px 8px;
+  background: white;
+  background: rgba(255,255,255,1);
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  border-radius: 5px;
 }
 
 .instructions ul {
   padding-left: 15px;
+}
+
+.custom-layer-menu .leaflet-control {
+  margin: 0px;
+}
+
+.custom-layer-menu .leaflet-control-layers {
+  float: none;
+  box-shadow: none;
+  border-radius: 0px;
+}
+
+.custom-layer-menu .leaflet-control-layers-expanded {
+  padding: 0px;
+}
+
+.section {
+
+}
+
+.section .section-title {
+  background: #efefef;
+  border-top: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding-left: 5px;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.section .section-content {
+  padding: 10px;
 }

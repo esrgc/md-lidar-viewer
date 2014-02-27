@@ -153,10 +153,10 @@ LidarViewer.prototype.makeMap = function() {
   })
 
   this.overlays = {
-    "Counties": this.countyoverlay
-    , "Watersheds": this.watershedoverlay
-    , "Future Acquisitions": this.futurestatus
+    "Future Acquisitions": this.futurestatus
     , "Most Recent Acquisitions": this.currentstatus
+    ,"Counties": this.countyoverlay
+    , "Watersheds": this.watershedoverlay
   }
 
   this.map = new L.Map('map', {
@@ -170,14 +170,14 @@ LidarViewer.prototype.makeMap = function() {
   this.map.setView([38.8, -77.3], 8)
   this.map.on('click', this.identify, this)
 
-  L.control.layers(this.baseMaps, this.overlays, {
-    collapsed: true
-    , click: false
-  }).addTo(this.map)
-
   L.control.scale().addTo(this.map)
 
   this.addControls()
+
+  L.control.layersCustom(this.baseMaps, this.overlays, {
+    collapsed: false
+    , click: false
+  }).addTo(this.map, $('.custom-layer-menu .section-content')[0])
 
   self.activeService = self.services.statewide[0].service
   self.addServiceLayer(self.activeService, 1)
@@ -187,60 +187,62 @@ LidarViewer.prototype.addControls = function() {
   var self = this
   var options = ''
 
-  // options += '<form class="leaflet-control-layers-list2">'
-  //   + '<div class="leaflet-control-layers-base">'
-  //   for (var i in this.baseMaps) {
-	// 		options += '<label><input type="radio" class="leaflet-control-layers-selector" name="leaflet-base-layers"><span> ' + i + '</span></label>'
-	// 	}
-  //   options += '</div>'
-  //   + '<div class="leaflet-control-layers-separator"></div>'
-  //   + '<div class="leaflet-control-layers-overlays">'
-  //   for (var i in this.overlays) {
-  //     options += '<label><input type="checkbox" class="leaflet-control-layers-selector"><span> ' + i + '</span></label>'
-  //   }
-  //   options += '</div>'
-  //   + '</form>'
-  //   + '</div>'
-  options += '<div class="title"><h4>Choose Lidar Layer</h4>'
+  options += '<div class="title"><h4>MD Lidar Viewer</h4>'
     + '<div class="toggle"><i class="fa fa-toggle-right"></i></div></div>'
     + '<div class="options">'
+
+  var layer_menu_section = '<div class="custom-layer-menu section">'
+    + '<div class="section-title">Base Maps and Overlays</div>'
+    + '<div class="section-content"></div>'
+    + '</div>'
+
+  options += layer_menu_section
+
+  var lidar_menu_section = '<div class="section">'
+    + '<div class="section-title">Lidar Layers</div>'
+    + '<div class="section-content">'
     + '<div class="layer-select">'
     + '<div class="layer-name">Statewide</div>'
     + '<select id="statewide" class="services">'
     + '<option value="">---</option>'
   for (var i = 0; i < self.services.statewide.length; i++) {
-    options += '<option value="'
+    lidar_menu_section += '<option value="'
       + self.services.statewide[i].service+ '">'
       + self.services.statewide[i].name+ '</option>'
   }
-  options += '</select></div>'
+  lidar_menu_section += '</select></div>'
     + '<div class="layer-select">'
     + '<div class="layer-name">County Stretched</div>'
     + '<select id="county-stretched" class="services">'
     + '<option value="">---</option>'
   for (var i = 0; i < self.services.stretched.length; i++) {
-    options += '<option value="'
+    lidar_menu_section += '<option value="'
       + self.services.stretched[i].service + '">'
       + self.services.stretched[i].name + '</option>'
   }
-  options += '</select></div>'
+  lidar_menu_section += '</select></div>'
     + '<div class="layer-select">'
     + '<div class="layer-name">County Slope</div>'
     + '<select id="county-slope" class="services">'
     + '<option value="">---</option>'
   for (var i = 0; i < self.services.slope.length; i++) {
-    options += '<option value="'
+    lidar_menu_section += '<option value="'
       + self.services.slope[i].service + '">'
       + self.services.slope[i].name + '</option>'
   }
-  options += '</select></div>'
+  lidar_menu_section += '</select></div></div>'
+
+  options += lidar_menu_section
+
+  var tools_menu_section = '<div class="section">'
+    + '<div class="section-title">Tools</div>'
+    + '<div class="section-content">'
     + '<div class="opacity-control">'
     + '<div class="layer-name">Opacity</div>'
     + '<input type="range" name="points" min="0" max="100"'
     + ' class="opacity-slider" value="100">'
     + '</div>'
-
-  var addressform = '<div class="addressControl"><div class="row">'
+    + '<div class="addressControl"><div class="row">'
     + '<div class="col-lg-12">'
     + '<div class="input-group">'
     + '<input type="text" class="form-control" '
@@ -251,16 +253,19 @@ LidarViewer.prototype.addControls = function() {
     + '</div></div></div>'
     + '<div class="row"><div class="col-lg-12">'
     + '<div class="geocode-error"></div>'
-    + '</div></div></div>'
+    + '</div></div></div></div>'
 
-  options += addressform
+  options += tools_menu_section
 
-  var instructions = '<div class="instructions"><ul>'
+  var instructions_menu_section = '<div class="section">'
+    + '<div class="section-title">Notes</div>'
+    + '<div class="section-content">'
+    + '<div class="instructions"><ul>'
     + '<li>Click anywhere on the map to identify elevation.</li>'
     + '<li>Elevation units represent bare earth values.</li>'
     + '</ul></div>'
 
-  options += instructions
+  options += instructions_menu_section
 
   var layerMenu = L.control({position: 'topright'})
   layerMenu.onAdd = function (map) {
@@ -404,14 +409,7 @@ LidarViewer.prototype.addServiceLayer = function (service, opacity) {
   this.lidarGroup.clearLayers()
   this.layertype = service.split('/')[2]
   var layer = {}
-  if(service.split('/')[1].indexOf('statewide_shadedRelief') > 0) {
-    layer = L.tileLayer('http://apps.esrgc.org/tilestream/v2/MD_statewide_shadedRelief_m/{z}/{x}/{y}.png', {
-      pane: 'overlayPane',
-      errorTileUrl: 'img/emptytile.png',
-      maxNativeZoom: 12,
-      reuseTiles: true
-    })
-  } else if (this.layertype === 'ImageServer') {
+  if (this.layertype === 'ImageServer') {
     layer = L.tileLayer.wms(this.services_base_url + service + "/WMSServer", {
       layers: service.split('/')[1]
       , format: 'image/png'
