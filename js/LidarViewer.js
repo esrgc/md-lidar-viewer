@@ -173,6 +173,7 @@ LidarViewer.prototype.makeMap = function() {
   L.control.scale().addTo(this.map)
 
   this.addControls()
+  $('.layerMenu').css('max-height', $(window).height()-20)
 
   L.control.layersCustom(this.baseMaps, this.overlays, {
     collapsed: false
