@@ -26,14 +26,14 @@ LidarViewer.prototype.load = function() {
   var self = this
   async.parallel([
     function(next) {
-      $.getJSON('data/mdcnty.json', function(res) {
+      $.getJSON('data/mdcnty.geojson', function(res) {
         self.mdcnty = res
         next(null)
       })
     }
     , function(next) {
-      $.getJSON('data/watershed4.json', function(res) {
-        self.watershed = res
+      $.getJSON('data/mdbuffer.geojson', function(res) {
+        self.mdbuffer = res
         next(null)
       })
     }
@@ -72,25 +72,44 @@ LidarViewer.prototype.makeMap = function() {
 
   var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png')
     , world_imagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/')
-    , gray = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}/')
-
+    //, gray = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}/')
+    , gray = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.hd7o0kfk/{z}/{x}/{y}.png')
+    , imap_6in = L.tileLayer.wms("http://mdimap.us/arcgis/services/ImageryBaseMapsEarthCover/MD.State.6InchImagery/MapServer/WMSServer", {
+      layers: '0',
+      format: 'image/png',
+      transparent: true,
+      attribution: "MD iMap"
+    })
+    , imap_6in_cir = L.tileLayer.wms("http://mdimap.us/arcgis/services/ImageryBaseMapsEarthCover/MD.State.6InchCIRImagery/MapServer/WMSServer", {
+      layers: '0',
+      format: 'image/png',
+      transparent: true,
+      attribution: "MD iMap"
+    })
   this.baseMaps = {
     "Gray": gray
     , "World Imagery": world_imagery
     , "World Imagery with Labels": mapboxsat
+    , 'iMap 6 Inch Imagerny': imap_6in
+    , 'iMap 6 Inch CIR Imagerny': imap_6in_cir
   }
 
   this.countylayer = L.geoJson(this.mdcnty, { style: this.polystyle })
-  this.watershedlayer = L.geoJson(this.watershed, { style: this.polystyle })
+  this.mdbuffer = L.geoJson(this.mdbuffer, { style: this.polystyle })
 
   this.countyoverlay = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.CountyCompare/{z}/{x}/{y}.png', {
     pane: 'overlayPane',
     errorTileUrl: 'img/emptytile.png'
+  }).on('add', function(e){
+    self.countyoverlay.bringToFront()
   })
   this.watershedoverlay = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.watersheds2/{z}/{x}/{y}.png', {
     pane: 'overlayPane',
     errorTileUrl: 'img/emptytile.png'
+  }).on('add', function(e){
+    self.watershedoverlay.bringToFront()
   })
+
 
   var template_current = '<h6>County: {COUNTY}</h6>'+
     '<h6>Date: {DATE}</h6>'+
@@ -155,7 +174,7 @@ LidarViewer.prototype.makeMap = function() {
   this.overlays = {
     "Future Acquisitions": this.futurestatus
     , "Most Recent Acquisitions": this.currentstatus
-    ,"Counties": this.countyoverlay
+    , "Counties": this.countyoverlay
     , "Watersheds": this.watershedoverlay
   }
 
@@ -239,15 +258,16 @@ LidarViewer.prototype.addControls = function() {
     + '<div class="section-title">Tools</div>'
     + '<div class="section-content">'
     + '<div class="opacity-control">'
-    + '<div class="layer-name">Opacity</div>'
+    + '<div class="layer-name">Lidar Opacity</div>'
     + '<input type="range" name="points" min="0" max="100"'
     + ' class="opacity-slider" value="100">'
     + '</div>'
-    + '<div class="addressControl"><div class="row">'
+    + '<div class="addressControl">'
+    + '<div class="layer-name">Address Search</div><div class="row">'
     + '<div class="col-lg-12">'
     + '<div class="input-group">'
     + '<input type="text" class="form-control" '
-    + 'id="geocode-input" placeholder="Address Search">'
+    + 'id="geocode-input" placeholder="1101 Camden Ave">'
     + '<span class="input-group-btn">'
     + '<button type="submit" class="geocode btn btn-default" type="button">Search</button>'
     + '</span>'
@@ -264,6 +284,7 @@ LidarViewer.prototype.addControls = function() {
     + '<div class="instructions"><ul>'
     + '<li>Click anywhere on the map to identify elevation.</li>'
     + '<li>Elevation units represent bare earth values.</li>'
+    + '<li><a href="http://lidar.salisbury.edu/ArcGIS/rest/services/">Services Directory</a></li>'
     + '</ul></div>'
 
   options += instructions_menu_section
@@ -359,7 +380,7 @@ LidarViewer.prototype.identifyContent = function (latlng, next) {
         var content = '<table class="table table-condensed table-bordered result">'
           + '<tr><td><strong>Elevation</strong></td><td> '
           + '<span class="elevationm"><img src="img/ajax.gif"></span></td></tr>'
-          + '<tr><td><strong>Lat, Lng</strong></td><td> '
+          + '<tr><td><strong>Lat, Long</strong></td><td> '
           + latlng.lat.toFixed(3) + ', ' + latlng.lng.toFixed(3) + '</td></tr>'
           + '<tr><td><strong>County</strong></td><td> '
           + metadata["County"] + '</td></tr>'
@@ -385,13 +406,18 @@ LidarViewer.prototype.identifyContent = function (latlng, next) {
 }
 
 LidarViewer.prototype.getMetadataFromPoint = function (point) {
-  var results = leafletPip.pointInLayer(point, this.countylayer)
-  if (results.length) {
-    var countyname = results[0].feature.properties.name
-    for (var i = 0; i < this.metadata.length; i++) {
-      if (this.metadata[i].County === countyname) {
-        return this.metadata[i]
+  var inMaryland = leafletPip.pointInLayer(point, this.mdbuffer)
+  if(inMaryland.length) {
+    var results = leafletPip.pointInLayer(point, this.countylayer)
+    if (results.length) {
+      var countyname = results[0].feature.properties.COUNTY
+      for (var i = 0; i < this.metadata.length; i++) {
+        if (this.metadata[i].County === countyname) {
+          return this.metadata[i]
+        }
       }
+    } else {
+      return false
     }
   } else {
     return false
