@@ -24,6 +24,7 @@ function LidarViewer() {
 
 LidarViewer.prototype.load = function() {
   var self = this
+  $.ajaxSetup({ cache: false })
   async.parallel([
     function(next) {
       $.getJSON('data/mdcnty.geojson', function(res) {
@@ -63,6 +64,7 @@ LidarViewer.prototype.load = function() {
     }
   ]
   , function(err, res) {
+    $.ajaxSetup({ cache: true })
     self.makeMap()
   })
 }
