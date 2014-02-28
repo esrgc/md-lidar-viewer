@@ -27,7 +27,7 @@ LidarViewer.prototype.load = function() {
   $.ajaxSetup({ cache: false })
   async.parallel([
     function(next) {
-      $.getJSON('data/mdcnty.geojson', function(res) {
+      $.getJSON('data/mdcntybuffer.geojson', function(res) {
         self.mdcnty = res
         next(null)
       })
@@ -92,8 +92,8 @@ LidarViewer.prototype.makeMap = function() {
     "Gray": gray
     , "World Imagery": world_imagery
     , "World Imagery with Labels": mapboxsat
-    , 'iMap 6 Inch Imagerny': imap_6in
-    , 'iMap 6 Inch CIR Imagerny': imap_6in_cir
+    , 'iMap 6 Inch Imagery': imap_6in
+    , 'iMap 6 Inch CIR Imagery': imap_6in_cir
   }
 
   this.countylayer = L.geoJson(this.mdcnty, { style: this.polystyle })
@@ -412,7 +412,7 @@ LidarViewer.prototype.getMetadataFromPoint = function (point) {
   if(inMaryland.length) {
     var results = leafletPip.pointInLayer(point, this.countylayer)
     if (results.length) {
-      var countyname = results[0].feature.properties.COUNTY
+      var countyname = results[0].feature.properties.name
       for (var i = 0; i < this.metadata.length; i++) {
         if (this.metadata[i].County === countyname) {
           return this.metadata[i]
