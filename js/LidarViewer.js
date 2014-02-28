@@ -286,7 +286,7 @@ LidarViewer.prototype.addControls = function() {
     + '<div class="instructions"><ul>'
     + '<li>Click anywhere on the map to identify elevation.</li>'
     + '<li>Elevation units represent bare earth values.</li>'
-    + '<li><a href="http://lidar.salisbury.edu/ArcGIS/rest/services/">Services Directory</a></li>'
+    + '<li><a href="http://lidar.salisbury.edu/ArcGIS/rest/services/" target="_blank">Services Directory</a></li>'
     + '</ul></div>'
 
   options += instructions_menu_section
