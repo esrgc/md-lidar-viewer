@@ -6,19 +6,11 @@
 L.Control.LayersCustom = L.Control.Layers.extend({
   addTo: function (map, el) {
 		this._map = map;
-    console.log(el);
 
-		var container = this._container = this.onAdd(map),
-		    pos = this.getPosition(),
-		    corner = map._controlCorners[pos];
+		var container = this._container = this.onAdd(map);
 
 		L.DomUtil.addClass(container, 'leaflet-control');
 
-		if (pos.indexOf('bottom') !== -1) {
-			//corner.insertBefore(container, corner.firstChild);
-		} else {
-			//corner.appendChild(container);
-		}
     el.appendChild(container)
 
 		return this;
