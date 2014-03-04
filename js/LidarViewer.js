@@ -227,7 +227,7 @@ LidarViewer.prototype.addControls = function() {
   }
   lidar_menu_section += '</select></div>'
     + '<div class="layer-select">'
-    + '<div class="layer-name">County Stretched</div>'
+    + '<div class="layer-name">County Shaded Relief</div>'
     + '<select id="county-stretched" class="services">'
     + '<option value="">---</option>'
   for (var i = 0; i < self.services.stretched.length; i++) {
