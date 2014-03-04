@@ -74,7 +74,6 @@ LidarViewer.prototype.makeMap = function() {
 
   var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png')
     , world_imagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/')
-    //, gray = L.tileLayer('http://services.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}/')
     , gray = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.hd7o0kfk/{z}/{x}/{y}.png')
     , imap_6in = L.tileLayer.wms("http://mdimap.us/arcgis/services/ImageryBaseMapsEarthCover/MD.State.6InchImagery/MapServer/WMSServer", {
       layers: '0',
@@ -189,7 +188,9 @@ LidarViewer.prototype.makeMap = function() {
   })
   var hash = new L.Hash(this.map)
   this.map.setView([38.8, -77.3], 8)
-  this.map.on('click', this.identify, this)
+  this.map.on('click', function(e) {
+    self.identify(e.latlng)
+  })
 
   L.control.scale().addTo(this.map)
 
@@ -342,13 +343,13 @@ LidarViewer.prototype.addControls = function() {
   chartControl.addTo(this.map)
 }
 
-LidarViewer.prototype.identify = function(e) {
+LidarViewer.prototype.identify = function(point) {
   var self = this
-  var marker = new L.marker(e.latlng).addTo(self.map).bindPopup('<i class="fa fa-refresh fa-spin"></i>').openPopup()
-  self.identifyContent(e.latlng, function(content, service) {
+  var marker = new L.marker(point).addTo(self.map).bindPopup('<i class="fa fa-refresh fa-spin"></i>').openPopup()
+  self.identifyContent(point, function(content, service) {
     marker.getPopup().setContent(content)
     if(service) {
-      self._identifyElevation(e.latlng, service, function(elevation, err){
+      self._identifyElevation(point, service, function(elevation, err){
         var elevation_display = ''
         if(err) {
           elevation_display = 'Error loading elevation data'
@@ -542,14 +543,7 @@ LidarViewer.prototype.geocodeSubmit = function() {
       $('.geocode-error').html('')
       self.map.setView(res, 13)
       var point = L.latLng(res)
-      var marker = L.marker(point)
-      self.drawnItems.addLayer(marker)
-      var popup = L.popup()
-        .setContent('<i class="fa fa-refresh fa-spin"></i>')
-      marker.bindPopup(popup).openPopup()
-      self.identifyContent(point, function(content) {
-        popup.setContent(content)
-      })
+      self.identify(point)
     } else {
       $('.geocode-error').html('<p>Address Not Found</p>')
     }
