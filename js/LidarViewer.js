@@ -213,13 +213,6 @@ LidarViewer.prototype.addControls = function() {
     + '<div class="toggle"><i class="fa fa-toggle-right"></i></div></div>'
     + '<div class="options">'
 
-  var layer_menu_section = '<div class="custom-layer-menu section">'
-    + '<div class="section-title">Base Maps and Overlays</div>'
-    + '<div class="section-content"></div>'
-    + '</div>'
-
-  options += layer_menu_section
-
   var lidar_menu_section = '<div class="section">'
     + '<div class="section-title">Lidar Layers</div>'
     + '<div class="section-content">'
@@ -255,6 +248,13 @@ LidarViewer.prototype.addControls = function() {
   lidar_menu_section += '</select></div></div>'
 
   options += lidar_menu_section
+
+  var layer_menu_section = '<div class="custom-layer-menu section">'
+    + '<div class="section-title">Base Maps and Overlays</div>'
+    + '<div class="section-content"></div>'
+    + '</div>'
+
+  options += layer_menu_section
 
   var tools_menu_section = '<div class="section">'
     + '<div class="section-title">Tools</div>'
