@@ -184,15 +184,21 @@ LidarViewer.prototype.makeMap = function() {
       gray
       , this.lidarGroup
       , this.drawnItems
-    ]
+    ],
+    zoomControl: false,
+    minZoom: 8
   })
   var hash = new L.Hash(this.map)
   this.map.setView([38.8, -77.3], 8)
+  this.map.setMaxBounds(this.map.getBounds())
   this.map.on('click', function(e) {
     self.identify(e.latlng)
   })
 
   L.control.scale().addTo(this.map)
+  L.control.zoomControlCenter({
+    center: this.map.getCenter()
+  }).addTo(this.map)
 
   this.addControls()
   $('.layerMenu').css('max-height', $(window).height()-20)
@@ -266,7 +272,7 @@ LidarViewer.prototype.addControls = function() {
     + ' class="opacity-slider" value="100">'
     + '</div>'
     + '<div class="addressControl">'
-    + '<div class="layer-name">Address Search</div><div class="row">'
+    + '<div class="layer-name">Address or Place Name Search</div><div class="row">'
     + '<div class="col-lg-12">'
     + '<div class="input-group">'
     + '<input type="text" class="form-control" '
@@ -294,12 +300,12 @@ LidarViewer.prototype.addControls = function() {
 
   var layerMenu = L.control({position: 'topright'})
   layerMenu.onAdd = function (map) {
-      var div = L.DomUtil.create('div', 'layerMenu')
-      div.className = div.className + " leaflet-control-layers"
-      div.innerHTML = options
-      div.firstChild.onmousedown = div.firstChild.ondblclick = L.DomEvent.stopPropagation
-      L.DomEvent.disableClickPropagation(div)
-      return div
+      this._div = L.DomUtil.create('div', 'layerMenu')
+      this._div.className = this._div.className + " leaflet-control-layers"
+      this._div.innerHTML = options
+      this._div.firstChild.onmousedown = this._div.firstChild.ondblclick = L.DomEvent.stopPropagation
+      L.DomEvent.disableClickPropagation(this._div)
+      return this._div
   }
   layerMenu.addTo(this.map)
   $($('#statewide option').get(1)).prop('selected', true)
@@ -308,9 +314,9 @@ LidarViewer.prototype.addControls = function() {
   var legend = L.control({position: 'bottomleft'});
 
   legend.onAdd = function (map) {
-      var div = L.DomUtil.create('div', 'info legend')
+      this._div = L.DomUtil.create('div', 'info legend')
 
-      div.innerHTML += '<div class="status-legend"></div><div class="lidar-legend"><p class="legendDesc">Elevation (m)</p>'
+      this._div.innerHTML += '<div class="status-legend"></div><div class="lidar-legend"><p class="legendDesc">Elevation (m)</p>'
         + '<img src="img/legend.jpg" alt="legend" class="legendImg" height="180px" width="30px">'
         + '<div class="legendLabel">'
         + '<p id="legendMax"></p>'
@@ -318,29 +324,28 @@ LidarViewer.prototype.addControls = function() {
         + '<p id="legendMin"></p></div>'
 
       self.updateLegend(self.services.statewide[0].service)
-
-      return div;
+      this._div.firstChild.onmousedown = this._div.firstChild.ondblclick = L.DomEvent.stopPropagation
+      L.DomEvent.disableClickPropagation(this._div)
+      return this._div;
   };
 
   legend.addTo(this.map);
 
-  var chartControl = L.control({position: 'bottomleft'})
-  chartControl.onAdd = function (map) {
-      var div = L.DomUtil.create('div', 'chartControl')
-      div.innerHTML = '<div class="line-chart"></div>'
-        + '<button type="button" class="close" aria-hidden="true">&times;'
-        + '</button>'
-      var closeButton = $('.close')
+  var maxExtentControl = L.control({position: 'topleft'})
+  maxExtentControl.onAdd = function (map) {
+      this._div = L.DomUtil.create('div', 'maxExtentControl')
+      this._div.className = this._div.className + " leaflet-control-zoom leaflet-bar"
+      this._div.innerHTML = '<a href="" href="#" title="maxExtent"><i class="fa fa-globe"></i></a>'
       L.DomEvent
-        .addListener(div, 'mousedown', function (e) {
+        .addListener(this._div, 'mousedown', function (e) {
           L.DomEvent.stopPropagation(e)
         })
-        .addListener(div, 'mousedown', function (e) {
+        .addListener(this._div, 'mousedown', function (e) {
           L.DomEvent.preventDefault(e)
         })
-      return div
+      return this._div
   }
-  chartControl.addTo(this.map)
+  //maxExtentControl.addTo(this.map)
 }
 
 LidarViewer.prototype.identify = function(point) {
