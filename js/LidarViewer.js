@@ -173,10 +173,10 @@ LidarViewer.prototype.makeMap = function() {
   })
 
   this.overlays = {
-    "Future Acquisitions": this.futurestatus
-    , "Most Recent Acquisitions": this.currentstatus
-    , "Counties": this.countyoverlay
+    "Counties": this.countyoverlay
     , "Watersheds": this.watershedoverlay
+    , "Future Acquisitions": this.futurestatus
+    , "Most Recent Acquisitions": this.currentstatus
   }
 
   this.map = new L.Map('map', {
