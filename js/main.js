@@ -66,6 +66,6 @@ $(document).ready(function(){
   })
 
   $(window).resize(function(){
-    $('.layerMenu').css('max-height', $(window).height()-20)
+    lidarViewer.resizeMenu()
   })
 })

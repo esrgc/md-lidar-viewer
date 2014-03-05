@@ -202,7 +202,7 @@ LidarViewer.prototype.makeMap = function() {
   }).addTo(this.map)
 
   this.addControls()
-  $('.layerMenu').css('max-height', $(window).height()-20)
+  this.resizeMenu()
 
   L.control.layersCustom(this.baseMaps, this.overlays, {
     collapsed: false
@@ -211,6 +211,10 @@ LidarViewer.prototype.makeMap = function() {
 
   self.activeService = self.services.statewide[0].service
   self.addServiceLayer(self.activeService, 1)
+}
+
+LidarViewer.prototype.resizeMenu = function(){
+  $('.layerMenu .options').css('max-height', $(window).height()-50)
 }
 
 LidarViewer.prototype.addControls = function() {
@@ -253,7 +257,7 @@ LidarViewer.prototype.addControls = function() {
       + self.services.slope[i].service + '">'
       + self.services.slope[i].name + '</option>'
   }
-  lidar_menu_section += '</select></div></div>'
+  lidar_menu_section += '</select></div></div></div>'
 
   options += lidar_menu_section
 
