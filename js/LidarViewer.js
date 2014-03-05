@@ -306,6 +306,12 @@ LidarViewer.prototype.addControls = function() {
       this._div.innerHTML = options
       this._div.firstChild.onmousedown = this._div.firstChild.ondblclick = L.DomEvent.stopPropagation
       L.DomEvent.disableClickPropagation(this._div)
+      L.DomEvent.addListener(this._div, 'mouseenter', function (e) {
+        self.map.scrollWheelZoom.disable()
+      })
+      L.DomEvent.addListener(this._div, 'mouseleave', function (e) {
+        self.map.scrollWheelZoom.enable()
+      })
       return this._div
   }
   layerMenu.addTo(this.map)
