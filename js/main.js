@@ -2,9 +2,11 @@
  * Author: Frank Rowe, ESRGC
  */
 
+var lidarViewer = require('./LidarViewer')
+
 $(document).ready(function(){
 
-  window.lidarViewer = new LidarViewer()
+  lidarViewer.start()
 
   $('#map').on('change', '.opacity-slider', function(e) {
     var opacity = $(this).val()/100

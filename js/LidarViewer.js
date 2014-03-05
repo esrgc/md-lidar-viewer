@@ -2,6 +2,9 @@
  * Author: Frank Rowe, ESRGC
  */
 
+var geocoder = require('./Geocoder')
+  , async = require('async')
+
 function LidarViewer() {
   this.layer = false
   this.services_base_url = 'http://lidar.salisbury.edu/ArcGIS/services/'
@@ -10,7 +13,6 @@ function LidarViewer() {
   this.identifyElevationTool = false
   this.hasLabels = true
   this.popup = new L.popup()
-  this.geocoder = new GeoCoder()
   this.lidarLayer = false
   this.lidarGroup = new L.layerGroup()
   this.drawnItems = new L.FeatureGroup()
@@ -19,10 +21,9 @@ function LidarViewer() {
     , fillOpacity: 0
     , weight: 2
   }
-  this.load()
 }
 
-LidarViewer.prototype.load = function() {
+LidarViewer.prototype.start = function() {
   var self = this
   $.ajaxSetup({ cache: false })
   async.parallel([
@@ -320,7 +321,6 @@ LidarViewer.prototype.addControls = function() {
   }
   layerMenu.addTo(this.map)
   $($('#statewide option').get(1)).prop('selected', true)
-  $('.identify').button()
 
   var legend = L.control({position: 'bottomleft'});
 
@@ -330,9 +330,9 @@ LidarViewer.prototype.addControls = function() {
       this._div.innerHTML += '<div class="status-legend"></div><div class="lidar-legend"><p class="legendDesc">Elevation (m)</p>'
         + '<img src="img/legend.jpg" alt="legend" class="legendImg" height="180px" width="30px">'
         + '<div class="legendLabel">'
-        + '<p id="legendMax"></p>'
-        + '<p id="legendMid"></p>'
-        + '<p id="legendMin"></p></div>'
+        + '<p class="legendMax"></p>'
+        + '<p class="legendMid"></p>'
+        + '<p class="legendMin"></p></div>'
 
       self.updateLegend(self.services.statewide[0].service)
       this._div.firstChild.onmousedown = this._div.firstChild.ondblclick = L.DomEvent.stopPropagation
@@ -490,9 +490,9 @@ LidarViewer.prototype.updateLegend = function (service) {
     max = max.toFixed(2)
     mid = mid.toFixed(2)
 
-    $("#legendMin").html(min)
-    $("#legendMid").html(mid)
-    $("#legendMax").html(max)
+    $(".legendMin").html(min)
+    $(".legendMid").html(mid)
+    $(".legendMax").html(max)
   }
   if(service.length == 0 || service == self.services.statewide[0].service){
     max = 1024
@@ -554,7 +554,7 @@ LidarViewer.prototype.getPixelValue = function(res) {
 LidarViewer.prototype.geocodeSubmit = function() {
   var self = this
   var term = $('#geocode-input').val()
-  self.geocoder.search(term, function(res) {
+  geocoder.search(term, function(res) {
     if (res) {
       $('.geocode-error').html('')
       self.map.setView(res, 13)
@@ -565,3 +565,5 @@ LidarViewer.prototype.geocodeSubmit = function() {
     }
   })
 }
+
+module.exports = new LidarViewer()

@@ -1,0 +1,203 @@
+html, body {
+  height: 100%;
+  width: 100%;
+}
+
+.wrap {
+  height: 100%;
+  width: 100%;
+  font-family: Tahoma, Verdana, sans-serif;
+}
+
+#map {
+  height: 100%;
+  width: 100%;
+  margin: 0 auto;
+  &:hover {
+    cursor: auto;
+  }
+}
+
+#tools {
+  margin-top: 20px;
+}
+
+.tool {
+  float: left;
+  margin-right: 20px;
+}
+
+.layerMenu {
+  background: white;
+  padding: 10px;
+  border-radius: 5px;
+  padding: 0px;
+  .options {
+    overflow-y: auto;
+    overflow-x: hidden;
+  }
+ .title {
+    overflow: hidden;
+    padding: 5px 5px 5px 5px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+   .toggle {
+      float: right;
+      font-size: 20px;
+      line-height: 20px;
+      cursor: pointer;
+      color: #000;
+    }
+    h4 {
+      float: left;
+      margin: 0px;
+    }
+  }
+  &.closed {
+    overflow: hidden;
+    .title {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      margin-bottom: 0px;
+     .toggle {
+        float: none;
+        line-height: 36px;
+      }
+    }
+  }
+  .section {
+    .section-title {
+      background: #444;
+      color: #fff;
+      border-top: 1px solid #ddd;
+      border-bottom: 1px solid #ddd;
+      padding-left: 5px;
+      font: 14px/22px Tahoma, Verdana, sans-serif;
+      font-weight: bold;
+    }
+    &:first-child .section-title {
+      border-top: 0px;
+    }
+    .section-content {
+      padding: 10px;
+    }
+  }
+  .instructions ul {
+    padding-left: 15px;
+  }
+
+  .custom-layer-menu {
+    .leaflet-control {
+      margin: 0px;
+    }
+    .leaflet-control-layers {
+      float: none;
+      box-shadow: none;
+      border-radius: 0px;
+    }
+   .leaflet-control-layers-expanded {
+      padding: 0px;
+    }
+  }
+  .layer-select {
+    padding-bottom: 5px;
+  }
+  .layer-name {
+    font-weight: bold;
+  }
+  .terrain-layer {
+    font-weight: bold;
+    padding-right: 5px;
+  }
+  .addressControl {
+    width: 250px;
+    padding-bottom:5px;
+  }
+  .geocode-error {
+    color: #D9534F;
+    font-weight: bold;
+    p {
+      margin: 5px 0 0 0;
+    }
+  }
+}
+
+.leaflet-touch .layerMenu.closed .title {
+  width: 44px;
+  height: 44px;
+}
+
+.leaflet-touch .layerMenu.closed .title .toggle {
+  line-height: 44px;
+  font-size: 24px;
+}
+
+.result p {
+  margin: 0;
+}
+
+.leaflet-top-pane {
+  pointer-events: none;
+}
+
+.legend {
+  line-height: 18px;
+  color: #555;
+  i {
+    width: 18px;
+    height: 18px;
+    float: left;
+    margin-right: 8px;
+  }
+  .status-legend {
+    display: none;
+  }
+  .legendLabel {
+    margin-left:5px;
+    float:left;
+    height:180px;
+  }
+  .legendMax {
+    float:top;
+    margin-bottom:0px;
+  }
+  .legendMin {
+    position:absolute;
+    bottom:0px;
+    margin-bottom:2px;
+  }
+  .legendMid {
+    position:absolute;
+    top:50%;
+    margin-bottom:0px;
+  }
+  .legendImg {
+    float:left;
+  }
+}
+
+
+
+.info {
+  font: 12px/1.5 "Helvetica Neue", Arial, Helvetica, sans-serif;
+  font-weight:bold;
+  padding: 6px 8px;
+  background: white;
+  background: rgba(255,255,255,1);
+  box-shadow: 0 0 15px rgba(0,0,0,0.2);
+  border-radius: 5px;
+}
+
+#map .leaflet-popup-close-button {
+  padding: 4px 0 0 0;
+  width: 24px;
+  height: 20px;
+  font: 21px/18px Tahoma, Verdana, sans-serif;
+}
+
+#map .leaflet-control-scale {
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+

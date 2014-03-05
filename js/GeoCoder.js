@@ -32,3 +32,5 @@ GeoCoder.prototype.search = function(term, next) {
       }
   })
 }
+
+module.exports = new GeoCoder()
