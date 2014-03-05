@@ -188,13 +188,14 @@ LidarViewer.prototype.makeMap = function() {
     zoomControl: false,
     minZoom: 8
   })
-  var hash = new L.Hash(this.map)
+  
   this.map.setView([38.8, -77.3], 8)
-  this.map.setMaxBounds(this.map.getBounds())
+  
   this.map.on('click', function(e) {
     self.identify(e.latlng)
   })
 
+  var hash = new L.Hash(this.map)
   L.control.scale().addTo(this.map)
   L.control.zoomControlCenter({
     center: this.map.getCenter()
