@@ -335,7 +335,7 @@ LidarViewer.prototype.addControls = function() {
     + '<div class="section-title">Notes</div>'
     + '<div class="section-content">'
     + '<div class="instructions"><ul>'
-    + '<li>Click anywhere on the map to identify elevation.</li>'
+    + '<li>Click anywhere on the map to identify values.</li>'
     + '<li>Elevation units represent bare earth values.</li>'
     + '<li><a href="http://lidar.salisbury.edu/ArcGIS/rest/services/" target="_blank">Services Directory</a></li>'
     + '</ul></div>'
@@ -399,32 +399,69 @@ LidarViewer.prototype.addControls = function() {
 
 LidarViewer.prototype.identify = function(point) {
   var self = this
-  var marker = new L.marker(point).addTo(self.map).bindPopup('<i class="fa fa-refresh fa-spin"></i>').openPopup()
-  self.identifyContent(point, function(content, service) {
-    marker.getPopup().setContent(content)
-    if(service) {
-      self._identifyElevation(point, service, function(elevation, err){
-        var elevation_display = ''
-        if(err) {
-          elevation_display = 'Error loading elevation data'
-        } else {
-          if(!parseFloat(elevation)) {
-            elevation_display = elevation
+  var marker = new L.marker(point).addTo(self.map).bindPopup('<img src="img/ajax.gif">').openPopup()
+  if(this.statewide) {
+    self.identifyContent(point, function(content) {
+      if(content) {
+        marker.getPopup().setContent(content)
+        self._identifyValue(point, function(value, err){
+          var popup_value = self.createIdentifyValueForPopup(value, err)
+          self.insertIdentifyValueIntoPopup(popup_value, marker)
+        })
+      } else {
+        marker.getPopup().setContent('No Data')
+      }
+    })
+  } else {
+    self._identifyValue(point, function(value, err){
+      if(value === 'NoData') {
+        marker.getPopup().setContent('No Data')
+      } else {
+        self.identifyContent(point, function(content) {
+          if(content) {
+            marker.getPopup().setContent(content)
+            var popup_value = self.createIdentifyValueForPopup(value, err)
+            self.insertIdentifyValueIntoPopup(popup_value, marker)
           } else {
-            var m = Math.round(parseFloat(elevation) * 100) / 100
-              , ft =  Math.round((m * 3.28084) * 100) / 100
-            m += ' m'
-            ft += ' ft'
-            elevation_display = m + '<br>' + ft
+            marker.getPopup().setContent('No Data')
           }
-        }
-        var content = $(marker.getPopup().getContent())
-        var popupContent = $('<div/>').html(content).contents()
-        $(popupContent.find('.elevationm')[0]).html(elevation_display)
-        marker.getPopup().setContent(popupContent[0].outerHTML)
-      })
+        })
+      }
+    })
+  }
+}
+
+LidarViewer.prototype.insertIdentifyValueIntoPopup = function(value, marker) {
+  var content = $(marker.getPopup().getContent())
+  var popupContent = $('<div/>').html(content).contents()
+  $(popupContent.find('.identify-value')[0]).html(value)
+  marker.getPopup().setContent(popupContent[0].outerHTML)
+}
+
+LidarViewer.prototype.createIdentifyValueForPopup = function(value, err) {
+  var self = this
+    , popup_value = ''
+  if(err) {
+    popup_value = 'Error loading data'
+  } else {
+    if(self.identifyType === 'elevation') {
+      if(!parseFloat(value)) {
+        popup_value = value
+      } else {
+        var m = Math.round(parseFloat(value) * 100) / 100
+          , ft =  Math.round((m * 3.28084) * 100) / 100
+        m += ' m'
+        ft += ' ft'
+        popup_value = m + '<br>' + ft
+      }
+    } else if(self.identifyType === 'slope') {
+      popup_value = value + '%'
+    } else if(self.identifyType === 'aspect') {
+      popup_value = value + '&deg;'
     }
-  })
+  }
+  return popup_value
+
 }
 
 LidarViewer.prototype.identifyContent = function (latlng, next) {
@@ -433,10 +470,9 @@ LidarViewer.prototype.identifyContent = function (latlng, next) {
   if(metadata) {
     for (var i = 0; i < self.services.stretched.length; i++) {
       if (metadata.County === self.services.stretched[i].name) {
-        var service = self.services.stretched[i].service
         var content = '<table class="table table-condensed table-bordered result">'
-          + '<tr><td><strong>Elevation</strong></td><td> '
-          + '<span class="elevationm"><img src="img/ajax.gif"></span></td></tr>'
+          + '<tr><td><strong>' + self.identifyType.charAt(0).toUpperCase() + self.identifyType.slice(1) + '</strong></td><td> '
+          + '<span class="identify-value"><img src="img/ajax.gif"></span></td></tr>'
           + '<tr><td><strong>Lat, Long</strong></td><td> '
           + latlng.lat.toFixed(3) + ', ' + latlng.lng.toFixed(3) + '</td></tr>'
           + '<tr><td><strong>County</strong></td><td> '
@@ -454,27 +490,32 @@ LidarViewer.prototype.identifyContent = function (latlng, next) {
               + metadata["Planned Acquisitions"] + '</td></tr>'
           }
         content += '</table>'
-        next(content, service)
+        next(content)
       }
     }
   } else {
-    next('No Data', false)
+    next(false)
   }
 }
 
 LidarViewer.prototype.getMetadataFromPoint = function (point) {
   var inMaryland = leafletPip.pointInLayer(point, this.mdbuffer)
   if(inMaryland.length) {
-    var results = leafletPip.pointInLayer(point, this.countylayer)
-    if (results.length) {
-      var countyname = results[0].feature.properties.name
-      for (var i = 0; i < this.metadata.length; i++) {
-        if (this.metadata[i].County === countyname) {
-          return this.metadata[i]
-        }
+    var countyname = ''
+    if(this.statewide) {
+      var results = leafletPip.pointInLayer(point, this.countylayer)
+      if (results.length) {
+        countyname = results[0].feature.properties.name
+      } else {
+        return false
       }
     } else {
-      return false
+      countyname = this.activeCounty
+    }
+    for (var i = 0; i < this.metadata.length; i++) {
+      if (this.metadata[i].County === countyname) {
+        return this.metadata[i]
+      }
     }
   } else {
     return false
@@ -489,7 +530,7 @@ LidarViewer.prototype.getServices = function (next) {
   })
 }
 
-LidarViewer.prototype.addServiceLayer = function (service, opacity) {
+LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
   this.lidarGroup.clearLayers()
   this.layertype = service.split('/')[2]
   var layer = {}
@@ -512,6 +553,19 @@ LidarViewer.prototype.addServiceLayer = function (service, opacity) {
   this.lidarGroup.addLayer(layer)
   this.lidarLayer = layer
   this.activeService = service
+  if(this.activeService.indexOf('statewide') >= 0) {
+    this.statewide = true
+  } else {
+    this.statewide = false
+    this.activeCounty = name
+  }
+  if(this.activeService.indexOf('slope') >= 0) {
+    this.identifyType = 'slope'
+  } else if(this.activeService.indexOf('aspect') >= 0) {
+    this.identifyType = 'aspect'
+  } else {
+    this.identifyType = 'elevation'
+  }
   this.lidarGroup.eachLayer(function(l) {
     l.bringToFront()
   })
@@ -556,8 +610,18 @@ LidarViewer.prototype.updateLegend = function (service) {
   }
 }
 
-LidarViewer.prototype._identifyElevation = function (latlng, service, next) {
+LidarViewer.prototype._identifyValue = function (latlng, next) {
   var self = this
+    , service
+  if(this.statewide){
+    for(var i = 0; i < this.services.statewide.length; i++){
+      if(this.services.statewide[i].service === this.activeService) {
+        service = this.services.statewide[i].identify
+      }
+    }
+  } else {
+    service = this.activeService
+  }
   var id_url = self.services_base_url_rest + service + '/identify'
   var data = {
     geometryType: 'esriGeometryPoint',
@@ -625,7 +689,7 @@ $(document).ready(function(){
     var service = $(this).val()
     var name = $(this).find('option:selected').text()
     var opacity = $('.opacity-slider').val()/100
-    lidarViewer.addServiceLayer(service, opacity)
+    lidarViewer.addServiceLayer(service, name, opacity)
     $('.services').not(this).each(function(idx){
       $($(this).find('option').get(0)).prop('selected', true)
     })
