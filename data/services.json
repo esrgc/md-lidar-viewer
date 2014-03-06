@@ -1,8 +1,20 @@
 {
   "statewide": [
-    {"name": "Statewide Shaded Relief", "service": "Statewide/MD_statewide_shadedRelief_m/MapServer"},
-    {"name": "Statewide Aspect", "service": "Statewide/MD_statewide_aspect_m/MapServer"},
-    {"name": "Statewide Slope", "service": "Statewide/MD_statewide_slope_m/MapServer"}
+    {
+        "name": "Statewide Shaded Relief",
+        "service": "Statewide/MD_statewide_shadedRelief_m/MapServer",
+        "identify": "Elevation/MD_statewide_demStretched_m/ImageServer"
+    },
+    {
+        "name": "Statewide Aspect",
+        "service": "Statewide/MD_statewide_aspect_m/MapServer",
+        "identify": "Elevation/MD_statewide_aspect_m/ImageServer"
+    },
+    {
+        "name": "Statewide Slope",
+        "service": "Statewide/MD_statewide_slope_m/MapServer",
+        "identify": "Elevation/MD_statewide_slope_m/ImageServer"
+    }
   ],
   "slope": [
     {"name": "Allegany", "service": "Elevation/MD_allegany_slope_m/ImageServer"},

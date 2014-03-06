@@ -17,7 +17,7 @@ $(document).ready(function(){
     var service = $(this).val()
     var name = $(this).find('option:selected').text()
     var opacity = $('.opacity-slider').val()/100
-    lidarViewer.addServiceLayer(service, opacity)
+    lidarViewer.addServiceLayer(service, name, opacity)
     $('.services').not(this).each(function(idx){
       $($(this).find('option').get(0)).prop('selected', true)
     })
