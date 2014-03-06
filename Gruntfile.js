@@ -29,7 +29,6 @@ module.exports = function(grunt) {
       },
       js: {
         src: [
-          'lib/leaflet-master/leaflet.js',
           'lib/*.js',
           'lib/bootstrap-3.0.1/js/bootstrap.min.js',
           'js/bundle.js'
