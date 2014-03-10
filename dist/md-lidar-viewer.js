@@ -439,7 +439,7 @@ Legend.prototype.showStatus = function(){
 }
 
 Legend.prototype.elevation = function(service){
-  $('.legend .lidar-legend img').attr('src', 'img/legend.JPG')
+  $('.legend .lidar-legend img').attr('src', 'img/legend.jpg')
   this.updateElevation(service)
 }
 
