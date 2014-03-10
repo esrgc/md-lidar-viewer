@@ -1,4 +1,6 @@
-{
+module.exports = {
+  "base_url" : "http://lidar.salisbury.edu/ArcGIS/services/",
+  "base_url_rest": "http://lidar.salisbury.edu/ArcGIS/rest/services/",
   "statewide": [
     {
         "name": "Statewide Shaded Relief",

@@ -3,13 +3,12 @@
  */
 
 var geocoder = require('./Geocoder')
+  , legend = require('./Legend')
+  , services = require('./services')
   , async = require('async')
 
 function LidarViewer() {
   this.layer = false
-  this.services_base_url = 'http://lidar.salisbury.edu/ArcGIS/services/'
-  this.services_base_url_rest = 'http://lidar.salisbury.edu/ArcGIS/rest/services/'
-  this.services_folder = 'Elevation'
   this.identifyElevationTool = false
   this.hasLabels = true
   this.popup = new L.popup()
@@ -42,12 +41,6 @@ LidarViewer.prototype.start = function() {
     , function(next) {
       $.getJSON('data/metadata.json', function(res) {
         self.metadata = res
-        next(null)
-      })
-    }
-    , function(next) {
-      $.getJSON('data/services.json', function(res) {
-        self.services = res
         next(null)
       })
     }
@@ -112,7 +105,6 @@ LidarViewer.prototype.makeMap = function() {
     self.watershedoverlay.bringToFront()
   })
 
-
   var template_current = '<h6>County: {COUNTY}</h6>'+
     '<h6>Date: {DATE}</h6>'+
     '<h6>Partners: {PROJ_PARTN}</h6>'+
@@ -146,12 +138,10 @@ LidarViewer.prototype.makeMap = function() {
     if(self.map.hasLayer(self.futurestatus)){
       self.futurestatus.bringToFront()
     }
-    $('.legend .lidar-legend').hide()
-    $('.legend .status-legend').show().html('<img src="img/status.png" />')
+    legend.showStatus()
   }).on('remove', function(e){
     if(!self.map.hasLayer(self.futurestatus)){
-      $('.legend .status-legend').hide()
-      $('.legend .lidar-legend').show()
+      legend.showLidar()
     }
   })
 
@@ -164,12 +154,10 @@ LidarViewer.prototype.makeMap = function() {
     }
   }).on('add', function(e){
     self.futurestatus.bringToFront()
-    $('.legend .lidar-legend').hide()
-    $('.legend .status-legend').show().html('<img src="img/status.png" />')
+    legend.showStatus()
   }).on('remove', function(e){
     if(!self.map.hasLayer(self.currentstatus)){
-      $('.legend .status-legend').hide()
-      $('.legend .lidar-legend').show()
+      legend.showLidar()
     }
   })
 
@@ -210,7 +198,7 @@ LidarViewer.prototype.makeMap = function() {
     , click: false
   }).addTo(this.map, $('.custom-layer-menu .section-content')[0])
 
-  self.activeService = self.services.statewide[0].service
+  self.activeService = services.statewide[0].service
   self.addServiceLayer(self.activeService, 1)
 }
 
@@ -233,30 +221,30 @@ LidarViewer.prototype.addControls = function() {
     + '<div class="layer-name">Statewide</div>'
     + '<select id="statewide" class="services">'
     + '<option value="">---</option>'
-  for (var i = 0; i < self.services.statewide.length; i++) {
+  for (var i = 0; i < services.statewide.length; i++) {
     lidar_menu_section += '<option value="'
-      + self.services.statewide[i].service+ '">'
-      + self.services.statewide[i].name+ '</option>'
+      + services.statewide[i].service+ '">'
+      + services.statewide[i].name+ '</option>'
   }
   lidar_menu_section += '</select></div>'
     + '<div class="layer-select">'
     + '<div class="layer-name">County Shaded Relief</div>'
     + '<select id="county-stretched" class="services">'
     + '<option value="">---</option>'
-  for (var i = 0; i < self.services.stretched.length; i++) {
+  for (var i = 0; i < services.stretched.length; i++) {
     lidar_menu_section += '<option value="'
-      + self.services.stretched[i].service + '">'
-      + self.services.stretched[i].name + '</option>'
+      + services.stretched[i].service + '">'
+      + services.stretched[i].name + '</option>'
   }
   lidar_menu_section += '</select></div>'
     + '<div class="layer-select">'
     + '<div class="layer-name">County Slope</div>'
     + '<select id="county-slope" class="services">'
     + '<option value="">---</option>'
-  for (var i = 0; i < self.services.slope.length; i++) {
+  for (var i = 0; i < services.slope.length; i++) {
     lidar_menu_section += '<option value="'
-      + self.services.slope[i].service + '">'
-      + self.services.slope[i].name + '</option>'
+      + services.slope[i].service + '">'
+      + services.slope[i].name + '</option>'
   }
   lidar_menu_section += '</select></div></div></div>'
 
@@ -299,7 +287,7 @@ LidarViewer.prototype.addControls = function() {
     + '<div class="instructions"><ul>'
     + '<li>Click anywhere on the map to identify values.</li>'
     + '<li>Elevation units represent bare earth values.</li>'
-    + '<li><a href="http://lidar.salisbury.edu/ArcGIS/rest/services/" target="_blank">Services Directory</a></li>'
+    + '<li><a href="' + services.base_url_rest + '" target="_blank">Services Directory</a></li>'
     + '</ul></div>'
 
   options += instructions_menu_section
@@ -322,41 +310,7 @@ LidarViewer.prototype.addControls = function() {
   layerMenu.addTo(this.map)
   $($('#statewide option').get(1)).prop('selected', true)
 
-  var legend = L.control({position: 'bottomleft'});
-
-  legend.onAdd = function (map) {
-      this._div = L.DomUtil.create('div', 'info legend')
-
-      this._div.innerHTML += '<div class="status-legend"></div><div class="lidar-legend"><p class="legendDesc">Elevation (m)</p>'
-        + '<img src="img/legend.jpg" alt="legend" class="legendImg" height="180px" width="30px">'
-        + '<div class="legendLabel">'
-        + '<p class="legendMax"></p>'
-        + '<p class="legendMid"></p>'
-        + '<p class="legendMin"></p></div>'
-
-      self.updateLegend(self.services.statewide[0].service)
-      this._div.firstChild.onmousedown = this._div.firstChild.ondblclick = L.DomEvent.stopPropagation
-      L.DomEvent.disableClickPropagation(this._div)
-      return this._div;
-  };
-
-  legend.addTo(this.map);
-
-  var maxExtentControl = L.control({position: 'topleft'})
-  maxExtentControl.onAdd = function (map) {
-      this._div = L.DomUtil.create('div', 'maxExtentControl')
-      this._div.className = this._div.className + " leaflet-control-zoom leaflet-bar"
-      this._div.innerHTML = '<a href="" href="#" title="maxExtent"><i class="fa fa-globe"></i></a>'
-      L.DomEvent
-        .addListener(this._div, 'mousedown', function (e) {
-          L.DomEvent.stopPropagation(e)
-        })
-        .addListener(this._div, 'mousedown', function (e) {
-          L.DomEvent.preventDefault(e)
-        })
-      return this._div
-  }
-  //maxExtentControl.addTo(this.map)
+  legend.legendControl.addTo(this.map);
 }
 
 LidarViewer.prototype.identify = function(point) {
@@ -423,15 +377,14 @@ LidarViewer.prototype.createIdentifyValueForPopup = function(value, err) {
     }
   }
   return popup_value
-
 }
 
 LidarViewer.prototype.identifyContent = function (latlng, next) {
   var self = this
   var metadata = self.getMetadataFromPoint(latlng)
   if(metadata) {
-    for (var i = 0; i < self.services.stretched.length; i++) {
-      if (metadata.County === self.services.stretched[i].name) {
+    for (var i = 0; i < services.stretched.length; i++) {
+      if (metadata.County === services.stretched[i].name) {
         var content = '<table class="table table-condensed table-bordered result">'
           + '<tr><td><strong>' + self.identifyType.charAt(0).toUpperCase() + self.identifyType.slice(1) + '</strong></td><td> '
           + '<span class="identify-value"><img src="img/ajax.gif"></span></td></tr>'
@@ -484,20 +437,12 @@ LidarViewer.prototype.getMetadataFromPoint = function (point) {
   }
 }
 
-LidarViewer.prototype.getServices = function (next) {
-  var self = this
-  $.getJSON('data/services.json', function(res) {
-    self.services = res
-    self.addControls()
-  })
-}
-
 LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
   this.lidarGroup.clearLayers()
   this.layertype = service.split('/')[2]
   var layer = {}
   if (this.layertype === 'ImageServer') {
-    layer = L.tileLayer.wms(this.services_base_url + service + "/WMSServer", {
+    layer = L.tileLayer.wms(services._base_url + service + "/WMSServer", {
       layers: service.split('/')[1]
       , format: 'image/png'
       , transparent: true
@@ -506,12 +451,11 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
       , pane: 'overlayPane'
     })
   } else if (this.layertype === 'MapServer') {
-    layer = L.tileLayer(this.services_base_url_rest + service + '/tile/{z}/{y}/{x}/', {
+    layer = L.tileLayer(services.base_url_rest + service + '/tile/{z}/{y}/{x}/', {
       pane: 'overlayPane',
       errorTileUrl: 'img/emptytile.png'
     })
   }
-  this.updateLegend(service)
   this.lidarGroup.addLayer(layer)
   this.lidarLayer = layer
   this.activeService = service
@@ -523,9 +467,12 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
   }
   if(this.activeService.indexOf('slope') >= 0) {
     this.identifyType = 'slope'
+    legend.slope()
   } else if(this.activeService.indexOf('aspect') >= 0) {
     this.identifyType = 'aspect'
+    legend.aspect()
   } else {
+    legend.elevation(service)
     this.identifyType = 'elevation'
   }
   this.lidarGroup.eachLayer(function(l) {
@@ -533,58 +480,19 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
   })
 }
 
-LidarViewer.prototype.updateLegend = function (service) {
-  var self = this
-  var max, min, mid
-
-  var update = function(min, max) {
-    mid = (min+max)/2.0
-
-    min = min.toFixed(2)
-    max = max.toFixed(2)
-    mid = mid.toFixed(2)
-
-    $(".legendMin").html(min)
-    $(".legendMid").html(mid)
-    $(".legendMax").html(max)
-  }
-  if(service.length == 0 || service == self.services.statewide[0].service){
-    max = 1024
-    min = -51
-    update(min, max)
-  } else {
-    if(service.search("Stretched") >= 0 || service.search("shadedRelief") >= 0){
-      $('.legend').css("visibility", "visible")
-
-      url = self.services_base_url_rest
-        + service
-        + '?f=pjson'
-
-      $.getJSON(url, function(res) {
-        min = res.minValues[0]
-        max = res.maxValues[0]
-        update(min, max)
-      })
-    }
-    else{
-      $('.legend').css("visibility", "hidden")
-    }
-  }
-}
-
 LidarViewer.prototype._identifyValue = function (latlng, next) {
   var self = this
     , service
   if(this.statewide){
-    for(var i = 0; i < this.services.statewide.length; i++){
-      if(this.services.statewide[i].service === this.activeService) {
-        service = this.services.statewide[i].identify
+    for(var i = 0; i < services.statewide.length; i++){
+      if(services.statewide[i].service === this.activeService) {
+        service = services.statewide[i].identify
       }
     }
   } else {
     service = this.activeService
   }
-  var id_url = self.services_base_url_rest + service + '/identify'
+  var id_url = services.base_url_rest + service + '/identify'
   var data = {
     geometryType: 'esriGeometryPoint',
     geometry:'{"x":' + latlng.lng + ',"y":' + latlng.lat + ',"spatialReference":{"wkid":4265}}',
