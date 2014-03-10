@@ -52,7 +52,7 @@ module.exports = function(grunt) {
       },
       browserify: {
         files: ['js/*.js', '!js/bundle.js'],
-        tasks: ['browserify', 'concat', 'uglify']
+        tasks: ['browserify']
       },
       css: {
         files: 'css/*.less',
