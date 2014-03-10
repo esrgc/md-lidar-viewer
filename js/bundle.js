@@ -325,8 +325,24 @@ LidarViewer.prototype.makeMap = function() {
   
   this.map.setView([38.8, -77.3], 8)
   
+  self.clicked = false
   this.map.on('click', function(e) {
-    self.identify(e.latlng)
+    if(self.clicked) {
+      self.clicked = false
+      return false
+    } else {
+      self.clicked = true
+      setTimeout(function(){
+        if(self.clicked) {
+          self.identify(e.latlng)
+          self.clicked = false
+        } 
+      }, 400)
+    }
+  })
+
+  this.map.on('dblclick', function(e){
+    return false
   })
 
   var hash = new L.Hash(this.map)
