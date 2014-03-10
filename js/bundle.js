@@ -459,48 +459,50 @@ LidarViewer.prototype.getMetadataFromPoint = function (point) {
 
 LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
   this.lidarGroup.clearLayers()
-  this.layertype = service.split('/')[2]
-  var layer = {}
-  if (this.layertype === 'ImageServer') {
-    layer = L.tileLayer.wms(services._base_url + service + "/WMSServer", {
-      layers: service.split('/')[1]
-      , format: 'image/png'
-      , transparent: true
-      , attribution: "ESRGC"
-      , opacity : opacity
-      , pane: 'overlayPane'
+  if(service) {
+    this.layertype = service.split('/')[2]
+    var layer = {}
+    if (this.layertype === 'ImageServer') {
+      layer = L.tileLayer.wms(services._base_url + service + "/WMSServer", {
+        layers: service.split('/')[1]
+        , format: 'image/png'
+        , transparent: true
+        , attribution: "ESRGC"
+        , opacity : opacity
+        , pane: 'overlayPane'
+      })
+    } else if (this.layertype === 'MapServer') {
+      layer = L.tileLayer(services.base_url_rest + service + '/tile/{z}/{y}/{x}/', {
+        pane: 'overlayPane',
+        errorTileUrl: 'img/emptytile.png'
+      })
+    }
+    this.lidarGroup.addLayer(layer)
+    this.lidarLayer = layer
+    this.activeService = service
+    if(this.activeService.indexOf('statewide') >= 0) {
+      this.statewide = true
+    } else {
+      this.statewide = false
+      this.activeCounty = name
+    }
+    if(this.activeService.indexOf('slope') >= 0) {
+      this.identifyType = 'slope'
+      legend.slope()
+    } else if(this.activeService.indexOf('aspect') >= 0) {
+      this.identifyType = 'aspect'
+      legend.aspect()
+    } else if(this.activeService.indexOf('hillshade') >= 0) {
+      this.identifyType = 'hillshade'
+      legend.hillshade()
+    } else {
+      legend.elevation(service)
+      this.identifyType = 'elevation'
+    }
+    this.lidarGroup.eachLayer(function(l) {
+      l.bringToFront()
     })
-  } else if (this.layertype === 'MapServer') {
-    layer = L.tileLayer(services.base_url_rest + service + '/tile/{z}/{y}/{x}/', {
-      pane: 'overlayPane',
-      errorTileUrl: 'img/emptytile.png'
-    })
   }
-  this.lidarGroup.addLayer(layer)
-  this.lidarLayer = layer
-  this.activeService = service
-  if(this.activeService.indexOf('statewide') >= 0) {
-    this.statewide = true
-  } else {
-    this.statewide = false
-    this.activeCounty = name
-  }
-  if(this.activeService.indexOf('slope') >= 0) {
-    this.identifyType = 'slope'
-    legend.slope()
-  } else if(this.activeService.indexOf('aspect') >= 0) {
-    this.identifyType = 'aspect'
-    legend.aspect()
-  } else if(this.activeService.indexOf('hillshade') >= 0) {
-    this.identifyType = 'hillshade'
-    legend.hillshade()
-  } else {
-    legend.elevation(service)
-    this.identifyType = 'elevation'
-  }
-  this.lidarGroup.eachLayer(function(l) {
-    l.bringToFront()
-  })
 }
 
 LidarViewer.prototype._identifyValue = function (latlng, next) {
