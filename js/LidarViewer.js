@@ -4,6 +4,7 @@
 
 var geocoder = require('./Geocoder')
   , legend = require('./Legend')
+  , menu = require('./Menu')
   , services = require('./services')
   , async = require('async')
 
@@ -189,9 +190,11 @@ LidarViewer.prototype.makeMap = function() {
   L.control.zoomControlCenter({
     center: this.map.getCenter()
   }).addTo(this.map)
-
-  this.addControls()
-  this.resizeMenu()
+  menu.lidarViewer = this
+  menu.menuControl.addTo(this.map)
+  menu.addEventListeners()
+  menu.resizeMenu()
+  legend.legendControl.addTo(this.map)
 
   L.control.layersCustom(this.baseMaps, this.overlays, {
     collapsed: false
@@ -200,117 +203,6 @@ LidarViewer.prototype.makeMap = function() {
 
   self.activeService = services.statewide[0].service
   self.addServiceLayer(self.activeService, 1)
-}
-
-LidarViewer.prototype.resizeMenu = function(){
-  $('.layerMenu .options').css('max-height', $(window).height()-50)
-}
-
-LidarViewer.prototype.addControls = function() {
-  var self = this
-  var options = ''
-
-  options += '<div class="title"><h4>MD Lidar Viewer</h4>'
-    + '<div class="toggle"><i class="fa fa-toggle-right"></i></div></div>'
-    + '<div class="options">'
-
-  var lidar_menu_section = '<div class="section">'
-    + '<div class="section-title">Lidar Layers</div>'
-    + '<div class="section-content">'
-    + '<div class="layer-select">'
-    + '<div class="layer-name">Statewide</div>'
-    + '<select id="statewide" class="services">'
-    + '<option value="">---</option>'
-  for (var i = 0; i < services.statewide.length; i++) {
-    lidar_menu_section += '<option value="'
-      + services.statewide[i].service+ '">'
-      + services.statewide[i].name+ '</option>'
-  }
-  lidar_menu_section += '</select></div>'
-    + '<div class="layer-select">'
-    + '<div class="layer-name">County Shaded Relief</div>'
-    + '<select id="county-stretched" class="services">'
-    + '<option value="">---</option>'
-  for (var i = 0; i < services.stretched.length; i++) {
-    lidar_menu_section += '<option value="'
-      + services.stretched[i].service + '">'
-      + services.stretched[i].name + '</option>'
-  }
-  lidar_menu_section += '</select></div>'
-    + '<div class="layer-select">'
-    + '<div class="layer-name">County Slope</div>'
-    + '<select id="county-slope" class="services">'
-    + '<option value="">---</option>'
-  for (var i = 0; i < services.slope.length; i++) {
-    lidar_menu_section += '<option value="'
-      + services.slope[i].service + '">'
-      + services.slope[i].name + '</option>'
-  }
-  lidar_menu_section += '</select></div></div></div>'
-
-  options += lidar_menu_section
-
-  var layer_menu_section = '<div class="custom-layer-menu section">'
-    + '<div class="section-title">Base Maps and Overlays</div>'
-    + '<div class="section-content"></div>'
-    + '</div>'
-
-  options += layer_menu_section
-
-  var tools_menu_section = '<div class="section">'
-    + '<div class="section-title">Tools</div>'
-    + '<div class="section-content">'
-    + '<div class="opacity-control">'
-    + '<div class="layer-name">Lidar Opacity</div>'
-    + '<input type="range" name="points" min="0" max="100"'
-    + ' class="opacity-slider" value="100">'
-    + '</div>'
-    + '<div class="addressControl">'
-    + '<div class="layer-name">Address or Place Name Search</div><div class="row">'
-    + '<div class="col-lg-12">'
-    + '<div class="input-group">'
-    + '<input type="text" class="form-control" '
-    + 'id="geocode-input" placeholder="1101 Camden Ave">'
-    + '<span class="input-group-btn">'
-    + '<button type="submit" class="geocode btn btn-default" type="button">Search</button>'
-    + '</span>'
-    + '</div></div></div>'
-    + '<div class="row"><div class="col-lg-12">'
-    + '<div class="geocode-error"></div>'
-    + '</div></div></div></div>'
-
-  options += tools_menu_section
-
-  var instructions_menu_section = '<div class="section">'
-    + '<div class="section-title">Notes</div>'
-    + '<div class="section-content">'
-    + '<div class="instructions"><ul>'
-    + '<li>Click anywhere on the map to identify values.</li>'
-    + '<li>Elevation units represent bare earth values.</li>'
-    + '<li><a href="' + services.base_url_rest + '" target="_blank">Services Directory</a></li>'
-    + '</ul></div>'
-
-  options += instructions_menu_section
-
-  var layerMenu = L.control({position: 'topright'})
-  layerMenu.onAdd = function (map) {
-      this._div = L.DomUtil.create('div', 'layerMenu')
-      this._div.className = this._div.className + " leaflet-control-layers"
-      this._div.innerHTML = options
-      this._div.firstChild.onmousedown = this._div.firstChild.ondblclick = L.DomEvent.stopPropagation
-      L.DomEvent.disableClickPropagation(this._div)
-      L.DomEvent.addListener(this._div, 'mouseenter', function (e) {
-        self.map.scrollWheelZoom.disable()
-      })
-      L.DomEvent.addListener(this._div, 'mouseleave', function (e) {
-        self.map.scrollWheelZoom.enable()
-      })
-      return this._div
-  }
-  layerMenu.addTo(this.map)
-  $($('#statewide option').get(1)).prop('selected', true)
-
-  legend.legendControl.addTo(this.map);
 }
 
 LidarViewer.prototype.identify = function(point) {
