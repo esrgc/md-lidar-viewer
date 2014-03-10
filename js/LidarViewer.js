@@ -7,6 +7,7 @@ var geocoder = require('./Geocoder')
   , menu = require('./Menu')
   , services = require('./services')
   , async = require('async')
+  , Mustache = require('mustache')
 
 function LidarViewer() {
   this.layer = false
@@ -48,6 +49,12 @@ LidarViewer.prototype.start = function() {
     , function(next) {
       $.getJSON('data/currentstatus.geojson', function(res) {
         self.currentstatusgeojson = res
+        next(null)
+      })
+    }
+    , function(next) {
+      $.get('templates/identifyPopup.html', function(res) {
+        self.identifyPopupTemplate = res
         next(null)
       })
     }
@@ -277,26 +284,10 @@ LidarViewer.prototype.identifyContent = function (latlng, next) {
   if(metadata) {
     for (var i = 0; i < services.stretched.length; i++) {
       if (metadata.County === services.stretched[i].name) {
-        var content = '<table class="table table-condensed table-bordered result">'
-          + '<tr><td><strong>' + self.identifyType.charAt(0).toUpperCase() + self.identifyType.slice(1) + '</strong></td><td> '
-          + '<span class="identify-value"><img src="img/ajax.gif"></span></td></tr>'
-          + '<tr><td><strong>Lat, Long</strong></td><td> '
-          + latlng.lat.toFixed(3) + ', ' + latlng.lng.toFixed(3) + '</td></tr>'
-          + '<tr><td><strong>County</strong></td><td> '
-          + metadata["County"] + '</td></tr>'
-          + '<tr><td><strong>Date</strong></td><td> '
-          + metadata["Date"] + '</td></tr>'
-          + '<tr><td><strong>Vertical Accuracy</strong></td><td> '
-          + metadata["Vertical Accuracy"] + '</td></tr>'
-          + '<tr><td><strong>Vertical Datum</strong></td><td> '
-          + metadata["Vertical Datum"] + '</td></tr>'
-          + '<tr><td><strong>Project Partners</strong></td><td> '
-          + metadata["Project Partners"] + '</td></tr>'
-          if (metadata["Planned Acquisitions"]) {
-            content += '<tr><td><strong>Planned Acquisitions</strong></td><td> '
-              + metadata["Planned Acquisitions"] + '</td></tr>'
-          }
-        content += '</table>'
+        metadata.identifyType = self.identifyType.charAt(0).toUpperCase() + self.identifyType.slice(1)
+        metadata.lat = latlng.lat.toFixed(3)
+        metadata.lng = latlng.lng.toFixed(3)
+        var content = Mustache.render(self.identifyPopupTemplate, metadata)
         next(content)
       }
     }
@@ -363,6 +354,9 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
   } else if(this.activeService.indexOf('aspect') >= 0) {
     this.identifyType = 'aspect'
     legend.aspect()
+  } else if(this.activeService.indexOf('hillshade') >= 0) {
+    this.identifyType = 'hillshade'
+    legend.hillshade()
   } else {
     legend.elevation(service)
     this.identifyType = 'elevation'

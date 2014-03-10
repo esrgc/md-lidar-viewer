@@ -444,7 +444,7 @@ Legend.prototype.elevation = function(service){
 }
 
 Legend.prototype.slope = function(){
-  $('.legend .lidar-legend img').attr('src', 'img/SlopeColorRamp.JPG')
+  $('.legend .lidar-legend img').attr('src', 'img/SlopeColorRamp.jpg')
   $(this.legendControl._div).find('.legendDesc').html('Slope (Percent Rise)')
   $(this.legendControl._div).find('.legendMin').html('0')
   $(this.legendControl._div).find('.legendMid').html('')
@@ -452,11 +452,15 @@ Legend.prototype.slope = function(){
 }
 
 Legend.prototype.aspect = function(){
-  $('.legend .lidar-legend img').attr('src', 'img/AspectColorRamp.JPG')
+  $('.legend .lidar-legend img').attr('src', 'img/AspectColorRamp.jpg')
   $(this.legendControl._div).find('.legendDesc').html('Aspect (Azimuth)')
   $(this.legendControl._div).find('.legendMin').html('0')
   $(this.legendControl._div).find('.legendMid').html('')
   $(this.legendControl._div).find('.legendMax').html('360')
+}
+
+Legend.prototype.hillshade = function(){
+
 }
 
 Legend.prototype.updateElevation = function (service) {
@@ -510,6 +514,7 @@ var geocoder = require('./Geocoder')
   , menu = require('./Menu')
   , services = require('./services')
   , async = require('async')
+  , Mustache = require('mustache')
 
 function LidarViewer() {
   this.layer = false
@@ -551,6 +556,12 @@ LidarViewer.prototype.start = function() {
     , function(next) {
       $.getJSON('data/currentstatus.geojson', function(res) {
         self.currentstatusgeojson = res
+        next(null)
+      })
+    }
+    , function(next) {
+      $.get('templates/identifyPopup.html', function(res) {
+        self.identifyPopupTemplate = res
         next(null)
       })
     }
@@ -780,26 +791,10 @@ LidarViewer.prototype.identifyContent = function (latlng, next) {
   if(metadata) {
     for (var i = 0; i < services.stretched.length; i++) {
       if (metadata.County === services.stretched[i].name) {
-        var content = '<table class="table table-condensed table-bordered result">'
-          + '<tr><td><strong>' + self.identifyType.charAt(0).toUpperCase() + self.identifyType.slice(1) + '</strong></td><td> '
-          + '<span class="identify-value"><img src="img/ajax.gif"></span></td></tr>'
-          + '<tr><td><strong>Lat, Long</strong></td><td> '
-          + latlng.lat.toFixed(3) + ', ' + latlng.lng.toFixed(3) + '</td></tr>'
-          + '<tr><td><strong>County</strong></td><td> '
-          + metadata["County"] + '</td></tr>'
-          + '<tr><td><strong>Date</strong></td><td> '
-          + metadata["Date"] + '</td></tr>'
-          + '<tr><td><strong>Vertical Accuracy</strong></td><td> '
-          + metadata["Vertical Accuracy"] + '</td></tr>'
-          + '<tr><td><strong>Vertical Datum</strong></td><td> '
-          + metadata["Vertical Datum"] + '</td></tr>'
-          + '<tr><td><strong>Project Partners</strong></td><td> '
-          + metadata["Project Partners"] + '</td></tr>'
-          if (metadata["Planned Acquisitions"]) {
-            content += '<tr><td><strong>Planned Acquisitions</strong></td><td> '
-              + metadata["Planned Acquisitions"] + '</td></tr>'
-          }
-        content += '</table>'
+        metadata.identifyType = self.identifyType.charAt(0).toUpperCase() + self.identifyType.slice(1)
+        metadata.lat = latlng.lat.toFixed(3)
+        metadata.lng = latlng.lng.toFixed(3)
+        var content = Mustache.render(self.identifyPopupTemplate, metadata)
         next(content)
       }
     }
@@ -866,6 +861,9 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
   } else if(this.activeService.indexOf('aspect') >= 0) {
     this.identifyType = 'aspect'
     legend.aspect()
+  } else if(this.activeService.indexOf('hillshade') >= 0) {
+    this.identifyType = 'hillshade'
+    legend.hillshade()
   } else {
     legend.elevation(service)
     this.identifyType = 'elevation'
@@ -934,7 +932,7 @@ LidarViewer.prototype.geocodeSubmit = function() {
 }
 
 module.exports = new LidarViewer()
-},{"./Geocoder":1,"./Legend":2,"./Menu":4,"./services":6,"async":7}],4:[function(require,module,exports){
+},{"./Geocoder":1,"./Legend":2,"./Menu":4,"./services":6,"async":7,"mustache":9}],4:[function(require,module,exports){
 var Mustache = require('mustache')
   , services = require('./services')
 
@@ -1041,19 +1039,24 @@ module.exports = {
   "base_url_rest": "http://lidar.salisbury.edu/ArcGIS/rest/services/",
   "statewide": [
     {
-        "name": "Statewide Shaded Relief",
-        "service": "Statewide/MD_statewide_shadedRelief_m/MapServer",
-        "identify": "Elevation/MD_statewide_demStretched_m/ImageServer"
+      "name": "Statewide Shaded Relief",
+      "service": "Statewide/MD_statewide_shadedRelief_m/MapServer",
+      "identify": "Elevation/MD_statewide_demStretched_m/ImageServer"
     },
     {
-        "name": "Statewide Aspect",
-        "service": "Statewide/MD_statewide_aspect_m/MapServer",
-        "identify": "Elevation/MD_statewide_aspect_m/ImageServer"
+      "name": "Statewide Aspect",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_statewide_aspect_m/ImageServer"
     },
     {
-        "name": "Statewide Slope",
-        "service": "Statewide/MD_statewide_slope_m/MapServer",
-        "identify": "Elevation/MD_statewide_slope_m/ImageServer"
+      "name": "Statewide Slope",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_statewide_slope_m/ImageServer"
+    },
+    {
+      "name": "Statewide Hillshade",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_statewide_demStretched_m/ImageServer"
     }
   ],
   "slope": [

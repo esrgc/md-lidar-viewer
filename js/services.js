@@ -3,19 +3,24 @@ module.exports = {
   "base_url_rest": "http://lidar.salisbury.edu/ArcGIS/rest/services/",
   "statewide": [
     {
-        "name": "Statewide Shaded Relief",
-        "service": "Statewide/MD_statewide_shadedRelief_m/MapServer",
-        "identify": "Elevation/MD_statewide_demStretched_m/ImageServer"
+      "name": "Statewide Shaded Relief",
+      "service": "Statewide/MD_statewide_shadedRelief_m/MapServer",
+      "identify": "Elevation/MD_statewide_demStretched_m/ImageServer"
     },
     {
-        "name": "Statewide Aspect",
-        "service": "Statewide/MD_statewide_aspect_m/MapServer",
-        "identify": "Elevation/MD_statewide_aspect_m/ImageServer"
+      "name": "Statewide Aspect",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_statewide_aspect_m/ImageServer"
     },
     {
-        "name": "Statewide Slope",
-        "service": "Statewide/MD_statewide_slope_m/MapServer",
-        "identify": "Elevation/MD_statewide_slope_m/ImageServer"
+      "name": "Statewide Slope",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_statewide_slope_m/ImageServer"
+    },
+    {
+      "name": "Statewide Hillshade",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_statewide_demStretched_m/ImageServer"
     }
   ],
   "slope": [

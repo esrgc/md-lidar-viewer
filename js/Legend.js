@@ -36,7 +36,7 @@ Legend.prototype.elevation = function(service){
 }
 
 Legend.prototype.slope = function(){
-  $('.legend .lidar-legend img').attr('src', 'img/SlopeColorRamp.JPG')
+  $('.legend .lidar-legend img').attr('src', 'img/SlopeColorRamp.jpg')
   $(this.legendControl._div).find('.legendDesc').html('Slope (Percent Rise)')
   $(this.legendControl._div).find('.legendMin').html('0')
   $(this.legendControl._div).find('.legendMid').html('')
@@ -44,11 +44,15 @@ Legend.prototype.slope = function(){
 }
 
 Legend.prototype.aspect = function(){
-  $('.legend .lidar-legend img').attr('src', 'img/AspectColorRamp.JPG')
+  $('.legend .lidar-legend img').attr('src', 'img/AspectColorRamp.jpg')
   $(this.legendControl._div).find('.legendDesc').html('Aspect (Azimuth)')
   $(this.legendControl._div).find('.legendMin').html('0')
   $(this.legendControl._div).find('.legendMid').html('')
   $(this.legendControl._div).find('.legendMax').html('360')
+}
+
+Legend.prototype.hillshade = function(){
+
 }
 
 Legend.prototype.updateElevation = function (service) {
