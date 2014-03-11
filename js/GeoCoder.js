@@ -2,7 +2,7 @@
  * Author: Frank Rowe, ESRGC
  */
 
- function GeoCoder() {
+function GeoCoder() {
   this.url = 'http://mdimap.us/ArcGIS/rest/services/'
     + 'GeocodeServices/MD.State.MDCascadingLocatorWithZIPCodes/GeocodeServer/'
     + 'findAddressCandidates'
@@ -20,16 +20,16 @@ GeoCoder.prototype.search = function(term, next) {
     , data: query
     , url : this.url
     , success: function(res) {
-        if (res.candidates.length) {
-          var latlng = [
-            res.candidates[0].location.y
-            , res.candidates[0].location.x
-          ]
-          next(latlng)
-        } else {
-          next(false)
-        }
+      if (res.candidates.length) {
+        var latlng = [
+          res.candidates[0].location.y
+          , res.candidates[0].location.x
+        ]
+        next(latlng)
+      } else {
+        next(false)
       }
+    }
   })
 }
 
