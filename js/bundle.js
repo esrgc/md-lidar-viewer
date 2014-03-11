@@ -51,7 +51,7 @@ Legend.prototype.create = function(template) {
   this.legendControl.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info legend')
     this._div.innerHTML += template
-    self.elevation(services.statewide[0].service)
+    //self.elevation(services.statewide[0].identify)
     this._div.firstChild.onmousedown = this._div.firstChild.ondblclick = L.DomEvent.stopPropagation
     L.DomEvent.disableClickPropagation(this._div)
     return this._div;
@@ -68,12 +68,26 @@ Legend.prototype.showStatus = function(){
   $('.legend .status-legend').show().html('<img src="img/status.png" />')
 }
 
+Legend.prototype.update = function(type, service) {
+  if(type == 'elevation') {
+    this.elevation(service)
+  } else if (type === 'slope') {
+    this.slope()
+  } else if (type === 'aspect') {
+    this.aspect()
+  } else if (type === 'hillshade') {
+    this.hillshade
+  }
+}
+
 Legend.prototype.elevation = function(service){
+  $('.legend').show()
   $('.legend .lidar-legend img').attr('src', 'img/legend.jpg')
   this.updateElevation(service)
 }
 
 Legend.prototype.slope = function(){
+  $('.legend').show()
   $('.legend .lidar-legend img').attr('src', 'img/SlopeColorRamp.jpg')
   $(this.legendControl._div).find('.legendDesc').html('Slope (Percent Rise)')
   $(this.legendControl._div).find('.legendMin').html('0')
@@ -82,6 +96,7 @@ Legend.prototype.slope = function(){
 }
 
 Legend.prototype.aspect = function(){
+  $('.legend').show()
   $('.legend .lidar-legend img').attr('src', 'img/AspectColorRamp.jpg')
   $(this.legendControl._div).find('.legendDesc').html('Aspect (Azimuth)')
   $(this.legendControl._div).find('.legendMin').html('0')
@@ -90,13 +105,12 @@ Legend.prototype.aspect = function(){
 }
 
 Legend.prototype.hillshade = function(){
-
+  $('.legend').hide()
 }
 
 Legend.prototype.updateElevation = function (service) {
   var self = this
   var max, min, mid
-
   var update = function(min, max) {
     mid = (min+max)/2.0
 
@@ -109,27 +123,22 @@ Legend.prototype.updateElevation = function (service) {
     $(self.legendControl._div).find('.legendMid').html(mid)
     $(self.legendControl._div).find('.legendMax').html(max)
   }
-  if(service.length == 0 || service == services.statewide[0].service){
+  if(service.length == 0 || service == services.statewide[0].identify){
     max = 1024
     min = -51
     update(min, max)
   } else {
-    if(service.search("Stretched") >= 0 || service.search("shadedRelief") >= 0){
-      $('.legend').css("visibility", "visible")
+    $('.legend').css("visibility", "visible")
 
-      url = self.services_base_url_rest
-        + service
-        + '?f=pjson'
+    url = services.base_url_rest
+      + service
+      + '?f=pjson'
 
-      $.getJSON(url, function(res) {
-        min = res.minValues[0]
-        max = res.maxValues[0]
-        update(min, max)
-      })
-    }
-    else{
-      $('.legend').css("visibility", "hidden")
-    }
+    $.getJSON(url, function(res) {
+      min = res.minValues[0]
+      max = res.maxValues[0]
+      update(min, max)
+    })
   }
 }
 
@@ -154,6 +163,8 @@ function LidarViewer() {
   this.lidarLayer = false
   this.lidarGroup = new L.layerGroup()
   this.drawnItems = new L.FeatureGroup()
+  this.center = [38.8, -77.3]
+  this.startZoom = 8
   this.polystyle = {
     color: '#333'
     , fillOpacity: 0
@@ -323,7 +334,7 @@ LidarViewer.prototype.makeMap = function() {
     minZoom: 8
   })
   
-  this.map.setView([38.8, -77.3], 8)
+  this.map.setView(this.center, this.startZoom, {animate: false})
   
   self.clicked = false
   this.map.on('click', function(e) {
@@ -362,7 +373,7 @@ LidarViewer.prototype.makeMap = function() {
   }).addTo(this.map, $('.custom-layer-menu .section-content')[0])
 
   self.activeService = services.statewide[0].service
-  self.addServiceLayer(self.activeService, 1)
+  self.addServiceLayer(this.activeService, services.statewide[0].name, 1)
 }
 
 LidarViewer.prototype.identify = function(point) {
@@ -435,8 +446,8 @@ LidarViewer.prototype.identifyContent = function (latlng, next) {
   var self = this
   var metadata = self.getMetadataFromPoint(latlng)
   if(metadata) {
-    for (var i = 0; i < services.stretched.length; i++) {
-      if (metadata.County === services.stretched[i].name) {
+    for (var i = 0; i < services.elevation.length; i++) {
+      if (metadata.County === services.elevation[i].name) {
         metadata.identifyType = self.identifyType.charAt(0).toUpperCase() + self.identifyType.slice(1)
         metadata.lat = latlng.lat.toFixed(3)
         metadata.lng = latlng.lng.toFixed(3)
@@ -497,44 +508,64 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
     this.lidarGroup.addLayer(layer)
     this.lidarLayer = layer
     this.activeService = service
-    if(this.activeService.indexOf('statewide') >= 0) {
-      this.statewide = true
-    } else {
-      this.statewide = false
-      this.activeCounty = name
-    }
-    if(this.activeService.indexOf('slope') >= 0) {
-      this.identifyType = 'slope'
-      legend.slope()
-    } else if(this.activeService.indexOf('aspect') >= 0) {
-      this.identifyType = 'aspect'
-      legend.aspect()
-    } else if(this.activeService.indexOf('hillshade') >= 0) {
-      this.identifyType = 'hillshade'
-      legend.hillshade()
-    } else {
-      legend.elevation(service)
-      this.identifyType = 'elevation'
-    }
+    this.identifyService = this.setIdentifyService(name)
+    legend.update(this.identifyType, this.identifyService)
     this.lidarGroup.eachLayer(function(l) {
       l.bringToFront()
     })
   }
 }
 
-LidarViewer.prototype._identifyValue = function (latlng, next) {
+LidarViewer.prototype.zoomToCounty = function(name) {
   var self = this
-    , service
+  this.countylayer.eachLayer(function(layer){
+    if(layer.feature.properties.name === name){
+      self.map.fitBounds(layer.getBounds(), { animate: false })
+    }
+  })
+}
+
+LidarViewer.prototype.zoomToState = function(name) {
+  this.map.setView(this.center, this.startZoom, {animate: false})
+}
+
+LidarViewer.prototype.setIdentifyService = function(name) {
+  if(name.indexOf('Statewide') >= 0) {
+    this.statewide = true
+    this.zoomToState()
+  } else {
+    this.statewide = false
+    this.activeCounty = name
+    this.zoomToCounty(name)
+  }
+  if(this.activeService.indexOf('slope') >= 0) {
+    this.identifyType = 'slope'
+  } else if(this.activeService.indexOf('aspect') >= 0) {
+    this.identifyType = 'aspect'
+  } else if(this.activeService.indexOf('hillshade') >= 0) {
+    this.identifyType = 'hillshade'
+  } else {
+    this.identifyType = 'elevation'
+  }
   if(this.statewide){
     for(var i = 0; i < services.statewide.length; i++){
-      if(services.statewide[i].service === this.activeService) {
-        service = services.statewide[i].identify
+      if(services.statewide[i].name === name) {
+        return services.statewide[i].identify
       }
     }
   } else {
-    service = this.activeService
+    for(var i = 0; i < services[this.identifyType].length; i++){
+      if(services[this.identifyType][i].name === name) {
+        return services[this.identifyType][i].identify
+      }
+    }
   }
-  var id_url = services.base_url_rest + service + '/identify'
+}
+
+LidarViewer.prototype._identifyValue = function (latlng, next) {
+  var self = this
+    , service
+  var id_url = services.base_url_rest + self.identifyService + '/identify'
   var data = {
     geometryType: 'esriGeometryPoint',
     geometry:'{"x":' + latlng.lng + ',"y":' + latlng.lat + ',"spatialReference":{"wkid":4265}}',
@@ -623,7 +654,7 @@ Menu.prototype.addEventListeners = function() {
     min: 0,
     max: 100,
     value: 100,
-    slide: function( event, ui ) {
+    slide: function(event, ui) {
       var opacity = ui.value/100
       self.lidarViewer.lidarLayer.setOpacity(opacity)
     }
@@ -637,7 +668,6 @@ Menu.prototype.addEventListeners = function() {
     var service = $(this).val()
     var name = $(this).find('option:selected').text()
     var opacity = $('.opacity-slider').slider('value')/100
-    console.log(opacity)
     self.lidarViewer.addServiceLayer(service, name, opacity)
     $('.services').not(this).each(function(idx){
       $($(this).find('option').get(0)).prop('selected', true)
@@ -696,7 +726,7 @@ module.exports = {
     {
       "name": "Statewide Shaded Relief",
       "service": "Statewide/MD_statewide_shadedRelief_m/MapServer",
-      "identify": "Elevation/MD_statewide_demStretched_m/ImageServer"
+      "identify": "Elevation/MD_statewide_dem_m/ImageServer"
     },
     {
       "name": "Statewide Aspect",
@@ -711,62 +741,516 @@ module.exports = {
     {
       "name": "Statewide Hillshade",
       "service": "Statewide/MD_statewide_hillshade_m/MapServer",
-      "identify": "Elevation/MD_statewide_demStretched_m/ImageServer"
+      "identify": "Elevation/MD_statewide_dem_m/ImageServer"
     }
   ],
   "slope": [
-    {"name": "Allegany", "service": "Elevation/MD_allegany_slope_m/ImageServer"},
-    {"name": "Anne Arundel", "service": "Elevation/MD_annearundel_slope_m/ImageServer"},
-    {"name": "Baltimore", "service": "Elevation/MD_baltimore_slope_m/ImageServer"},
-    {"name": "Baltimore City", "service": "Elevation/MD_baltimorecity_slope_m/ImageServer"},
-    {"name": "Calvert", "service": "Elevation/MD_calvert_slope_m/ImageServer"},
-    {"name": "Caroline", "service": "Elevation/MD_caroline_slope_m/ImageServer"},
-    {"name": "Carroll", "service": "Elevation/MD_carroll_slope_m/ImageServer"},
-    {"name": "Cecil", "service": "Elevation/MD_cecil_slope_m/ImageServer"},
-    {"name": "Charles", "service": "Elevation/MD_charles_slope_m/ImageServer"},
-    {"name": "Dorchester", "service": "Elevation/MD_dorchester_slope_m/ImageServer"},
-    {"name": "Frederick", "service": "Elevation/MD_frederick_slope_m/ImageServer"},
-    {"name": "Garrett", "service": "Elevation/MD_garrett_slope_m/ImageServer"},
-    {"name": "Harford", "service": "Elevation/MD_harford_slope_m/ImageServer"},
-    {"name": "Howard", "service": "Elevation/MD_howard_slope_m/ImageServer"},
-    {"name": "Kent", "service": "Elevation/MD_kent_slope_m/ImageServer"},
-    {"name": "Montgomery", "service": "Elevation/MD_montgomery_slope_m/ImageServer"},
-    {"name": "Prince George's", "service": "Elevation/MD_princegeorges_slope_m/ImageServer"},
-    {"name": "Queen Anne's", "service": "Elevation/MD_queenannes_slope_m/ImageServer"},
-    {"name": "Somerset", "service": "Elevation/MD_somerset_slope_m/ImageServer"},
-    {"name": "St. Mary's", "service": "Elevation/MD_stmarys_slope_m/ImageServer"},
-    {"name": "Talbot", "service": "Elevation/MD_talbot_slope_m/ImageServer"},
-    {"name": "Washington", "service": "Elevation/MD_washington_slope_m/ImageServer"},
-    {"name": "Washington, D.C.", "service": "Elevation/MD_washingtonDC_slope_m/ImageServer"},
-    {"name": "Wicomico", "service": "Elevation/MD_wicomico_slope_m/ImageServer"},
-    {"name": "Worcester", "service": "Elevation/MD_worcester_slope_m/ImageServer"}
+    {
+      "name": "Allegany",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_allegany_slope_m/ImageServer"
+    },
+    {
+      "name": "Anne Arundel",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_annearundel_slope_m/ImageServer"
+    },
+    {
+      "name": "Baltimore",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_baltimore_slope_m/ImageServer"
+    },
+    {
+      "name": "Baltimore City",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_baltimorecity_slope_m/ImageServer"
+    },
+    {
+      "name": "Calvert",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_calvert_slope_m/ImageServer"
+    },
+    {
+      "name": "Caroline",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_caroline_slope_m/ImageServer"
+    },
+    {
+      "name": "Carroll",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_carroll_slope_m/ImageServer"
+    },
+    {
+      "name": "Cecil",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_cecil_slope_m/ImageServer"
+    },
+    {
+      "name": "Charles",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_charles_slope_m/ImageServer"
+    },
+    {
+      "name": "Dorchester",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_dorchester_slope_m/ImageServer"
+    },
+    {
+      "name": "Frederick",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_frederick_slope_m/ImageServer"
+    },
+    {
+      "name": "Garrett",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_garrett_slope_m/ImageServer"
+    },
+    {
+      "name": "Harford",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_harford_slope_m/ImageServer"
+    },
+    {
+      "name": "Howard",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_howard_slope_m/ImageServer"
+    },
+    {
+      "name": "Kent",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_kent_slope_m/ImageServer"
+    },
+    {
+      "name": "Montgomery",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_montgomery_slope_m/ImageServer"
+    },
+    {
+      "name": "Prince George's",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_princegeorges_slope_m/ImageServer"
+    },
+    {
+      "name": "Queen Anne's",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_queenannes_slope_m/ImageServer"
+    },
+    {
+      "name": "Somerset",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_somerset_slope_m/ImageServer"
+    },
+    {
+      "name": "St. Mary's",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_stmarys_slope_m/ImageServer"
+    },
+    {
+      "name": "Talbot",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_talbot_slope_m/ImageServer"
+    },
+    {
+      "name": "Washington",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_washington_slope_m/ImageServer"
+    },
+    {
+      "name": "Washington, D.C.",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_washingtonDC_slope_m/ImageServer"
+    },
+    {
+      "name": "Wicomico",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_wicomico_slope_m/ImageServer"
+    },
+    {
+      "name": "Worcester",
+      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "identify": "Elevation/MD_worcester_slope_m/ImageServer"
+    }
   ],
-  "stretched": [
-    {"name": "Allegany", "service": "Elevation/MD_allegany_demStretched_m/ImageServer"},
-    {"name": "Anne Arundel", "service": "Elevation/MD_annearundel_demStretched_m/ImageServer"},
-    {"name": "Baltimore", "service": "Elevation/MD_baltimore_demStretched_m/ImageServer"},
-    {"name": "Baltimore City", "service": "Elevation/MD_baltimorecity_demStretched_m/ImageServer"},
-    {"name": "Calvert", "service": "Elevation/MD_calvert_demStretched_m/ImageServer"},
-    {"name": "Caroline", "service": "Elevation/MD_caroline_demStretched_m/ImageServer"},
-    {"name": "Carroll", "service": "Elevation/MD_carroll_demStretched_m/ImageServer"},
-    {"name": "Cecil", "service": "Elevation/MD_cecil_demStretched_m/ImageServer"},
-    {"name": "Charles", "service": "Elevation/MD_charles_demStretched_m/ImageServer"},
-    {"name": "Dorchester", "service": "Elevation/MD_dorchester_demStretched_m/ImageServer"},
-    {"name": "Frederick", "service": "Elevation/MD_frederick_demStretched_m/ImageServer"},
-    {"name": "Garrett", "service": "Elevation/MD_garrett_demStretched_m/ImageServer"},
-    {"name": "Harford", "service": "Elevation/MD_harford_demStretched_m/ImageServer"},
-    {"name": "Howard", "service": "Elevation/MD_howard_demStretched_m/ImageServer"},
-    {"name": "Kent", "service": "Elevation/MD_kent_demStretched_m/ImageServer"},
-    {"name": "Montgomery", "service": "Elevation/MD_montgomery_demStretched_m/ImageServer"},
-    {"name": "Prince George's", "service": "Elevation/MD_princegeorges_demStretched_m/ImageServer"},
-    {"name": "Queen Anne's", "service": "Elevation/MD_queenannes_demStretched_m/ImageServer"},
-    {"name": "Somerset", "service": "Elevation/MD_somerset_demStretched_m/ImageServer"},
-    {"name": "St. Mary's", "service": "Elevation/MD_stmarys_demStretched_m/ImageServer"},
-    {"name": "Talbot", "service": "Elevation/MD_talbot_demStretched_m/ImageServer"},
-    {"name": "Washington", "service": "Elevation/MD_washington_demStretched_m/ImageServer"},
-    {"name": "Washington, D.C.", "service": "Elevation/MD_washingtonDC_demStretched_m/ImageServer"},
-    {"name": "Wicomico", "service": "Elevation/MD_wicomico_demStretched_m/ImageServer"},
-    {"name": "Worcester", "service": "Elevation/MD_worcester_demStretched_m/ImageServer"}
+  "elevation": [
+    {
+      "name": "Allegany",
+      "service": "ShadedRelief/MD_allegany_shadedRelief/MapServer",
+      "identify": "Elevation/MD_allegany_dem_m/ImageServer"
+    },
+    {
+      "name": "Anne Arundel",
+      "service": "ShadedRelief/MD_annearundel_shadedRelief",
+      "identify": "Elevation/MD_annearundel_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Baltimore",
+      "service": "ShadedRelief/MD_baltimore_shadedRelief/MapServer",
+      "identify": "Elevation/MD_baltimore_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Baltimore City",
+      "service": "ShadedRelief/MD_baltimorecity_shadedRelief/MapServer",
+      "identify": "Elevation/MD_baltimorecity_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Calvert",
+      "service": "ShadedRelief/MD_calvert_shadedRelief/MapServer",
+      "identify": "Elevation/MD_calvert_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Caroline",
+      "service": "ShadedRelief/MD_caroline_shadedRelief/MapServer",
+      "identify": "Elevation/MD_caroline_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Carroll",
+      "service": "ShadedRelief/MD_carroll_shadedRelief/MapServer",
+      "identify": "Elevation/MD_carroll_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Cecil",
+      "service": "Elevation/MD_cecil_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_cecil_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Charles",
+      "service": "Elevation/MD_charles_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_charles_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Dorchester",
+      "service": "Elevation/MD_dorchester_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_dorchester_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Frederick",
+      "service": "Elevation/MD_frederick_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_frederick_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Garrett",
+      "service": "Elevation/MD_garrett_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_garrett_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Harford",
+      "service": "Elevation/MD_harford_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_harford_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Howard",
+      "service": "Elevation/MD_howard_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_howard_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Kent",
+      "service": "Elevation/MD_kent_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_kent_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Montgomery",
+      "service": "Elevation/MD_montgomery_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_montgomery_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Prince George's",
+      "service": "Elevation/MD_princegeorges_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_princegeorges_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Queen Anne's",
+      "service": "Elevation/MD_queenannes_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_queenannes_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Somerset",
+      "service": "Elevation/MD_somerset_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_somerset_demStretched_m/ImageServer"
+    },
+    {
+      "name": "St. Mary's",
+      "service": "Elevation/MD_stmarys_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_stmarys_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Talbot",
+      "service": "Elevation/MD_talbot_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_talbot_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Washington",
+      "service": "Elevation/MD_washington_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_washington_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Washington, D.C.",
+      "service": "Elevation/MD_washingtonDC_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_washingtonDC_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Wicomico",
+      "service": "Elevation/MD_wicomico_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_wicomico_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Worcester",
+      "service": "Elevation/MD_worcester_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_worcester_demStretched_m/ImageServer"
+    }
+  ],
+  "aspect": [
+    {
+      "name": "Allegany",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_allegany_aspect_m/ImageServer"
+    },
+    {
+      "name": "Anne Arundel",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_annearundel_aspect_m/ImageServer"
+    },
+    {
+      "name": "Baltimore",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_baltimore_aspect_m/ImageServer"
+    },
+    {
+      "name": "Baltimore City",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_baltimorecity_aspect_m/ImageServer"
+    },
+    {
+      "name": "Calvert",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_calvert_aspect_m/ImageServer"
+    },
+    {
+      "name": "Caroline",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_caroline_aspect_m/ImageServer"
+    },
+    {
+      "name": "Carroll",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_carroll_aspect_m/ImageServer"
+    },
+    {
+      "name": "Cecil",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_cecil_aspect_m/ImageServer"
+    },
+    {
+      "name": "Charles",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_charles_aspect_m/ImageServer"
+    },
+    {
+      "name": "Dorchester",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_dorchester_aspect_m/ImageServer"
+    },
+    {
+      "name": "Frederick",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_frederick_aspect_m/ImageServer"
+    },
+    {
+      "name": "Garrett",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_garrett_aspect_m/ImageServer"
+    },
+    {
+      "name": "Harford",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_harford_aspect_m/ImageServer"
+    },
+    {
+      "name": "Howard",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_howard_aspect_m/ImageServer"
+    },
+    {
+      "name": "Kent",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_kent_aspect_m/ImageServer"
+    },
+    {
+      "name": "Montgomery",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_montgomery_aspect_m/ImageServer"
+    },
+    {
+      "name": "Prince George's",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_princegeorges_aspect_m/ImageServer"
+    },
+    {
+      "name": "Queen Anne's",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_queenannes_aspect_m/ImageServer"
+    },
+    {
+      "name": "Somerset",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_somerset_aspect_m/ImageServer"
+    },
+    {
+      "name": "St. Mary's",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_stmarys_aspect_m/ImageServer"
+    },
+    {
+      "name": "Talbot",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_talbot_aspect_m/ImageServer"
+    },
+    {
+      "name": "Washington",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_washington_aspect_m/ImageServer"
+    },
+    {
+      "name": "Washington, D.C.",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_washingtonDC_aspect_m/ImageServer"
+    },
+    {
+      "name": "Wicomico",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_wicomico_aspect_m/ImageServer"
+    },
+    {
+      "name": "Worcester",
+      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "identify": "Elevation/MD_worcester_aspect_m/ImageServer"
+    }
+  ],
+  "hillshade": [
+    {
+      "name": "Allegany",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_allegany_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Anne Arundel",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_annearundel_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Baltimore",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_baltimore_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Baltimore City",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_baltimorecity_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Calvert",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_calvert_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Caroline",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_caroline_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Carroll",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_carroll_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Cecil",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_cecil_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Charles",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_charles_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Dorchester",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_dorchester_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Frederick",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_frederick_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Garrett",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_garrett_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Harford",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_harford_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Howard",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_howard_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Kent",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_kent_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Montgomery",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_montgomery_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Prince George's",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_princegeorges_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Queen Anne's",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_queenannes_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Somerset",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_somerset_hillshade_m/ImageServer"
+    },
+    {
+      "name": "St. Mary's",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_stmarys_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Talbot",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_talbot_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Washington",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_washington_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Washington, D.C.",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_washingtonDC_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Wicomico",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_wicomico_hillshade_m/ImageServer"
+    },
+    {
+      "name": "Worcester",
+      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "identify": "Elevation/MD_worcester_hillshade_m/ImageServer"
+    }
   ]
 }
 

@@ -17,6 +17,8 @@ function LidarViewer() {
   this.lidarLayer = false
   this.lidarGroup = new L.layerGroup()
   this.drawnItems = new L.FeatureGroup()
+  this.center = [38.8, -77.3]
+  this.startZoom = 8
   this.polystyle = {
     color: '#333'
     , fillOpacity: 0
@@ -186,7 +188,7 @@ LidarViewer.prototype.makeMap = function() {
     minZoom: 8
   })
   
-  this.map.setView([38.8, -77.3], 8)
+  this.map.setView(this.center, this.startZoom, {animate: false})
   
   self.clicked = false
   this.map.on('click', function(e) {
@@ -225,7 +227,7 @@ LidarViewer.prototype.makeMap = function() {
   }).addTo(this.map, $('.custom-layer-menu .section-content')[0])
 
   self.activeService = services.statewide[0].service
-  self.addServiceLayer(self.activeService, 1)
+  self.addServiceLayer(this.activeService, services.statewide[0].name, 1)
 }
 
 LidarViewer.prototype.identify = function(point) {
@@ -298,8 +300,8 @@ LidarViewer.prototype.identifyContent = function (latlng, next) {
   var self = this
   var metadata = self.getMetadataFromPoint(latlng)
   if(metadata) {
-    for (var i = 0; i < services.stretched.length; i++) {
-      if (metadata.County === services.stretched[i].name) {
+    for (var i = 0; i < services.elevation.length; i++) {
+      if (metadata.County === services.elevation[i].name) {
         metadata.identifyType = self.identifyType.charAt(0).toUpperCase() + self.identifyType.slice(1)
         metadata.lat = latlng.lat.toFixed(3)
         metadata.lng = latlng.lng.toFixed(3)
@@ -360,44 +362,64 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
     this.lidarGroup.addLayer(layer)
     this.lidarLayer = layer
     this.activeService = service
-    if(this.activeService.indexOf('statewide') >= 0) {
-      this.statewide = true
-    } else {
-      this.statewide = false
-      this.activeCounty = name
-    }
-    if(this.activeService.indexOf('slope') >= 0) {
-      this.identifyType = 'slope'
-      legend.slope()
-    } else if(this.activeService.indexOf('aspect') >= 0) {
-      this.identifyType = 'aspect'
-      legend.aspect()
-    } else if(this.activeService.indexOf('hillshade') >= 0) {
-      this.identifyType = 'hillshade'
-      legend.hillshade()
-    } else {
-      legend.elevation(service)
-      this.identifyType = 'elevation'
-    }
+    this.identifyService = this.setIdentifyService(name)
+    legend.update(this.identifyType, this.identifyService)
     this.lidarGroup.eachLayer(function(l) {
       l.bringToFront()
     })
   }
 }
 
-LidarViewer.prototype._identifyValue = function (latlng, next) {
+LidarViewer.prototype.zoomToCounty = function(name) {
   var self = this
-    , service
+  this.countylayer.eachLayer(function(layer){
+    if(layer.feature.properties.name === name){
+      self.map.fitBounds(layer.getBounds(), { animate: false })
+    }
+  })
+}
+
+LidarViewer.prototype.zoomToState = function(name) {
+  this.map.setView(this.center, this.startZoom, {animate: false})
+}
+
+LidarViewer.prototype.setIdentifyService = function(name) {
+  if(name.indexOf('Statewide') >= 0) {
+    this.statewide = true
+    this.zoomToState()
+  } else {
+    this.statewide = false
+    this.activeCounty = name
+    this.zoomToCounty(name)
+  }
+  if(this.activeService.indexOf('slope') >= 0) {
+    this.identifyType = 'slope'
+  } else if(this.activeService.indexOf('aspect') >= 0) {
+    this.identifyType = 'aspect'
+  } else if(this.activeService.indexOf('hillshade') >= 0) {
+    this.identifyType = 'hillshade'
+  } else {
+    this.identifyType = 'elevation'
+  }
   if(this.statewide){
     for(var i = 0; i < services.statewide.length; i++){
-      if(services.statewide[i].service === this.activeService) {
-        service = services.statewide[i].identify
+      if(services.statewide[i].name === name) {
+        return services.statewide[i].identify
       }
     }
   } else {
-    service = this.activeService
+    for(var i = 0; i < services[this.identifyType].length; i++){
+      if(services[this.identifyType][i].name === name) {
+        return services[this.identifyType][i].identify
+      }
+    }
   }
-  var id_url = services.base_url_rest + service + '/identify'
+}
+
+LidarViewer.prototype._identifyValue = function (latlng, next) {
+  var self = this
+    , service
+  var id_url = services.base_url_rest + self.identifyService + '/identify'
   var data = {
     geometryType: 'esriGeometryPoint',
     geometry:'{"x":' + latlng.lng + ',"y":' + latlng.lat + ',"spatialReference":{"wkid":4265}}',

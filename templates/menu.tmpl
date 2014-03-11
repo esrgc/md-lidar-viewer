@@ -21,9 +21,9 @@
         <div class="layer-name">County Shaded Relief</div>
         <select id="county-stretched" class="services">
           <option value="">---</option>
-          {{#stretched}}
+          {{#elevation}}
           <option value="{{service}}">{{name}}</option>
-          {{/stretched}}
+          {{/elevation}}
         </select>
       </div>
       <div class="layer-select">
@@ -33,6 +33,24 @@
           {{#slope}}
           <option value="{{service}}">{{name}}</option>
           {{/slope}}
+        </select>
+      </div>
+      <div class="layer-select">
+        <div class="layer-name">County Aspect</div>
+        <select id="county-aspect" class="services">
+          <option value="">---</option>
+          {{#aspect}}
+          <option value="{{service}}">{{name}}</option>
+          {{/aspect}}
+        </select>
+      </div>
+      <div class="layer-select">
+        <div class="layer-name">County Hillshade</div>
+        <select id="county-hillshade" class="services">
+          <option value="">---</option>
+          {{#hillshade}}
+          <option value="{{service}}">{{name}}</option>
+          {{/hillshade}}
         </select>
       </div>
     </div>

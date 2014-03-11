@@ -39,7 +39,7 @@ Menu.prototype.addEventListeners = function() {
     min: 0,
     max: 100,
     value: 100,
-    slide: function( event, ui ) {
+    slide: function(event, ui) {
       var opacity = ui.value/100
       self.lidarViewer.lidarLayer.setOpacity(opacity)
     }
@@ -53,7 +53,6 @@ Menu.prototype.addEventListeners = function() {
     var service = $(this).val()
     var name = $(this).find('option:selected').text()
     var opacity = $('.opacity-slider').slider('value')/100
-    console.log(opacity)
     self.lidarViewer.addServiceLayer(service, name, opacity)
     $('.services').not(this).each(function(idx){
       $($(this).find('option').get(0)).prop('selected', true)

@@ -13,7 +13,7 @@ Legend.prototype.create = function(template) {
   this.legendControl.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info legend')
     this._div.innerHTML += template
-    self.elevation(services.statewide[0].service)
+    //self.elevation(services.statewide[0].identify)
     this._div.firstChild.onmousedown = this._div.firstChild.ondblclick = L.DomEvent.stopPropagation
     L.DomEvent.disableClickPropagation(this._div)
     return this._div;
@@ -30,12 +30,26 @@ Legend.prototype.showStatus = function(){
   $('.legend .status-legend').show().html('<img src="img/status.png" />')
 }
 
+Legend.prototype.update = function(type, service) {
+  if(type == 'elevation') {
+    this.elevation(service)
+  } else if (type === 'slope') {
+    this.slope()
+  } else if (type === 'aspect') {
+    this.aspect()
+  } else if (type === 'hillshade') {
+    this.hillshade
+  }
+}
+
 Legend.prototype.elevation = function(service){
+  $('.legend').show()
   $('.legend .lidar-legend img').attr('src', 'img/legend.jpg')
   this.updateElevation(service)
 }
 
 Legend.prototype.slope = function(){
+  $('.legend').show()
   $('.legend .lidar-legend img').attr('src', 'img/SlopeColorRamp.jpg')
   $(this.legendControl._div).find('.legendDesc').html('Slope (Percent Rise)')
   $(this.legendControl._div).find('.legendMin').html('0')
@@ -44,6 +58,7 @@ Legend.prototype.slope = function(){
 }
 
 Legend.prototype.aspect = function(){
+  $('.legend').show()
   $('.legend .lidar-legend img').attr('src', 'img/AspectColorRamp.jpg')
   $(this.legendControl._div).find('.legendDesc').html('Aspect (Azimuth)')
   $(this.legendControl._div).find('.legendMin').html('0')
@@ -52,13 +67,12 @@ Legend.prototype.aspect = function(){
 }
 
 Legend.prototype.hillshade = function(){
-
+  $('.legend').hide()
 }
 
 Legend.prototype.updateElevation = function (service) {
   var self = this
   var max, min, mid
-
   var update = function(min, max) {
     mid = (min+max)/2.0
 
@@ -71,27 +85,22 @@ Legend.prototype.updateElevation = function (service) {
     $(self.legendControl._div).find('.legendMid').html(mid)
     $(self.legendControl._div).find('.legendMax').html(max)
   }
-  if(service.length == 0 || service == services.statewide[0].service){
+  if(service.length == 0 || service == services.statewide[0].identify){
     max = 1024
     min = -51
     update(min, max)
   } else {
-    if(service.search("Stretched") >= 0 || service.search("shadedRelief") >= 0){
-      $('.legend').css("visibility", "visible")
+    $('.legend').css("visibility", "visible")
 
-      url = self.services_base_url_rest
-        + service
-        + '?f=pjson'
+    url = services.base_url_rest
+      + service
+      + '?f=pjson'
 
-      $.getJSON(url, function(res) {
-        min = res.minValues[0]
-        max = res.maxValues[0]
-        update(min, max)
-      })
-    }
-    else{
-      $('.legend').css("visibility", "hidden")
-    }
+    $.getJSON(url, function(res) {
+      min = res.minValues[0]
+      max = res.maxValues[0]
+      update(min, max)
+    })
   }
 }
 
