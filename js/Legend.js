@@ -2,17 +2,17 @@ var services = require('./services')
 
 function Legend() {
   var self = this
+  $.get('templates/legend.tmpl', function(res){
+    self.create(res)
+  })
+}
+
+Legend.prototype.create = function(template) {
+  var self = this
   this.legendControl = L.control({position: 'bottomleft'})
   this.legendControl.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info legend')
-
-    this._div.innerHTML += '<div class="status-legend"></div><div class="lidar-legend"><p class="legendDesc">Elevation (m)</p>'
-      + '<img src="img/legend.jpg" alt="legend" class="legendImg" height="180px" width="30px">'
-      + '<div class="legendLabel">'
-      + '<p class="legendMax"></p>'
-      + '<p class="legendMid"></p>'
-      + '<p class="legendMin"></p></div>'
-
+    this._div.innerHTML += template
     self.elevation(services.statewide[0].service)
     this._div.firstChild.onmousedown = this._div.firstChild.ondblclick = L.DomEvent.stopPropagation
     L.DomEvent.disableClickPropagation(this._div)
