@@ -479,7 +479,7 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
     this.layertype = service.split('/')[2]
     var layer = {}
     if (this.layertype === 'ImageServer') {
-      layer = L.tileLayer.wms(services._base_url + service + "/WMSServer", {
+      layer = L.tileLayer.wms(services.base_url + service + "/WMSServer", {
         layers: service.split('/')[1]
         , format: 'image/png'
         , transparent: true

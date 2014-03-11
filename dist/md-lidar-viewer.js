@@ -1,4 +1,4 @@
-/*! md-lidar-viewer - v0.0.1 - 2014-03-10
+/*! md-lidar-viewer - v0.0.1 - 2014-03-11
 * https://github.com/esrgc/md-lidar-viewer
 * Copyright (c) 2014 ; Licensed  */
 L.Control.LayersCustom = L.Control.Layers.extend({
@@ -849,7 +849,7 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
     this.layertype = service.split('/')[2]
     var layer = {}
     if (this.layertype === 'ImageServer') {
-      layer = L.tileLayer.wms(services._base_url + service + "/WMSServer", {
+      layer = L.tileLayer.wms(services.base_url + service + "/WMSServer", {
         layers: service.split('/')[1]
         , format: 'image/png'
         , transparent: true
