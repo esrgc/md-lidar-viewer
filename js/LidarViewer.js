@@ -353,7 +353,8 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
     } else if (this.layertype === 'MapServer') {
       layer = L.tileLayer(services.base_url_rest + service + '/tile/{z}/{y}/{x}/', {
         pane: 'overlayPane',
-        errorTileUrl: 'img/emptytile.png'
+        errorTileUrl: 'img/emptytile.png',
+        opacity: opacity
       })
     }
     this.lidarGroup.addLayer(layer)

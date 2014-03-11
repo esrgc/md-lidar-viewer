@@ -3,7 +3,7 @@
  * Author: Frank Rowe, ESRGC
  */
 
- function GeoCoder() {
+function GeoCoder() {
   this.url = 'http://mdimap.us/ArcGIS/rest/services/'
     + 'GeocodeServices/MD.State.MDCascadingLocatorWithZIPCodes/GeocodeServer/'
     + 'findAddressCandidates'
@@ -21,16 +21,16 @@ GeoCoder.prototype.search = function(term, next) {
     , data: query
     , url : this.url
     , success: function(res) {
-        if (res.candidates.length) {
-          var latlng = [
-            res.candidates[0].location.y
-            , res.candidates[0].location.x
-          ]
-          next(latlng)
-        } else {
-          next(false)
-        }
+      if (res.candidates.length) {
+        var latlng = [
+          res.candidates[0].location.y
+          , res.candidates[0].location.x
+        ]
+        next(latlng)
+      } else {
+        next(false)
       }
+    }
   })
 }
 
@@ -40,17 +40,17 @@ var services = require('./services')
 
 function Legend() {
   var self = this
+  $.get('templates/legend.tmpl', function(res){
+    self.create(res)
+  })
+}
+
+Legend.prototype.create = function(template) {
+  var self = this
   this.legendControl = L.control({position: 'bottomleft'})
   this.legendControl.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info legend')
-
-    this._div.innerHTML += '<div class="status-legend"></div><div class="lidar-legend"><p class="legendDesc">Elevation (m)</p>'
-      + '<img src="img/legend.jpg" alt="legend" class="legendImg" height="180px" width="30px">'
-      + '<div class="legendLabel">'
-      + '<p class="legendMax"></p>'
-      + '<p class="legendMid"></p>'
-      + '<p class="legendMin"></p></div>'
-
+    this._div.innerHTML += template
     self.elevation(services.statewide[0].service)
     this._div.firstChild.onmousedown = this._div.firstChild.ondblclick = L.DomEvent.stopPropagation
     L.DomEvent.disableClickPropagation(this._div)
@@ -490,7 +490,8 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
     } else if (this.layertype === 'MapServer') {
       layer = L.tileLayer(services.base_url_rest + service + '/tile/{z}/{y}/{x}/', {
         pane: 'overlayPane',
-        errorTileUrl: 'img/emptytile.png'
+        errorTileUrl: 'img/emptytile.png',
+        opacity: opacity
       })
     }
     this.lidarGroup.addLayer(layer)
@@ -618,19 +619,25 @@ Menu.prototype.resizeMenu = function(){
 Menu.prototype.addEventListeners = function() {
   var self = this
 
-  $(window).resize(function(){
-    self.resizeMenu()
+  $(".opacity-slider").slider({
+    min: 0,
+    max: 100,
+    value: 100,
+    slide: function( event, ui ) {
+      var opacity = ui.value/100
+      self.lidarViewer.lidarLayer.setOpacity(opacity)
+    }
   })
 
-  $(this.menuControl._div).on('change', '.opacity-slider', function(e) {
-    var opacity = $(this).val()/100
-    self.lidarViewer.lidarLayer.setOpacity(opacity)
+  $(window).resize(function(){
+    self.resizeMenu()
   })
 
   $(this.menuControl._div).on('change', '.services', function(e) {
     var service = $(this).val()
     var name = $(this).find('option:selected').text()
-    var opacity = $('.opacity-slider').val()/100
+    var opacity = $('.opacity-slider').slider('value')/100
+    console.log(opacity)
     self.lidarViewer.addServiceLayer(service, name, opacity)
     $('.services').not(this).each(function(idx){
       $($(this).find('option').get(0)).prop('selected', true)

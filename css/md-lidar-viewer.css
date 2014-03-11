@@ -113,6 +113,10 @@ body {
 .layerMenu .geocode-error p {
   margin: 5px 0 0 0;
 }
+.layerMenu .opacity-slider {
+  margin: 5px 0 10px 0;
+  width: 160px;
+}
 .leaflet-touch .layerMenu.closed .title {
   width: 44px;
   height: 44px;

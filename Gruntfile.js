@@ -38,8 +38,9 @@ module.exports = function(grunt) {
       },
       js: {
         src: [
+          'lib/jquery/jquery-1.10.2.min.js',
+          //'lib/bootstrap-3.0.1/js/bootstrap.min.js',
           'lib/*.js',
-          'lib/bootstrap-3.0.1/js/bootstrap.min.js',
           'js/bundle.js'
         ],
         dest: 'dist/<%= pkg.name %>.js'

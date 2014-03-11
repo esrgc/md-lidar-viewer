@@ -35,19 +35,25 @@ Menu.prototype.resizeMenu = function(){
 Menu.prototype.addEventListeners = function() {
   var self = this
 
-  $(window).resize(function(){
-    self.resizeMenu()
+  $(".opacity-slider").slider({
+    min: 0,
+    max: 100,
+    value: 100,
+    slide: function( event, ui ) {
+      var opacity = ui.value/100
+      self.lidarViewer.lidarLayer.setOpacity(opacity)
+    }
   })
 
-  $(this.menuControl._div).on('change', '.opacity-slider', function(e) {
-    var opacity = $(this).val()/100
-    self.lidarViewer.lidarLayer.setOpacity(opacity)
+  $(window).resize(function(){
+    self.resizeMenu()
   })
 
   $(this.menuControl._div).on('change', '.services', function(e) {
     var service = $(this).val()
     var name = $(this).find('option:selected').text()
-    var opacity = $('.opacity-slider').val()/100
+    var opacity = $('.opacity-slider').slider('value')/100
+    console.log(opacity)
     self.lidarViewer.addServiceLayer(service, name, opacity)
     $('.services').not(this).each(function(idx){
       $($(this).find('option').get(0)).prop('selected', true)
