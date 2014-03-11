@@ -190,7 +190,7 @@ LidarViewer.prototype.start = function() {
       })
     }
     , function(next) {
-      $.get('templates/identifyPopup.html', function(res) {
+      $.get('templates/identifyPopup.tmpl', function(res) {
         self.identifyPopupTemplate = res
         next(null)
       })
@@ -586,7 +586,7 @@ var Mustache = require('mustache')
 
 function Menu() {
   var self = this
-  $.get('templates/menu.html', function(res){
+  $.get('templates/menu.tmpl', function(res){
     self.create(res)
   })
 }

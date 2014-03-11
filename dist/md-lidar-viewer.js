@@ -1,6 +1,6 @@
-/*! md-lidar-viewer - v0.0.1 - 2014-03-11
+/*! md-lidar-viewer - v0.3.20 - 2014-03-11
 * https://github.com/esrgc/md-lidar-viewer
-* Copyright (c) 2014 ; Licensed  */
+* Copyright (c) 2014 Eastern Shore Regional GIS Cooperative; Licensed MIT */
 L.Control.LayersCustom = L.Control.Layers.extend({
   addTo: function (map, el) {
 		this._map = map;
@@ -560,7 +560,7 @@ LidarViewer.prototype.start = function() {
       })
     }
     , function(next) {
-      $.get('templates/identifyPopup.html', function(res) {
+      $.get('templates/identifyPopup.tmpl', function(res) {
         self.identifyPopupTemplate = res
         next(null)
       })
@@ -956,7 +956,7 @@ var Mustache = require('mustache')
 
 function Menu() {
   var self = this
-  $.get('templates/menu.html', function(res){
+  $.get('templates/menu.tmpl', function(res){
     self.create(res)
   })
 }

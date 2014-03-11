@@ -53,7 +53,7 @@ LidarViewer.prototype.start = function() {
       })
     }
     , function(next) {
-      $.get('templates/identifyPopup.html', function(res) {
+      $.get('templates/identifyPopup.tmpl', function(res) {
         self.identifyPopupTemplate = res
         next(null)
       })

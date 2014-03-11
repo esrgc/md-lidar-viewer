@@ -2,11 +2,20 @@
 module.exports = function(grunt) {
   grunt.initConfig({
     pkg: grunt.file.readJSON('package.json'),
+    bump: {
+      options: {
+        files: ['package.json'],
+        updateConfigs: ['pkg'],
+        commit: false,
+        createTag: false,
+        push: false
+      }
+    },
     banner: '/*! <%= pkg.title || pkg.name %> - v<%= pkg.version %> - ' +
       '<%= grunt.template.today("yyyy-mm-dd") %>\n' +
       '<%= pkg.homepage ? "* " + pkg.homepage + "\\n" : "" %>' +
-      '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author.name %>;' +
-      ' Licensed <%= _.pluck(pkg.licenses, "type").join(", ") %> */\n',
+      '* Copyright (c) <%= grunt.template.today("yyyy") %> <%= pkg.author %>;' +
+      ' Licensed <%= pkg.license %> */\n',
     less: {
       dist: {
         files: {
@@ -45,10 +54,20 @@ module.exports = function(grunt) {
         dest: 'dist/<%= pkg.name %>.min.js'
       }
     },
+    assemble: {
+      index: {
+        options: {
+          pkg: '<%= pkg %>'
+        },
+        files: {
+          'index.html': ['templates/index.tmpl' ]
+        }
+      }
+    },
     watch: {
       scripts: {
         files: ['<%= concat.js.src %>'],
-        tasks: ['concat', 'uglify']
+        tasks: ['bump', 'concat', 'uglify', 'assemble']
       },
       browserify: {
         files: ['js/*.js', '!js/bundle.js'],
@@ -65,8 +84,10 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-uglify');
   grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-contrib-less');
+  grunt.loadNpmTasks('grunt-bump');
+  grunt.loadNpmTasks('assemble');
   grunt.loadNpmTasks('grunt-contrib-watch');
 
-  grunt.registerTask('default', ['less', 'browserify', 'concat', 'uglify']);
+  grunt.registerTask('default', ['bump', 'less', 'browserify', 'concat', 'uglify', 'assemble']);
 
 };
