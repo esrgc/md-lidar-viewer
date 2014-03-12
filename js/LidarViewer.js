@@ -280,7 +280,7 @@ LidarViewer.prototype.createIdentifyValueForPopup = function(value, err) {
   if(err) {
     popup_value = 'Error loading data'
   } else {
-    if(self.identifyType === 'elevation') {
+    if(self.identifyType === 'elevation' || self.identifyType === 'hillshade') {
       if(!parseFloat(value)) {
         popup_value = value
       } else {
@@ -305,7 +305,9 @@ LidarViewer.prototype.identifyContent = function (latlng, next) {
   if(metadata) {
     for (var i = 0; i < services.elevation.length; i++) {
       if (metadata.County === services.elevation[i].name) {
-        metadata.identifyType = self.identifyType.charAt(0).toUpperCase() + self.identifyType.slice(1)
+        var type = self.identifyType
+        if(type === 'hillshade') type = 'elevation'
+        metadata.identifyType = type.charAt(0).toUpperCase() + type.slice(1)
         metadata.lat = latlng.lat.toFixed(3)
         metadata.lng = latlng.lng.toFixed(3)
         var content = Mustache.render(self.identifyPopupTemplate, metadata)
@@ -342,6 +344,7 @@ LidarViewer.prototype.getMetadataFromPoint = function (point) {
 }
 
 LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
+  var self = this
   this.lidarGroup.clearLayers()
   if(service) {
     this.layertype = service.split('/')[2]

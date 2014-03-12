@@ -425,7 +425,7 @@ LidarViewer.prototype.createIdentifyValueForPopup = function(value, err) {
   if(err) {
     popup_value = 'Error loading data'
   } else {
-    if(self.identifyType === 'elevation') {
+    if(self.identifyType === 'elevation' || self.identifyType === 'hillshade') {
       if(!parseFloat(value)) {
         popup_value = value
       } else {
@@ -450,7 +450,9 @@ LidarViewer.prototype.identifyContent = function (latlng, next) {
   if(metadata) {
     for (var i = 0; i < services.elevation.length; i++) {
       if (metadata.County === services.elevation[i].name) {
-        metadata.identifyType = self.identifyType.charAt(0).toUpperCase() + self.identifyType.slice(1)
+        var type = self.identifyType
+        if(type === 'hillshade') type = 'elevation'
+        metadata.identifyType = type.charAt(0).toUpperCase() + type.slice(1)
         metadata.lat = latlng.lat.toFixed(3)
         metadata.lng = latlng.lng.toFixed(3)
         var content = Mustache.render(self.identifyPopupTemplate, metadata)
@@ -487,6 +489,7 @@ LidarViewer.prototype.getMetadataFromPoint = function (point) {
 }
 
 LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
+  var self = this
   this.lidarGroup.clearLayers()
   if(service) {
     this.layertype = service.split('/')[2]
@@ -759,6 +762,133 @@ module.exports = {
       "type": "hillshade"
     }
   ],
+  "elevation": [
+    {
+      "name": "Allegany",
+      "service": "ShadedRelief/MD_allegany_shadedRelief/MapServer",
+      "identify": "Elevation/MD_allegany_dem_m/ImageServer"
+    },
+    {
+      "name": "Anne Arundel",
+      "service": "ShadedRelief/MD_annearundel_shadedRelief/MapServer",
+      "identify": "Elevation/MD_annearundel_dem_m/ImageServer"
+    },
+    {
+      "name": "Baltimore",
+      "service": "ShadedRelief/MD_baltimore_shadedRelief/MapServer",
+      "identify": "Elevation/MD_baltimore_dem_m/ImageServer"
+    },
+    {
+      "name": "Baltimore City",
+      "service": "ShadedRelief/MD_baltimorecity_shadedRelief/MapServer",
+      "identify": "Elevation/MD_baltimorecity_dem_m/ImageServer"
+    },
+    {
+      "name": "Calvert",
+      "service": "ShadedRelief/MD_calvert_shadedRelief/MapServer",
+      "identify": "Elevation/MD_calvert_dem_m/ImageServer"
+    },
+    {
+      "name": "Caroline",
+      "service": "ShadedRelief/MD_caroline_shadedRelief/MapServer",
+      "identify": "Elevation/MD_caroline_dem_m/ImageServer"
+    },
+    {
+      "name": "Carroll",
+      "service": "ShadedRelief/MD_carroll_shadedRelief/MapServer",
+      "identify": "Elevation/MD_carroll_dem_m/ImageServer"
+    },
+    {
+      "name": "Cecil",
+      "service": "ShadedRelief/MD_cecil_shadedRelief/MapServer",
+      "identify": "Elevation/MD_cecil_dem_m/ImageServer"
+    },
+    {
+      "name": "Charles",
+      "service": "ShadedRelief/MD_charles_shadedRelief/MapServer",
+      "identify": "Elevation/MD_charles_dem_m/ImageServer"
+    },
+    {
+      "name": "Dorchester",
+      "service": "ShadedRelief/MD_dorchester_shadedRelief/MapServer",
+      "identify": "Elevation/MD_dorchester_dem_m/ImageServer"
+    },
+    {
+      "name": "Frederick",
+      "service": "ShadedRelief/MD_frederick_shadedRelief/MapServer",
+      "identify": "Elevation/MD_frederick_dem_m/ImageServer"
+    },
+    {
+      "name": "Garrett",
+      "service": "ShadedRelief/MD_garrett_shadedRelief/MapServer",
+      "identify": "Elevation/MD_garrett_dem_m/ImageServer"
+    },
+    {
+      "name": "Harford",
+      "service": "ShadedRelief/MD_harford_shadedRelief/MapServer",
+      "identify": "Elevation/MD_harford_dem_m/ImageServer"
+    },
+    {
+      "name": "Howard",
+      "service": "ShadedRelief/MD_howard_shadedRelief/MapServer",
+      "identify": "Elevation/MD_howard_dem_m/ImageServer"
+    },
+    {
+      "name": "Kent",
+      "service": "ShadedRelief/MD_kent_shadedRelief/MapServer",
+      "identify": "Elevation/MD_kent_dem_m/ImageServer"
+    },
+    {
+      "name": "Montgomery",
+      "service": "ShadedRelief/MD_montgomery_shadedRelief/MapServer",
+      "identify": "Elevation/MD_montgomery_dem_m/ImageServer"
+    },
+    {
+      "name": "Prince George's",
+      "service": "ShadedRelief/MD_princegeorges_shadedRelief/MapServer",
+      "identify": "Elevation/MD_princegeorges_dem_m/ImageServer"
+    },
+    {
+      "name": "Queen Anne's",
+      "service": "ShadedRelief/MD_queenannes_shadedRelief/MapServer",
+      "identify": "Elevation/MD_queenannes_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Somerset",
+      "service": "Elevation/MD_somerset_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_somerset_demStretched_m/ImageServer"
+    },
+    {
+      "name": "St. Mary's",
+      "service": "Elevation/MD_stmarys_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_stmarys_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Talbot",
+      "service": "Elevation/MD_talbot_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_talbot_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Washington",
+      "service": "Elevation/MD_washington_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_washington_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Washington, D.C.",
+      "service": "Elevation/MD_washingtonDC_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_washingtonDC_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Wicomico",
+      "service": "Elevation/MD_wicomico_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_wicomico_demStretched_m/ImageServer"
+    },
+    {
+      "name": "Worcester",
+      "service": "Elevation/MD_worcester_demStretched_m/ImageServer",
+      "identify": "Elevation/MD_worcester_demStretched_m/ImageServer"
+    }
+  ],
   "slope": [
     {
       "name": "Allegany",
@@ -884,133 +1014,6 @@ module.exports = {
       "name": "Worcester",
       "service": "Statewide/MD_statewide_slope_m/MapServer",
       "identify": "Elevation/MD_worcester_slope_m/ImageServer"
-    }
-  ],
-  "elevation": [
-    {
-      "name": "Allegany",
-      "service": "ShadedRelief/MD_allegany_shadedRelief/MapServer",
-      "identify": "Elevation/MD_allegany_dem_m/ImageServer"
-    },
-    {
-      "name": "Anne Arundel",
-      "service": "ShadedRelief/MD_annearundel_shadedRelief",
-      "identify": "Elevation/MD_annearundel_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Baltimore",
-      "service": "ShadedRelief/MD_baltimore_shadedRelief/MapServer",
-      "identify": "Elevation/MD_baltimore_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Baltimore City",
-      "service": "ShadedRelief/MD_baltimorecity_shadedRelief/MapServer",
-      "identify": "Elevation/MD_baltimorecity_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Calvert",
-      "service": "ShadedRelief/MD_calvert_shadedRelief/MapServer",
-      "identify": "Elevation/MD_calvert_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Caroline",
-      "service": "ShadedRelief/MD_caroline_shadedRelief/MapServer",
-      "identify": "Elevation/MD_caroline_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Carroll",
-      "service": "ShadedRelief/MD_carroll_shadedRelief/MapServer",
-      "identify": "Elevation/MD_carroll_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Cecil",
-      "service": "Elevation/MD_cecil_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_cecil_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Charles",
-      "service": "Elevation/MD_charles_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_charles_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Dorchester",
-      "service": "Elevation/MD_dorchester_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_dorchester_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Frederick",
-      "service": "Elevation/MD_frederick_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_frederick_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Garrett",
-      "service": "Elevation/MD_garrett_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_garrett_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Harford",
-      "service": "Elevation/MD_harford_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_harford_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Howard",
-      "service": "Elevation/MD_howard_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_howard_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Kent",
-      "service": "Elevation/MD_kent_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_kent_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Montgomery",
-      "service": "Elevation/MD_montgomery_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_montgomery_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Prince George's",
-      "service": "Elevation/MD_princegeorges_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_princegeorges_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Queen Anne's",
-      "service": "Elevation/MD_queenannes_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_queenannes_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Somerset",
-      "service": "Elevation/MD_somerset_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_somerset_demStretched_m/ImageServer"
-    },
-    {
-      "name": "St. Mary's",
-      "service": "Elevation/MD_stmarys_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_stmarys_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Talbot",
-      "service": "Elevation/MD_talbot_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_talbot_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Washington",
-      "service": "Elevation/MD_washington_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_washington_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Washington, D.C.",
-      "service": "Elevation/MD_washingtonDC_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_washingtonDC_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Wicomico",
-      "service": "Elevation/MD_wicomico_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_wicomico_demStretched_m/ImageServer"
-    },
-    {
-      "name": "Worcester",
-      "service": "Elevation/MD_worcester_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_worcester_demStretched_m/ImageServer"
     }
   ],
   "aspect": [
