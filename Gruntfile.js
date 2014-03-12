@@ -39,6 +39,7 @@ module.exports = function(grunt) {
       js: {
         src: [
           'lib/jquery/jquery-1.10.2.min.js',
+          'lib/jquery/jquery-ui-1.10.4.custom.min.js',
           'lib/*.js',
           'js/bundle.js'
         ],

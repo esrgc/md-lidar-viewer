@@ -379,7 +379,7 @@ LidarViewer.prototype.zoomToCounty = function(name) {
   })
 }
 
-LidarViewer.prototype.zoomToState = function(name) {
+LidarViewer.prototype.zoomToState = function() {
   this.map.setView(this.center, this.startZoom, {animate: false})
 }
 

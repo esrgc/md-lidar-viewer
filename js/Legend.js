@@ -13,7 +13,6 @@ Legend.prototype.create = function(template) {
   this.legendControl.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info legend')
     this._div.innerHTML += template
-    //self.elevation(services.statewide[0].identify)
     this._div.firstChild.onmousedown = this._div.firstChild.ondblclick = L.DomEvent.stopPropagation
     L.DomEvent.disableClickPropagation(this._div)
     return this._div;
