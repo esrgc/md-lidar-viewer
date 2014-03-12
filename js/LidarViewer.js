@@ -242,7 +242,7 @@ LidarViewer.prototype.identify = function(point) {
   var self = this
   var marker = new L.marker(point, {icon: new this.identifyIcon({html: '<div class="value"></div>'})})
   self.markerlayer.addLayer(marker)
-  marker.bindPopup(L.popup({offset: [0,-20]}).setContent('<img src="img/ajax.gif">')).openPopup()
+  marker.bindPopup(L.popup({offset: [0,-20]}).setContent('<img src="img/ajax.gif">'))
   if(this.statewide) {
     self.identifyContent(point, function(content) {
       if(content) {

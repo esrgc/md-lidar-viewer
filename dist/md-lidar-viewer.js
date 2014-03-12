@@ -1,4 +1,4 @@
-/*! md-lidar-viewer - v0.3.187 - 2014-03-12
+/*! md-lidar-viewer - v0.3.195 - 2014-03-12
 * https://github.com/esrgc/md-lidar-viewer
 * Copyright (c) 2014 Eastern Shore Regional GIS Cooperative; Licensed MIT */
 /*! jQuery v1.10.2 | (c) 2005, 2013 jQuery Foundation, Inc. | jquery.org/license
@@ -764,7 +764,7 @@ LidarViewer.prototype.identify = function(point) {
   var self = this
   var marker = new L.marker(point, {icon: new this.identifyIcon({html: '<div class="value"></div>'})})
   self.markerlayer.addLayer(marker)
-  marker.bindPopup(L.popup({offset: [0,-20]}).setContent('<img src="img/ajax.gif">')).openPopup()
+  marker.bindPopup(L.popup({offset: [0,-20]}).setContent('<img src="img/ajax.gif">'))
   if(this.statewide) {
     self.identifyContent(point, function(content) {
       if(content) {
