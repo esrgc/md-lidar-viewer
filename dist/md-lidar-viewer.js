@@ -1,4 +1,4 @@
-/*! md-lidar-viewer - v0.3.122 - 2014-03-12
+/*! md-lidar-viewer - v0.3.144 - 2014-03-12
 * https://github.com/esrgc/md-lidar-viewer
 * Copyright (c) 2014 Eastern Shore Regional GIS Cooperative; Licensed MIT */
 /*! jQuery v1.10.2 | (c) 2005, 2013 jQuery Foundation, Inc. | jquery.org/license
@@ -729,8 +729,8 @@ LidarViewer.prototype.makeMap = function() {
     }
   })
 
-  this.map.on('dblclick', function(e){
-    return false
+  this.map.on('baselayerchange', function(e) {
+    self.lidarLayer.bringToFront()
   })
 
   var hash = new L.Hash(this.map)
@@ -879,9 +879,9 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
       })
     } else if (this.layertype === 'MapServer') {
       layer = L.tileLayer(services.base_url_rest + service + '/tile/{z}/{y}/{x}/', {
-        pane: 'overlayPane',
-        errorTileUrl: 'img/emptytile.png',
-        opacity: opacity
+        //pane: 'overlayPane'
+        errorTileUrl: 'img/emptytile.png'
+        , opacity: opacity
       })
     }
     this.lidarGroup.addLayer(layer)
@@ -917,18 +917,23 @@ LidarViewer.prototype.setIdentifyService = function(name) {
     this.activeCounty = name
     this.zoomToCounty(name)
   }
+  
   if(this.activeService.indexOf('slope') >= 0) {
     this.identifyType = 'slope'
+    this.statewide = true
   } else if(this.activeService.indexOf('aspect') >= 0) {
     this.identifyType = 'aspect'
+    this.statewide = true
   } else if(this.activeService.indexOf('hillshade') >= 0) {
     this.identifyType = 'hillshade'
+    this.statewide = true
   } else {
     this.identifyType = 'elevation'
   }
-  if(this.statewide){
+  //use statewide layers for querying all but county elevation
+  if(this.identifyType !== 'elevation' || this.statewide){
     for(var i = 0; i < services.statewide.length; i++){
-      if(services.statewide[i].name === name) {
+      if(services.statewide[i].type === this.identifyType) {
         return services.statewide[i].identify
       }
     }
@@ -1109,22 +1114,26 @@ module.exports = {
     {
       "name": "Statewide Shaded Relief",
       "service": "Statewide/MD_statewide_shadedRelief_m/MapServer",
-      "identify": "Elevation/MD_statewide_dem_m/ImageServer"
+      "identify": "Elevation/MD_statewide_dem_m/ImageServer",
+      "type": "elevation"
     },
     {
       "name": "Statewide Aspect",
       "service": "Statewide/MD_statewide_aspect_m/MapServer",
-      "identify": "Elevation/MD_statewide_aspect_m/ImageServer"
+      "identify": "Elevation/MD_statewide_aspect_m/ImageServer",
+      "type": "aspect"
     },
     {
       "name": "Statewide Slope",
       "service": "Statewide/MD_statewide_slope_m/MapServer",
-      "identify": "Elevation/MD_statewide_slope_m/ImageServer"
+      "identify": "Elevation/MD_statewide_slope_m/ImageServer",
+      "type": "slope"
     },
     {
       "name": "Statewide Hillshade",
       "service": "Statewide/MD_statewide_hillshade_m/MapServer",
-      "identify": "Elevation/MD_statewide_dem_m/ImageServer"
+      "identify": "Elevation/MD_statewide_dem_m/ImageServer",
+      "type": "hillshade"
     }
   ],
   "slope": [
