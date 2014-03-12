@@ -1,4 +1,4 @@
-/*! md-lidar-viewer - v0.3.118 - 2014-03-12
+/*! md-lidar-viewer - v0.3.122 - 2014-03-12
 * https://github.com/esrgc/md-lidar-viewer
 * Copyright (c) 2014 Eastern Shore Regional GIS Cooperative; Licensed MIT */
 /*! jQuery v1.10.2 | (c) 2005, 2013 jQuery Foundation, Inc. | jquery.org/license
@@ -538,7 +538,7 @@ function LidarViewer() {
   this.popup = new L.popup()
   this.lidarLayer = false
   this.lidarGroup = new L.layerGroup()
-  this.drawnItems = new L.FeatureGroup()
+  this.markerlayer = new L.LayerGroup()
   this.center = [38.8, -77.3]
   this.startZoom = 8
   this.polystyle = {
@@ -613,6 +613,7 @@ LidarViewer.prototype.makeMap = function() {
       transparent: true,
       attribution: "MD iMap"
     })
+
   this.baseMaps = {
     "Gray": gray
     , "World Imagery": world_imagery
@@ -704,7 +705,7 @@ LidarViewer.prototype.makeMap = function() {
     layers: [
       gray
       , this.lidarGroup
-      , this.drawnItems
+      , this.markerlayer
     ],
     zoomControl: false,
     minZoom: 8
@@ -754,7 +755,9 @@ LidarViewer.prototype.makeMap = function() {
 
 LidarViewer.prototype.identify = function(point) {
   var self = this
-  var marker = new L.marker(point).addTo(self.map).bindPopup('<img src="img/ajax.gif">').openPopup()
+  var marker = new L.marker(point)
+  self.markerlayer.addLayer(marker)
+  marker.bindPopup('<img src="img/ajax.gif">').openPopup()
   if(this.statewide) {
     self.identifyContent(point, function(content) {
       if(content) {
@@ -1065,6 +1068,10 @@ Menu.prototype.addEventListeners = function() {
 
   $(this.menuControl._div).on('click', '.geocode', function(e) {
     self.lidarViewer.geocodeSubmit()
+  })
+
+  $(this.menuControl._div).on('click', '.clearmarkers', function(e) {
+    self.lidarViewer.markerlayer.clearLayers()
   })
 
   $(this.menuControl._div).on('click', '.toggle', function(e) {

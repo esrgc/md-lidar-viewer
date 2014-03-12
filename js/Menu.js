@@ -76,6 +76,10 @@ Menu.prototype.addEventListeners = function() {
     self.lidarViewer.geocodeSubmit()
   })
 
+  $(this.menuControl._div).on('click', '.clearmarkers', function(e) {
+    self.lidarViewer.markerlayer.clearLayers()
+  })
+
   $(this.menuControl._div).on('click', '.toggle', function(e) {
     if($('.layerMenu').hasClass('closed')) {
       $('.layerMenu').removeClass('closed')
