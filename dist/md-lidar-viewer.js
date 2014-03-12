@@ -1,4 +1,4 @@
-/*! md-lidar-viewer - v0.3.195 - 2014-03-12
+/*! md-lidar-viewer - v0.3.202 - 2014-03-12
 * https://github.com/esrgc/md-lidar-viewer
 * Copyright (c) 2014 Eastern Shore Regional GIS Cooperative; Licensed MIT */
 /*! jQuery v1.10.2 | (c) 2005, 2013 jQuery Foundation, Inc. | jquery.org/license
@@ -427,6 +427,7 @@ Legend.prototype.create = function(template) {
   this.legendControl = L.control({position: 'bottomleft'})
   this.legendControl.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info legend')
+    this._div.className = this._div.className + ' hidden-xs'
     this._div.innerHTML += template
     this._div.firstChild.onmousedown = this._div.firstChild.ondblclick = L.DomEvent.stopPropagation
     L.DomEvent.disableClickPropagation(this._div)
@@ -687,6 +688,7 @@ LidarViewer.prototype.makeMap = function() {
 
   this.futurestatus = L.geoJson(this.futurestatusgeojson, {
     style: function (feature) {
+      console.log(feature)
       return { fillColor: '#FFD700', weight: 1, color: '#333', fillOpacity: 1 }
     },
     onEachFeature: function (feature, layer) {

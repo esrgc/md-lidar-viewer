@@ -50,6 +50,7 @@ Legend.prototype.create = function(template) {
   this.legendControl = L.control({position: 'bottomleft'})
   this.legendControl.onAdd = function (map) {
     this._div = L.DomUtil.create('div', 'info legend')
+    this._div.className = this._div.className + ' hidden-xs'
     this._div.innerHTML += template
     this._div.firstChild.onmousedown = this._div.firstChild.ondblclick = L.DomEvent.stopPropagation
     L.DomEvent.disableClickPropagation(this._div)
@@ -310,6 +311,7 @@ LidarViewer.prototype.makeMap = function() {
 
   this.futurestatus = L.geoJson(this.futurestatusgeojson, {
     style: function (feature) {
+      console.log(feature)
       return { fillColor: '#FFD700', weight: 1, color: '#333', fillOpacity: 1 }
     },
     onEachFeature: function (feature, layer) {
