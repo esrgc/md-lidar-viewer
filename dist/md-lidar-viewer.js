@@ -1,4 +1,4 @@
-/*! md-lidar-viewer - v0.3.154 - 2014-03-12
+/*! md-lidar-viewer - v0.3.187 - 2014-03-12
 * https://github.com/esrgc/md-lidar-viewer
 * Copyright (c) 2014 Eastern Shore Regional GIS Cooperative; Licensed MIT */
 /*! jQuery v1.10.2 | (c) 2005, 2013 jQuery Foundation, Inc. | jquery.org/license
@@ -535,7 +535,6 @@ function LidarViewer() {
   this.layer = false
   this.identifyElevationTool = false
   this.hasLabels = true
-  this.popup = new L.popup()
   this.lidarLayer = false
   this.lidarGroup = new L.layerGroup()
   this.markerlayer = new L.LayerGroup()
@@ -546,6 +545,14 @@ function LidarViewer() {
     , fillOpacity: 0
     , weight: 2
   }
+  this.identifyIcon = L.DivIcon.extend({
+    options: {
+        className: 'identify-div-icon',
+        html: '',
+        iconSize: [25, 55],
+        iconAnchor: [12, 55]
+    }
+  })
 }
 
 LidarViewer.prototype.start = function() {
@@ -755,9 +762,9 @@ LidarViewer.prototype.makeMap = function() {
 
 LidarViewer.prototype.identify = function(point) {
   var self = this
-  var marker = new L.marker(point)
+  var marker = new L.marker(point, {icon: new this.identifyIcon({html: '<div class="value"></div>'})})
   self.markerlayer.addLayer(marker)
-  marker.bindPopup('<img src="img/ajax.gif">').openPopup()
+  marker.bindPopup(L.popup({offset: [0,-20]}).setContent('<img src="img/ajax.gif">')).openPopup()
   if(this.statewide) {
     self.identifyContent(point, function(content) {
       if(content) {
@@ -794,6 +801,11 @@ LidarViewer.prototype.insertIdentifyValueIntoPopup = function(value, marker) {
   var popupContent = $('<div/>').html(content).contents()
   $(popupContent.find('.identify-value')[0]).html(value)
   marker.getPopup().setContent(popupContent[0].outerHTML)
+  var icon = new this.identifyIcon({html: '<div class="value">' + value.split('<br>')[0] + '</div>'})
+  marker.setIcon(icon)
+  $(marker._icon).width('auto')
+  var width = $(marker._icon).width()
+  $(marker._icon).css('margin-left', (width/2)*-1)
 }
 
 LidarViewer.prototype.createIdentifyValueForPopup = function(value, err) {
@@ -808,8 +820,8 @@ LidarViewer.prototype.createIdentifyValueForPopup = function(value, err) {
       } else {
         var m = Math.round(parseFloat(value) * 100) / 100
           , ft =  Math.round((m * 3.28084) * 100) / 100
-        m += ' m'
-        ft += ' ft'
+        m += 'm'
+        ft += 'ft'
         popup_value = m + '<br>' + ft
       }
     } else if(self.identifyType === 'slope') {
