@@ -1,4 +1,4 @@
-/*! md-lidar-viewer - v0.3.204 - 2014-03-12
+/*! md-lidar-viewer - v0.3.207 - 2014-03-13
 * https://github.com/esrgc/md-lidar-viewer
 * Copyright (c) 2014 Eastern Shore Regional GIS Cooperative; Licensed MIT */
 /*! jQuery v1.10.2 | (c) 2005, 2013 jQuery Foundation, Inc. | jquery.org/license
@@ -626,8 +626,8 @@ LidarViewer.prototype.makeMap = function() {
     "Gray": gray
     , "World Imagery": world_imagery
     , "World Imagery with Labels": mapboxsat
-    , 'iMap 6 Inch Imagery': imap_6in
-    , 'iMap 6 Inch CIR Imagery': imap_6in_cir
+    , 'MD iMap 6 Inch Imagery': imap_6in
+    , 'MD iMap 6 Inch CIR Imagery': imap_6in_cir
   }
 
   this.countylayer = L.geoJson(this.mdcnty, { style: this.polystyle })

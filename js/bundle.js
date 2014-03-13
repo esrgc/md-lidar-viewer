@@ -249,8 +249,8 @@ LidarViewer.prototype.makeMap = function() {
     "Gray": gray
     , "World Imagery": world_imagery
     , "World Imagery with Labels": mapboxsat
-    , 'iMap 6 Inch Imagery': imap_6in
-    , 'iMap 6 Inch CIR Imagery': imap_6in_cir
+    , 'MD iMap 6 Inch Imagery': imap_6in
+    , 'MD iMap 6 Inch CIR Imagery': imap_6in_cir
   }
 
   this.countylayer = L.geoJson(this.mdcnty, { style: this.polystyle })

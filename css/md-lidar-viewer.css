@@ -45,6 +45,7 @@ body {
   line-height: 20px;
   cursor: pointer;
   color: #000;
+  padding-left: 5px;
 }
 .layerMenu .title h4 {
   float: left;
@@ -196,7 +197,7 @@ body {
 .identify-div-icon .value {
   font-size: 11px;
   text-align: center;
-  background: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.5);
   padding: 0 3px 0 3px;
   border-radius: 2px;
 }
