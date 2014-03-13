@@ -62,7 +62,6 @@ body {
 }
 .layerMenu .title {
   overflow: hidden;
-  padding: 5px 5px 5px 5px;
   text-align: center;
   border-bottom: 1px solid #ddd;
 }
@@ -72,13 +71,13 @@ body {
   line-height: 22px;
   cursor: pointer;
   color: #000;
-  padding-left: 5px;
-  padding-right: 5px;
+  padding: 5px 10px 5px 10px;
 }
 .layerMenu .title h4 {
   float: left;
   margin: 0px;
   line-height: 22px;
+  padding: 5px;
 }
 .layerMenu.closed {
   overflow: hidden;
@@ -92,8 +91,7 @@ body {
 .layerMenu.closed .title .toggle {
   float: none;
   line-height: 36px;
-  padding-left: 0px;
-  padding-right: 0px;
+  padding: 0px;
 }
 .layerMenu .section .section-title {
   background: #444;
