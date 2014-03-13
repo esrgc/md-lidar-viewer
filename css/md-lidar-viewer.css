@@ -1,6 +1,16 @@
 #map .leaflet-oldie .leaflet-control-layers {
   border: none;
 }
+#map .leaflet-touch .leaflet-control-layers {
+  border: none;
+}
+
+#map .leaflet-oldie .leaflet-control-layers {
+  border: none;
+}
+#map .leaflet-touch .leaflet-control-layers {
+  border: none;
+}
 html,
 body {
   height: 100%;
