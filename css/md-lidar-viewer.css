@@ -63,6 +63,7 @@ body {
 .layerMenu.closed .title .toggle {
   float: none;
   line-height: 36px;
+  padding-left: 0px;
 }
 .layerMenu .section .section-title {
   background: #444;
