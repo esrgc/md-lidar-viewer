@@ -1,21 +1,29 @@
-#map .leaflet-oldie .leaflet-control-layers {
+#map.leaflet-oldie .leaflet-control-layers {
   border: none;
 }
-#map .leaflet-touch .leaflet-control-layers {
+#map.leaflet-touch .leaflet-control-layers {
   border: none;
 }
 #map .leaflet-control-layers {
   background: inherit;
+}
+#map.leaflet-touch .info {
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  background-clip: padding-box;
 }
 
-#map .leaflet-oldie .leaflet-control-layers {
+#map.leaflet-oldie .leaflet-control-layers {
   border: none;
 }
-#map .leaflet-touch .leaflet-control-layers {
+#map.leaflet-touch .leaflet-control-layers {
   border: none;
 }
 #map .leaflet-control-layers {
   background: inherit;
+}
+#map.leaflet-touch .info {
+  border: 2px solid rgba(0, 0, 0, 0.2);
+  background-clip: padding-box;
 }
 html,
 body {
