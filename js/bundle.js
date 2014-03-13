@@ -606,16 +606,6 @@ LidarViewer.prototype._identifyValue = function (latlng, next) {
   })
 }
 
-LidarViewer.prototype.getPixelValue = function(res) {
-  var value
-  if (this.layertype === 'ImageServer') {
-    value = res.value
-  } else if (this.layertype === 'MapServer') {
-    value = res.results[0].attributes['Pixel Value']
-  }
-  return value
-}
-
 LidarViewer.prototype.geocodeSubmit = function() {
   var self = this
   var term = $('#geocode-input').val()
