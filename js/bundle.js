@@ -650,8 +650,8 @@ Menu.prototype.create = function(template) {
   var self = this
   this.menuControl = L.control({position: 'topright'})
   this.menuControl.onAdd = function (map) {
-    this._div = L.DomUtil.create('div', 'layerMenu')
-    this._div.className = this._div.className + " leaflet-control"
+    this._div = L.DomUtil.create('div', 'info layerMenu')
+    //this._div.className = this._div.className + " leaflet-control"
     this._div.innerHTML = Mustache.render(template, services)
     this._div.firstChild.onmousedown = this._div.firstChild.ondblclick = L.DomEvent.stopPropagation
     $($(this._div).find('#statewide option').get(1)).prop('selected', true)
