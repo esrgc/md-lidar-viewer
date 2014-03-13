@@ -20,29 +20,6 @@
   top: -0.6em;
   margin-left: -0.6em;
 }
-
-#map.leaflet-oldie .leaflet-control-layers {
-  border: none;
-}
-#map.leaflet-touch .leaflet-control-layers {
-  border: none;
-}
-#map .leaflet-control-layers {
-  background: inherit;
-}
-#map.leaflet-touch .info {
-  border: 2px solid rgba(0, 0, 0, 0.2);
-  background-clip: padding-box;
-}
-.ui-slider {
-  margin-top: 5px;
-}
-#map.leaflet-touch .ui-slider .ui-slider-handle {
-  width: 1.6em;
-  height: 1.6em;
-  top: -0.6em;
-  margin-left: -0.6em;
-}
 html,
 body {
   height: 100%;

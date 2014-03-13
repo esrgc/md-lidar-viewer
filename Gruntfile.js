@@ -19,7 +19,7 @@ module.exports = function(grunt) {
     less: {
       dist: {
         files: {
-          'css/<%= pkg.name %>.css': ['css/*.less']
+          'css/<%= pkg.name %>.css': ['css/style.less']
         }
       }
     },
