@@ -10,19 +10,10 @@ var geocoder = require('./Geocoder')
   , Mustache = require('mustache')
 
 function LidarViewer() {
-  this.layer = false
-  this.identifyElevationTool = false
-  this.hasLabels = true
-  this.lidarLayer = false
   this.lidarGroup = new L.layerGroup()
   this.markerlayer = new L.LayerGroup()
   this.center = [38.8, -77.3]
   this.startZoom = 8
-  this.polystyle = {
-    color: '#333'
-    , fillOpacity: 0
-    , weight: 2
-  }
   this.identifyIcon = L.DivIcon.extend({
     options: {
         className: 'identify-div-icon',
@@ -107,8 +98,8 @@ LidarViewer.prototype.makeMap = function() {
     , 'MD iMap 6 Inch CIR Imagery': imap_6in_cir
   }
 
-  this.countylayer = L.geoJson(this.mdcnty, { style: this.polystyle })
-  this.mdbuffer = L.geoJson(this.mdbuffer, { style: this.polystyle })
+  this.countylayer = L.geoJson(this.mdcnty)
+  this.mdbuffer = L.geoJson(this.mdbuffer)
 
   this.countyoverlay = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.CountyCompare/{z}/{x}/{y}.png', {
     pane: 'overlayPane',
@@ -162,6 +153,7 @@ LidarViewer.prototype.makeMap = function() {
       legend.showLidar()
     }
   })
+  this.currentstatusgeojson = null
 
   this.futurestatus = L.geoJson(this.futurestatusgeojson, {
     style: function (feature) {
@@ -178,6 +170,7 @@ LidarViewer.prototype.makeMap = function() {
       legend.showLidar()
     }
   })
+  this.futurestatusgeojson = null
 
   this.overlays = {
     "Counties": this.countyoverlay
@@ -193,7 +186,9 @@ LidarViewer.prototype.makeMap = function() {
       , this.markerlayer
     ],
     zoomControl: false,
-    minZoom: 8
+    minZoom: 8,
+    unloadInvisibleTiles: true,
+    reuseTiles: true 
   })
   
   this.map.setView(this.center, this.startZoom, {animate: false})
@@ -215,7 +210,9 @@ LidarViewer.prototype.makeMap = function() {
   })
 
   this.map.on('baselayerchange', function(e) {
-    self.lidarLayer.bringToFront()
+    self.lidarGroup.eachLayer(function(layer){
+      layer.bringToFront()
+    })
   })
 
   var hash = new L.Hash(this.map)
@@ -363,23 +360,22 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
     this.layertype = service.split('/')[2]
     var layer = {}
     if (this.layertype === 'ImageServer') {
-      layer = L.tileLayer.wms(services.base_url + service + "/WMSServer", {
-        layers: service.split('/')[1]
-        , format: 'image/png'
-        , transparent: true
-        , attribution: "ESRGC"
-        , opacity : opacity
-        , pane: 'overlayPane'
-      })
+      this.lidarGroup.addLayer(L.tileLayer.wms(services.base_url + service + "/WMSServer", {
+          layers: service.split('/')[1]
+          , format: 'image/png'
+          , transparent: true
+          , attribution: "ESRGC"
+          , opacity : opacity
+          , pane: 'overlayPane'
+        })
+      )
     } else if (this.layertype === 'MapServer') {
-      layer = L.tileLayer(services.base_url_rest + service + '/tile/{z}/{y}/{x}/', {
-        //pane: 'overlayPane'
-        errorTileUrl: 'img/emptytile.png'
-        , opacity: opacity
-      })
+      this.lidarGroup.addLayer(L.tileLayer(services.base_url_rest + service + '/tile/{z}/{y}/{x}/', {
+          errorTileUrl: 'img/emptytile.png'
+          , opacity: opacity
+        })
+      )
     }
-    this.lidarGroup.addLayer(layer)
-    this.lidarLayer = layer
     this.activeService = service
     this.identifyService = this.setIdentifyService(name)
     legend.update(this.identifyType, this.identifyService)
@@ -462,16 +458,6 @@ LidarViewer.prototype._identifyValue = function (latlng, next) {
   }).fail(function(res){
     next(null, 'Error')
   })
-}
-
-LidarViewer.prototype.getPixelValue = function(res) {
-  var value
-  if (this.layertype === 'ImageServer') {
-    value = res.value
-  } else if (this.layertype === 'MapServer') {
-    value = res.results[0].attributes['Pixel Value']
-  }
-  return value
 }
 
 LidarViewer.prototype.geocodeSubmit = function() {

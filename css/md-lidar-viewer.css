@@ -115,6 +115,7 @@ body {
 }
 .layerMenu .instructions ul {
   padding-left: 15px;
+  font-weight: normal;
 }
 .layerMenu .custom-layer-menu .leaflet-control {
   margin: 0px;
@@ -223,11 +224,11 @@ body {
   background-image: url('../lib/leaflet-master/images/marker-icon.png');
   background-position: bottom;
   background-repeat: no-repeat;
-  /*width: auto !important;*/
 }
 .identify-div-icon .value {
   font-size: 11px;
   text-align: center;
+  background: white;
   background: rgba(255, 255, 255, 0.5);
   padding: 0 3px 0 3px;
   border-radius: 2px;

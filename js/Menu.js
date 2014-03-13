@@ -40,7 +40,9 @@ Menu.prototype.addEventListeners = function() {
     value: 100,
     slide: function(event, ui) {
       var opacity = ui.value/100
-      self.lidarViewer.lidarLayer.setOpacity(opacity)
+      self.lidarViewer.lidarGroup.eachLayer(function(layer){
+        layer.setOpacity(opacity)
+      })
     }
   })
 

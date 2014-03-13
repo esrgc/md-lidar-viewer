@@ -30,28 +30,36 @@ module.exports = function(grunt) {
         }
       }
     },
+    uglify: {
+      options: {
+        banner: ''
+      },
+      dist: {
+        src: [
+          'lib/leaflet-hash.js',
+          'lib/leaflet-pip.js',
+          'lib/Control.Layers.Custom.js',
+          'lib/Control.Zoom.Center.js',
+          'js/bundle.js'
+        ],
+        dest: 'js/bundle.min.js'
+      }
+    },
     concat: {
       options: {
         banner: '<%= banner %>',
         stripBanners: true,
-        separator: ';'
+        separator: ''
       },
       js: {
         src: [
           'lib/jquery/jquery-1.10.2.min.js',
           'lib/jquery/jquery-ui-1.10.4.custom.min.js',
-          'lib/*.js',
-          'js/bundle.js'
+          'lib/jquery.ui.touch-punch.min.js',
+          'lib/es5-shim.min.js',
+          'lib/analytics.js',
+          'js/bundle.min.js'
         ],
-        dest: 'dist/<%= pkg.name %>.js'
-      }
-    },
-    uglify: {
-      options: {
-        banner: '<%= banner %>'
-      },
-      dist: {
-        src: '<%= concat.js.dest %>',
         dest: 'dist/<%= pkg.name %>.min.js'
       }
     },
@@ -67,11 +75,11 @@ module.exports = function(grunt) {
     },
     watch: {
       scripts: {
-        files: ['<%= concat.js.src %>'],
-        tasks: ['bump', 'concat', 'uglify', 'assemble']
+        files: ['js/bundle.js'],
+        tasks: ['bump', 'uglify', 'concat', 'assemble']
       },
       browserify: {
-        files: ['js/*.js', '!js/bundle.js'],
+        files: ['js/*.js', '!js/bundle.js', '!js/bundle.min.js'],
         tasks: ['browserify']
       },
       css: {
@@ -89,6 +97,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('assemble');
   grunt.loadNpmTasks('grunt-contrib-watch');
 
-  grunt.registerTask('default', ['bump', 'less', 'browserify', 'concat', 'uglify', 'assemble']);
+  grunt.registerTask('default', ['bump', 'less', 'browserify', 'uglify', 'concat', 'assemble']);
 
 };

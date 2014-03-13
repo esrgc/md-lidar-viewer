@@ -1,8 +1,8 @@
 /*
  * Author: Frank Rowe, ESRGC
  */
-
-var lidarViewer = require('./LidarViewer')
+ 
+window.lidarViewer = require('./LidarViewer')
 
 $(function(){
   lidarViewer.start()
