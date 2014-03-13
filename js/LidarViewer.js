@@ -220,6 +220,7 @@ LidarViewer.prototype.makeMap = function() {
 
   var hash = new L.Hash(this.map)
   L.control.scale().addTo(this.map)
+  $('.leaflet-control-scale').addClass('hidden-xs')
   L.control.zoomControlCenter({
     center: this.map.getCenter()
   }).addTo(this.map)
