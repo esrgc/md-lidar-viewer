@@ -1,3 +1,6 @@
+#map .leaflet-oldie .leaflet-control-layers {
+  border: none;
+}
 html,
 body {
   height: 100%;
