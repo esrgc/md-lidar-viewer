@@ -857,37 +857,37 @@ module.exports = {
     },
     {
       "name": "Somerset",
-      "service": "Elevation/MD_somerset_demStretched_m/ImageServer",
+      "service": "ShadedRelief/MD_somerset_shadedRelief/MapServer",
       "identify": "Elevation/MD_somerset_demStretched_m/ImageServer"
     },
     {
       "name": "St. Mary's",
-      "service": "Elevation/MD_stmarys_demStretched_m/ImageServer",
+      "service": "ShadedRelief/MD_stmarys_shadedRelief/MapServer",
       "identify": "Elevation/MD_stmarys_demStretched_m/ImageServer"
     },
     {
       "name": "Talbot",
-      "service": "Elevation/MD_talbot_demStretched_m/ImageServer",
+      "service": "ShadedRelief/MD_talbot_shadedRelief/MapServer",
       "identify": "Elevation/MD_talbot_demStretched_m/ImageServer"
     },
     {
       "name": "Washington",
-      "service": "Elevation/MD_washington_demStretched_m/ImageServer",
+      "service": "ShadedRelief/MD_washington_shadedRelief/MapServer",
       "identify": "Elevation/MD_washington_demStretched_m/ImageServer"
     },
     {
       "name": "Washington, D.C.",
-      "service": "Elevation/MD_washingtonDC_demStretched_m/ImageServer",
+      "service": "ShadedRelief/MD_washingtonDC_shadedRelief/MapServer",
       "identify": "Elevation/MD_washingtonDC_demStretched_m/ImageServer"
     },
     {
       "name": "Wicomico",
-      "service": "Elevation/MD_wicomico_demStretched_m/ImageServer",
+      "service": "ShadedRelief/MD_wicomico_shadedRelief/MapServer",
       "identify": "Elevation/MD_wicomico_demStretched_m/ImageServer"
     },
     {
       "name": "Worcester",
-      "service": "Elevation/MD_worcester_demStretched_m/ImageServer",
+      "service": "ShadedRelief/MD_worcester_shadedRelief/MapServer",
       "identify": "Elevation/MD_worcester_demStretched_m/ImageServer"
     }
   ],
@@ -2235,8 +2235,8 @@ module.exports = {
 
 }());
 
-}).call(this,require("/Users/fsrowe/Documents/Web/maps/md-lidar-viewer/node_modules/grunt-browserify/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"))
-},{"/Users/fsrowe/Documents/Web/maps/md-lidar-viewer/node_modules/grunt-browserify/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":8}],8:[function(require,module,exports){
+}).call(this,require("/Users/fsrowe/Documents/www/md-lidar-viewer/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js"))
+},{"/Users/fsrowe/Documents/www/md-lidar-viewer/node_modules/browserify/node_modules/insert-module-globals/node_modules/process/browser.js":8}],8:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
