@@ -8,6 +8,7 @@ var geocoder = require('./Geocoder')
   , services = require('./services')
   , async = require('async')
   , Mustache = require('mustache')
+  , proj4 = require('proj4')
 
 function LidarViewer() {
   this.lidarGroup = new L.layerGroup()
@@ -441,9 +442,18 @@ LidarViewer.prototype._identifyValue = function (latlng, next) {
   var self = this
     , service
   var id_url = services.base_url_rest + self.identifyService + '/identify'
+
+  var stateplane = '+proj=lcc +lat_1=39.45 +lat_2=38.3 +lat_0=37.66666666666666 +lon_0=-77 +x_0=400000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
+  var esriwebmercator = '+proj=lcc +lat_1=39.45 +lat_2=38.3 +lat_0=37.66666666666666 +lon_0=-77 +x_0=400000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
+
+  var coords = proj4(stateplane,[latlng.lng, latlng.lat])
+  console.log(coords)
+
   var data = {
     geometryType: 'esriGeometryPoint',
     geometry:'{"x":' + latlng.lng + ',"y":' + latlng.lat + ',"spatialReference":{"wkid":4265}}',
+    //geometry:'{"x":' + coords[0] + ',"y":' + coords[1] + ',"spatialReference":{"wkid":26985}}',
+    pixelSize: '{"x":611.4962262812483,"y":611.4962262812473,"spatialReference":{"wkid":102100,"latestWkid":3857}}',
     f: 'json',
     returnGeometry: false,
     returnCatalogItems: false
