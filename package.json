@@ -5,13 +5,14 @@
   "name": "md-lidar-viewer",
   "description": "md-lidar-viewer",
   "license": "MIT",
-  "version": "0.3.273",
+  "version": "0.3.281",
   "main": "Gruntfile.js",
   "dependencies": {
     "async": "~0.2.10",
     "request": "~2.30.0",
     "grunt": "~0.4.2",
-    "mustache": "^0.8.1"
+    "mustache": "^0.8.1",
+    "proj4": "^2.1.0"
   },
   "devDependencies": {
     "grunt": "~0.4.2",
