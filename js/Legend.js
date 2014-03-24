@@ -38,18 +38,18 @@ Legend.prototype.update = function(type, service) {
   } else if (type === 'aspect') {
     this.aspect()
   } else if (type === 'hillshade') {
-    this.hillshade
+    this.hillshade()
   }
 }
 
 Legend.prototype.elevation = function(service){
-  $('.legend').show()
+  $('.legend').removeClass('hidden')
   $('.legend .lidar-legend img').attr('src', 'img/legend.jpg')
   this.updateElevation(service)
 }
 
 Legend.prototype.slope = function(){
-  $('.legend').show()
+  $('.legend').removeClass('hidden')
   $('.legend .lidar-legend img').attr('src', 'img/SlopeColorRamp.jpg')
   $(this.legendControl._div).find('.legendDesc').html('Slope (Percent Rise)')
   $(this.legendControl._div).find('.legendMin').html('0')
@@ -58,7 +58,7 @@ Legend.prototype.slope = function(){
 }
 
 Legend.prototype.aspect = function(){
-  $('.legend').show()
+  $('.legend').removeClass('hidden')
   $('.legend .lidar-legend img').attr('src', 'img/AspectColorRamp.jpg')
   $(this.legendControl._div).find('.legendDesc').html('Aspect (Azimuth)')
   $(this.legendControl._div).find('.legendMin').html('0')
@@ -67,7 +67,8 @@ Legend.prototype.aspect = function(){
 }
 
 Legend.prototype.hillshade = function(){
-  $('.legend').hide()
+  console.log('hillshade legend')
+  $('.legend').addClass('hidden')
 }
 
 Legend.prototype.updateElevation = function (service) {
@@ -90,16 +91,24 @@ Legend.prototype.updateElevation = function (service) {
     min = -51
     update(min, max)
   } else {
-    $('.legend').css("visibility", "visible")
-
     url = services.base_url_rest
       + service
       + '?f=pjson'
 
-    $.getJSON(url, function(res) {
-      min = res.minValues[0]
-      max = res.maxValues[0]
-      update(min, max)
+    $.ajax({
+      url: url,
+      type: "GET",
+      dataType: 'json',
+    }).done(function(res){
+      if(res.error) {
+        $('.legend').addClass('hidden')
+      } else {
+        min = res.minValues[0]
+        max = res.maxValues[0]
+        update(min, max)
+      }
+    }).fail(function(res){
+      $('.legend').addClass('hidden')
     })
   }
 }

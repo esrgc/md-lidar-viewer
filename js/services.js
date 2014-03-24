@@ -139,7 +139,7 @@ module.exports = {
       "identify": "Elevation/MD_washington_dem_m/ImageServer"
     },
     {
-      "name": "Washington, D.C.",
+      "name": "Washington D.C.",
       "service": "ShadedRelief/MD_washingtonDC_shadedRelief/MapServer",
       "identify": "Elevation/MD_washingtonDC_dem_m/ImageServer"
     },
@@ -266,7 +266,7 @@ module.exports = {
       "identify": "Elevation/MD_washington_slope_m/ImageServer"
     },
     {
-      "name": "Washington, D.C.",
+      "name": "Washington D.C.",
       "service": "Statewide/MD_statewide_slope_m/MapServer",
       "identify": "Elevation/MD_washingtonDC_slope_m/ImageServer"
     },
@@ -393,7 +393,7 @@ module.exports = {
       "identify": "Elevation/MD_washington_aspect_m/ImageServer"
     },
     {
-      "name": "Washington, D.C.",
+      "name": "Washington D.C.",
       "service": "Statewide/MD_statewide_aspect_m/MapServer",
       "identify": "Elevation/MD_washingtonDC_aspect_m/ImageServer"
     },
@@ -520,7 +520,7 @@ module.exports = {
       "identify": "Elevation/MD_washington_hillshade_m/ImageServer"
     },
     {
-      "name": "Washington, D.C.",
+      "name": "Washington D.C.",
       "service": "Statewide/MD_statewide_hillshade_m/MapServer",
       "identify": "Elevation/MD_washingtonDC_hillshade_m/ImageServer"
     },

@@ -15,6 +15,7 @@ function LidarViewer() {
   this.markerlayer = new L.LayerGroup()
   this.center = [38.8, -77.3]
   this.startZoom = 8
+  this.errorText = 'No information available.'
   this.identifyIcon = L.DivIcon.extend({
     options: {
         className: 'identify-div-icon',
@@ -251,13 +252,15 @@ LidarViewer.prototype.identify = function(point) {
           self.insertIdentifyValueIntoPopup(popup_value, marker)
         })
       } else {
-        marker.getPopup().setContent('No Data')
+        marker.getPopup().setContent(self.errorText)
+        marker.openPopup()
       }
     })
   } else {
     self._identifyValue(point, function(value, err){
-      if(value === 'NoData') {
-        marker.getPopup().setContent('No Data')
+      if(value === 'NoData' || err) {
+        marker.getPopup().setContent(self.errorText)
+        marker.openPopup()
       } else {
         self.identifyContent(point, function(content) {
           if(content) {
@@ -265,7 +268,8 @@ LidarViewer.prototype.identify = function(point) {
             var popup_value = self.createIdentifyValueForPopup(value, err)
             self.insertIdentifyValueIntoPopup(popup_value, marker)
           } else {
-            marker.getPopup().setContent('No Data')
+            marker.getPopup().setContent(self.errorText)
+            marker.openPopup()
           }
         })
       }
@@ -277,6 +281,7 @@ LidarViewer.prototype.insertIdentifyValueIntoPopup = function(value, marker) {
   var content = $(marker.getPopup().getContent())
   var popupContent = $('<div/>').html(content).contents()
   $(popupContent.find('.identify-value')[0]).html(value)
+  console.log('insertIdentifyValueIntoPopup', value)
   marker.getPopup().setContent(popupContent[0].outerHTML)
   var icon = new this.identifyIcon({html: '<div class="value">' + value.split('<br>')[0] + '</div>'})
   marker.setIcon(icon)
@@ -289,7 +294,7 @@ LidarViewer.prototype.createIdentifyValueForPopup = function(value, err) {
   var self = this
     , popup_value = ''
   if(err) {
-    popup_value = 'Error loading data'
+    popup_value = err
   } else {
     if(self.identifyType === 'elevation' || self.identifyType === 'hillshade') {
       if(!parseFloat(value)) {
@@ -444,17 +449,14 @@ LidarViewer.prototype._identifyValue = function (latlng, next) {
   var id_url = services.base_url_rest + self.identifyService + '/identify'
 
   var stateplane = '+proj=lcc +lat_1=39.45 +lat_2=38.3 +lat_0=37.66666666666666 +lon_0=-77 +x_0=400000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
-  var esriwebmercator = '+proj=lcc +lat_1=39.45 +lat_2=38.3 +lat_0=37.66666666666666 +lon_0=-77 +x_0=400000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
-
   var coords = proj4(stateplane,[latlng.lng, latlng.lat])
-  console.log(coords)
 
   var data = {
+    f: 'json',
     geometryType: 'esriGeometryPoint',
     geometry:'{"x":' + latlng.lng + ',"y":' + latlng.lat + ',"spatialReference":{"wkid":4265}}',
     //geometry:'{"x":' + coords[0] + ',"y":' + coords[1] + ',"spatialReference":{"wkid":26985}}',
     //pixelSize: '{"x":611.4962262812483,"y":611.4962262812473,"spatialReference":{"wkid":102100,"latestWkid":3857}}',
-    f: 'json',
     returnGeometry: false,
     returnCatalogItems: false
   }
@@ -464,10 +466,14 @@ LidarViewer.prototype._identifyValue = function (latlng, next) {
     data: data,
     dataType: "jsonp"
   }).done(function(res){
-    var value = res.value
-    next(value, null)
+    if(res.error) {
+      next(false, true)
+    } else {
+      var value = res.value
+      next(value, false)
+    }
   }).fail(function(res){
-    next(null, 'Error')
+    next(false, true)
   })
 }
 

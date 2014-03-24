@@ -76,18 +76,18 @@ Legend.prototype.update = function(type, service) {
   } else if (type === 'aspect') {
     this.aspect()
   } else if (type === 'hillshade') {
-    this.hillshade
+    this.hillshade()
   }
 }
 
 Legend.prototype.elevation = function(service){
-  $('.legend').show()
+  $('.legend').removeClass('hidden')
   $('.legend .lidar-legend img').attr('src', 'img/legend.jpg')
   this.updateElevation(service)
 }
 
 Legend.prototype.slope = function(){
-  $('.legend').show()
+  $('.legend').removeClass('hidden')
   $('.legend .lidar-legend img').attr('src', 'img/SlopeColorRamp.jpg')
   $(this.legendControl._div).find('.legendDesc').html('Slope (Percent Rise)')
   $(this.legendControl._div).find('.legendMin').html('0')
@@ -96,7 +96,7 @@ Legend.prototype.slope = function(){
 }
 
 Legend.prototype.aspect = function(){
-  $('.legend').show()
+  $('.legend').removeClass('hidden')
   $('.legend .lidar-legend img').attr('src', 'img/AspectColorRamp.jpg')
   $(this.legendControl._div).find('.legendDesc').html('Aspect (Azimuth)')
   $(this.legendControl._div).find('.legendMin').html('0')
@@ -105,7 +105,8 @@ Legend.prototype.aspect = function(){
 }
 
 Legend.prototype.hillshade = function(){
-  $('.legend').hide()
+  console.log('hillshade legend')
+  $('.legend').addClass('hidden')
 }
 
 Legend.prototype.updateElevation = function (service) {
@@ -128,16 +129,24 @@ Legend.prototype.updateElevation = function (service) {
     min = -51
     update(min, max)
   } else {
-    $('.legend').css("visibility", "visible")
-
     url = services.base_url_rest
       + service
       + '?f=pjson'
 
-    $.getJSON(url, function(res) {
-      min = res.minValues[0]
-      max = res.maxValues[0]
-      update(min, max)
+    $.ajax({
+      url: url,
+      type: "GET",
+      dataType: 'json',
+    }).done(function(res){
+      if(res.error) {
+        $('.legend').addClass('hidden')
+      } else {
+        min = res.minValues[0]
+        max = res.maxValues[0]
+        update(min, max)
+      }
+    }).fail(function(res){
+      $('.legend').addClass('hidden')
     })
   }
 }
@@ -161,6 +170,7 @@ function LidarViewer() {
   this.markerlayer = new L.LayerGroup()
   this.center = [38.8, -77.3]
   this.startZoom = 8
+  this.errorText = 'No information available.'
   this.identifyIcon = L.DivIcon.extend({
     options: {
         className: 'identify-div-icon',
@@ -397,13 +407,15 @@ LidarViewer.prototype.identify = function(point) {
           self.insertIdentifyValueIntoPopup(popup_value, marker)
         })
       } else {
-        marker.getPopup().setContent('No Data')
+        marker.getPopup().setContent(self.errorText)
+        marker.openPopup()
       }
     })
   } else {
     self._identifyValue(point, function(value, err){
-      if(value === 'NoData') {
-        marker.getPopup().setContent('No Data')
+      if(value === 'NoData' || err) {
+        marker.getPopup().setContent(self.errorText)
+        marker.openPopup()
       } else {
         self.identifyContent(point, function(content) {
           if(content) {
@@ -411,7 +423,8 @@ LidarViewer.prototype.identify = function(point) {
             var popup_value = self.createIdentifyValueForPopup(value, err)
             self.insertIdentifyValueIntoPopup(popup_value, marker)
           } else {
-            marker.getPopup().setContent('No Data')
+            marker.getPopup().setContent(self.errorText)
+            marker.openPopup()
           }
         })
       }
@@ -423,6 +436,7 @@ LidarViewer.prototype.insertIdentifyValueIntoPopup = function(value, marker) {
   var content = $(marker.getPopup().getContent())
   var popupContent = $('<div/>').html(content).contents()
   $(popupContent.find('.identify-value')[0]).html(value)
+  console.log('insertIdentifyValueIntoPopup', value)
   marker.getPopup().setContent(popupContent[0].outerHTML)
   var icon = new this.identifyIcon({html: '<div class="value">' + value.split('<br>')[0] + '</div>'})
   marker.setIcon(icon)
@@ -435,7 +449,7 @@ LidarViewer.prototype.createIdentifyValueForPopup = function(value, err) {
   var self = this
     , popup_value = ''
   if(err) {
-    popup_value = 'Error loading data'
+    popup_value = err
   } else {
     if(self.identifyType === 'elevation' || self.identifyType === 'hillshade') {
       if(!parseFloat(value)) {
@@ -590,17 +604,14 @@ LidarViewer.prototype._identifyValue = function (latlng, next) {
   var id_url = services.base_url_rest + self.identifyService + '/identify'
 
   var stateplane = '+proj=lcc +lat_1=39.45 +lat_2=38.3 +lat_0=37.66666666666666 +lon_0=-77 +x_0=400000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
-  var esriwebmercator = '+proj=lcc +lat_1=39.45 +lat_2=38.3 +lat_0=37.66666666666666 +lon_0=-77 +x_0=400000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
-
   var coords = proj4(stateplane,[latlng.lng, latlng.lat])
-  console.log(coords)
 
   var data = {
+    f: 'json',
     geometryType: 'esriGeometryPoint',
     geometry:'{"x":' + latlng.lng + ',"y":' + latlng.lat + ',"spatialReference":{"wkid":4265}}',
     //geometry:'{"x":' + coords[0] + ',"y":' + coords[1] + ',"spatialReference":{"wkid":26985}}',
     //pixelSize: '{"x":611.4962262812483,"y":611.4962262812473,"spatialReference":{"wkid":102100,"latestWkid":3857}}',
-    f: 'json',
     returnGeometry: false,
     returnCatalogItems: false
   }
@@ -610,10 +621,14 @@ LidarViewer.prototype._identifyValue = function (latlng, next) {
     data: data,
     dataType: "jsonp"
   }).done(function(res){
-    var value = res.value
-    next(value, null)
+    if(res.error) {
+      next(false, true)
+    } else {
+      var value = res.value
+      next(value, false)
+    }
   }).fail(function(res){
-    next(null, 'Error')
+    next(false, true)
   })
 }
 
@@ -886,7 +901,7 @@ module.exports = {
       "identify": "Elevation/MD_washington_dem_m/ImageServer"
     },
     {
-      "name": "Washington, D.C.",
+      "name": "Washington D.C.",
       "service": "ShadedRelief/MD_washingtonDC_shadedRelief/MapServer",
       "identify": "Elevation/MD_washingtonDC_dem_m/ImageServer"
     },
@@ -1013,7 +1028,7 @@ module.exports = {
       "identify": "Elevation/MD_washington_slope_m/ImageServer"
     },
     {
-      "name": "Washington, D.C.",
+      "name": "Washington D.C.",
       "service": "Statewide/MD_statewide_slope_m/MapServer",
       "identify": "Elevation/MD_washingtonDC_slope_m/ImageServer"
     },
@@ -1140,7 +1155,7 @@ module.exports = {
       "identify": "Elevation/MD_washington_aspect_m/ImageServer"
     },
     {
-      "name": "Washington, D.C.",
+      "name": "Washington D.C.",
       "service": "Statewide/MD_statewide_aspect_m/MapServer",
       "identify": "Elevation/MD_washingtonDC_aspect_m/ImageServer"
     },
@@ -1267,7 +1282,7 @@ module.exports = {
       "identify": "Elevation/MD_washington_hillshade_m/ImageServer"
     },
     {
-      "name": "Washington, D.C.",
+      "name": "Washington D.C.",
       "service": "Statewide/MD_statewide_hillshade_m/MapServer",
       "identify": "Elevation/MD_washingtonDC_hillshade_m/ImageServer"
     },
