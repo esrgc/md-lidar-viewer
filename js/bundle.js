@@ -599,7 +599,7 @@ LidarViewer.prototype._identifyValue = function (latlng, next) {
     geometryType: 'esriGeometryPoint',
     geometry:'{"x":' + latlng.lng + ',"y":' + latlng.lat + ',"spatialReference":{"wkid":4265}}',
     //geometry:'{"x":' + coords[0] + ',"y":' + coords[1] + ',"spatialReference":{"wkid":26985}}',
-    pixelSize: '{"x":611.4962262812483,"y":611.4962262812473,"spatialReference":{"wkid":102100,"latestWkid":3857}}',
+    //pixelSize: '{"x":611.4962262812483,"y":611.4962262812473,"spatialReference":{"wkid":102100,"latestWkid":3857}}',
     f: 'json',
     returnGeometry: false,
     returnCatalogItems: false
@@ -863,42 +863,42 @@ module.exports = {
     {
       "name": "Queen Anne's",
       "service": "ShadedRelief/MD_queenannes_shadedRelief/MapServer",
-      "identify": "Elevation/MD_queenannes_demStretched_m/ImageServer"
+      "identify": "Elevation/MD_queenannes_dem_m/ImageServer"
     },
     {
       "name": "Somerset",
-      "service": "Elevation/MD_somerset_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_somerset_demStretched_m/ImageServer"
+      "service": "ShadedRelief/MD_somerset_shadedRelief/MapServer",
+      "identify": "Elevation/MD_somerset_dem_m/ImageServer"
     },
     {
       "name": "St. Mary's",
-      "service": "Elevation/MD_stmarys_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_stmarys_demStretched_m/ImageServer"
+      "service": "ShadedRelief/MD_stmarys_shadedRelief/MapServer",
+      "identify": "Elevation/MD_stmarys_dem_m/ImageServer"
     },
     {
       "name": "Talbot",
-      "service": "Elevation/MD_talbot_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_talbot_demStretched_m/ImageServer"
+      "service": "ShadedRelief/MD_talbot_shadedRelief/MapServer",
+      "identify": "Elevation/MD_talbot_dem_m/ImageServer"
     },
     {
       "name": "Washington",
-      "service": "Elevation/MD_washington_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_washington_demStretched_m/ImageServer"
+      "service": "ShadedRelief/MD_washington_shadedRelief/MapServer",
+      "identify": "Elevation/MD_washington_dem_m/ImageServer"
     },
     {
       "name": "Washington, D.C.",
-      "service": "Elevation/MD_washingtonDC_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_washingtonDC_demStretched_m/ImageServer"
+      "service": "ShadedRelief/MD_washingtonDC_shadedRelief/MapServer",
+      "identify": "Elevation/MD_washingtonDC_dem_m/ImageServer"
     },
     {
       "name": "Wicomico",
-      "service": "Elevation/MD_wicomico_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_wicomico_demStretched_m/ImageServer"
+      "service": "ShadedRelief/MD_wicomico_shadedRelief/MapServer",
+      "identify": "Elevation/MD_wicomico_dem_m/ImageServer"
     },
     {
       "name": "Worcester",
-      "service": "Elevation/MD_worcester_demStretched_m/ImageServer",
-      "identify": "Elevation/MD_worcester_demStretched_m/ImageServer"
+      "service": "ShadedRelief/MD_worcester_shadedRelief/MapServer",
+      "identify": "Elevation/MD_worcester_dem_m/ImageServer"
     }
   ],
   "slope": [
