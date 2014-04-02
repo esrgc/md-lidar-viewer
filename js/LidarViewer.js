@@ -370,7 +370,6 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
           layers: service.split('/')[1]
           , format: 'image/png'
           , transparent: true
-          , attribution:'<a href="http://esrgc.org">ESRGC</a>'
           , opacity : opacity
           , pane: 'overlayPane'
         })
