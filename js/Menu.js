@@ -31,6 +31,22 @@ Menu.prototype.resizeMenu = function(){
   $('.layerMenu .options').css('max-height', $(window).height()-55)
 }
 
+Menu.prototype.close = function(el){
+  $('.layerMenu').addClass('closed')
+  $(this.menuControl._div).find('.toggle i').removeClass('fa-toggle-right')
+  $(this.menuControl._div).find('.toggle i').addClass('fa-bars')
+  $('.options').hide()
+  $('.layerMenu .title h4').hide()
+}
+
+Menu.prototype.open = function(el){
+  $('.layerMenu').removeClass('closed')
+  $(el).find('i').removeClass('fa-bars')
+  $(el).find('i').addClass('fa-toggle-right')
+  $('.options').show()
+  $('.layerMenu .title h4').show()
+}
+
 Menu.prototype.addEventListeners = function() {
   var self = this
 
@@ -83,16 +99,10 @@ Menu.prototype.addEventListeners = function() {
 
   $(this.menuControl._div).on('click', '.toggle', function(e) {
     if($('.layerMenu').hasClass('closed')) {
-      $('.layerMenu').removeClass('closed')
-      $(this).find('i').removeClass('fa-bars')
-      $(this).find('i').addClass('fa-toggle-right')
+      self.open()
     } else {
-      $('.layerMenu').addClass('closed')
-      $(this).find('i').removeClass('fa-toggle-right')
-      $(this).find('i').addClass('fa-bars')
+      self.close()
     }
-    $('.options').toggle()
-    $('.layerMenu .title h4').toggle()
   })
 }
 

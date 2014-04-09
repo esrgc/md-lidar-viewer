@@ -217,17 +217,21 @@ LidarViewer.prototype.makeMap = function() {
     })
   })
 
+  menu.lidarViewer = this
+  menu.menuControl.addTo(this.map)
+  menu.addEventListeners()
+  menu.resizeMenu()
+  if(window.location.hash.indexOf('embed') >= 0) {
+    menu.close()
+  }
+  legend.legendControl.addTo(this.map)
+
   var hash = new L.Hash(this.map)
   L.control.scale().addTo(this.map)
   $('.leaflet-control-scale').addClass('hidden-xs')
   L.control.zoomControlCenter({
     center: this.map.getCenter()
   }).addTo(this.map)
-  menu.lidarViewer = this
-  menu.menuControl.addTo(this.map)
-  menu.addEventListeners()
-  menu.resizeMenu()
-  legend.legendControl.addTo(this.map)
 
   L.control.layersCustom(this.baseMaps, this.overlays, {
     collapsed: false
