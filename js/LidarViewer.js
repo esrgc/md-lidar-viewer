@@ -285,7 +285,6 @@ LidarViewer.prototype.insertIdentifyValueIntoPopup = function(value, marker) {
   var content = $(marker.getPopup().getContent())
   var popupContent = $('<div/>').html(content).contents()
   $(popupContent.find('.identify-value')[0]).html(value)
-  console.log('insertIdentifyValueIntoPopup', value)
   marker.getPopup().setContent(popupContent[0].outerHTML)
   var icon = new this.identifyIcon({html: '<div class="value">' + value.split('<br>')[0] + '</div>'})
   marker.setIcon(icon)
@@ -457,8 +456,9 @@ LidarViewer.prototype._identifyValue = function (latlng, next) {
   var data = {
     f: 'json',
     geometryType: 'esriGeometryPoint',
-    geometry:'{"x":' + latlng.lng + ',"y":' + latlng.lat + ',"spatialReference":{"wkid":4265}}',
+    //geometry:'{"x":' + latlng.lng + ',"y":' + latlng.lat + ',"spatialReference":{"wkid":4326}}',
     //geometry:'{"x":' + coords[0] + ',"y":' + coords[1] + ',"spatialReference":{"wkid":26985}}',
+    geometry: coords[0] + ',' + coords[1],
     //pixelSize: '{"x":611.4962262812483,"y":611.4962262812473,"spatialReference":{"wkid":102100,"latestWkid":3857}}',
     returnGeometry: false,
     returnCatalogItems: false
@@ -467,7 +467,7 @@ LidarViewer.prototype._identifyValue = function (latlng, next) {
     url: id_url,
     type: "GET",
     data: data,
-    dataType: "jsonp"
+    dataType: 'json'
   }).done(function(res){
     if(res.error) {
       next(false, true)
