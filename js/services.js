@@ -4,25 +4,25 @@ module.exports = {
   "statewide": [
     {
       "name": "Statewide Shaded Relief",
-      "service": "Statewide/MD_statewide_shadedRelief_m/MapServer",
+      "service": "ShadedRelief/MD_statewide_shadedRelief_m/MapServer",
       "identify": "DEM_m/MD_statewide_dem_m/ImageServer",
       "type": "elevation"
     },
     {
       "name": "Statewide Aspect",
-      "service": "Statewide/MD_statewide_aspect_m/MapServer",
+      "service": "Aspect/MD_statewide_aspect_m/MapServer",
       "identify": "Aspect/MD_statewide_aspect_m/ImageServer",
       "type": "aspect"
     },
     {
       "name": "Statewide Slope",
-      "service": "Statewide/MD_statewide_slope_m/MapServer",
+      "service": "Slope/MD_statewide_slope_m/MapServer",
       "identify": "Slope/MD_statewide_slope_m/ImageServer",
       "type": "slope"
     },
     {
       "name": "Statewide Hillshade",
-      "service": "Statewide/MD_statewide_hillshade_m/MapServer",
+      "service": "Hillshade/MD_statewide_hillshade_m/MapServer",
       "identify": "DEM_m/MD_statewide_dem_m/ImageServer",
       "type": "hillshade"
     }
