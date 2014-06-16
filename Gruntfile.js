@@ -97,6 +97,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('assemble');
   grunt.loadNpmTasks('grunt-contrib-watch');
 
-  grunt.registerTask('default', ['bump', 'less', 'browserify', 'uglify', 'concat', 'assemble']);
+  grunt.registerTask('default', ['bump', 'less', 'browserify', 'uglify', 'concat', 'assemble', 'watch']);
 
 };
