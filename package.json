@@ -5,7 +5,7 @@
   "name": "md-lidar-viewer",
   "description": "md-lidar-viewer",
   "license": "MIT",
-  "version": "0.3.378",
+  "version": "0.3.383",
   "main": "Gruntfile.js",
   "dependencies": {
     "async": "~0.2.10",

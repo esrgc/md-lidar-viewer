@@ -79,14 +79,14 @@ LidarViewer.prototype.makeMap = function() {
   var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png')
     , world_imagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/')
     , gray = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.hd7o0kfk/{z}/{x}/{y}.png')
-    , imap_6in = L.tileLayer.wms("http://mdimap.us/arcgis/services/ImageryBaseMapsEarthCover/MD.State.6InchImagery/MapServer/WMSServer", {
-      layers: '0',
+    , imap_6in = L.tileLayer.wms("http://geodata.md.gov/imap/services/Imagery/MD_SixInchImagery/MapServer/WMSServer", {
+      layers: 'MD_SixInchImagery',
       format: 'image/png',
       transparent: true,
       attribution: "MD iMap"
     })
-    , imap_6in_cir = L.tileLayer.wms("http://mdimap.us/arcgis/services/ImageryBaseMapsEarthCover/MD.State.6InchCIRImagery/MapServer/WMSServer", {
-      layers: '0',
+    , imap_6in_cir = L.tileLayer.wms("http://geodata.md.gov/imap/services/Imagery/MD_SixInchCIRImagery/MapServer/WMSServer", {
+      layers: 'MD_SixInchCIRImagery',
       format: 'image/png',
       transparent: true,
       attribution: "MD iMap"
