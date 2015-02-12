@@ -238,21 +238,21 @@ LidarViewer.prototype.makeMap = function() {
       layers: 'MD_SixInchImagery',
       format: 'image/png',
       transparent: true,
-      attribution: "MD iMap"
+      attribution: "MD iMAP"
     })
     , imap_6in_cir = L.tileLayer.wms("http://geodata.md.gov/imap/services/Imagery/MD_SixInchCIRImagery/MapServer/WMSServer", {
       layers: 'MD_SixInchCIRImagery',
       format: 'image/png',
       transparent: true,
-      attribution: "MD iMap"
+      attribution: "MD iMAP"
     })
 
   this.baseMaps = {
     "Gray": gray
     , "World Imagery": world_imagery
     , "World Imagery with Labels": mapboxsat
-    , 'MD iMap 6 Inch Imagery': imap_6in
-    , 'MD iMap 6 Inch CIR Imagery': imap_6in_cir
+    , 'MD iMAP 6 Inch Imagery': imap_6in
+    , 'MD iMAP 6 Inch CIR Imagery': imap_6in_cir
   }
 
   this.countylayer = L.geoJson(this.mdcnty)
