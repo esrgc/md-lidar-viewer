@@ -179,6 +179,13 @@ function LidarViewer() {
         iconAnchor: [12, 55]
     }
   })
+  if (window.location.hash) {
+    var location = window.location.hash.replace('#', '').split('/')
+    if (location.length === 3) {
+      this.startZoom = location[0]
+      this.center = [location[1], location[2]]
+    }
+  }
 }
 
 LidarViewer.prototype.start = function() {
