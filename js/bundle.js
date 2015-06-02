@@ -82,7 +82,12 @@ Legend.prototype.update = function(type, service) {
 
 Legend.prototype.elevation = function(service){
   $('.legend').removeClass('hidden')
-  $('.legend .lidar-legend img').attr('src', 'img/legend.jpg')
+  console.log(service)
+  if (service.indexOf('statewide') >= 0) {
+    $('.legend .lidar-legend img').attr('src', 'img/ColorRamp.jpg')
+  } else {
+    $('.legend .lidar-legend img').attr('src', 'img/legend.jpg')
+  }
   this.updateElevation(service)
 }
 
