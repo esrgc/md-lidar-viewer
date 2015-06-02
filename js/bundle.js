@@ -179,14 +179,7 @@ function LidarViewer() {
         iconAnchor: [12, 55]
     }
   })
-  if (window.location.hash) {
-    var location = window.location.hash.replace('#', '').split('/')
-    console.log(location)
-    if (location.length === 3) {
-      this.startZoom = location[0]
-      this.center = [location[1], location[2]]
-    }
-  }
+
 }
 
 LidarViewer.prototype.start = function() {
@@ -238,7 +231,14 @@ LidarViewer.prototype.start = function() {
 
 LidarViewer.prototype.makeMap = function() {
   var self = this
-
+  if (window.location.hash) {
+    var location = window.location.hash.replace('#', '').split('/').map(Number)
+    console.log(location)
+    if (location.length === 3) {
+      this.startZoom = location[0]
+      this.center = [location[1], location[2]]
+    }
+  }
   var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png')
     , world_imagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/')
     , gray = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.hd7o0kfk/{z}/{x}/{y}.png')
