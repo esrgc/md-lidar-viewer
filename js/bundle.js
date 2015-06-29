@@ -248,13 +248,13 @@ LidarViewer.prototype.makeMap = function() {
     , world_imagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/')
     , gray = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.hd7o0kfk/{z}/{x}/{y}.png')
     , imap_6in = L.tileLayer.wms("http://imagery.geodata.md.gov/imap/services/SixInch/SixInchImagery2011_2013/MapServer/WMSServer", {
-      layers: 'MD_SixInchImagery',
+      layers: 'Six Inch Imagery 2011-2013',
       format: 'image/png',
       transparent: true,
       attribution: "MD iMAP"
     })
     , imap_6in_cir = L.tileLayer.wms("http://imagery.geodata.md.gov/imap/services/SixInch/SixInchCIRImagery2011_2013/MapServer/WMSServer", {
-      layers: 'MD_SixInchCIRImagery',
+      layers: 'Six Inch CIR Imagery 2011-2013',
       format: 'image/png',
       transparent: true,
       attribution: "MD iMAP"
