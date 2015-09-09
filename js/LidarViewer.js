@@ -198,11 +198,11 @@ LidarViewer.prototype.makeMap = function() {
     zoomControl: false,
     minZoom: 8,
     unloadInvisibleTiles: true,
-    reuseTiles: true 
+    reuseTiles: true
   })
-  
+
   this.map.setView(this.center, this.startZoom, {animate: false})
-  
+
   self.clicked = false
   this.map.on('click', function(e) {
     if(self.clicked) {
@@ -214,7 +214,7 @@ LidarViewer.prototype.makeMap = function() {
         if(self.clicked) {
           self.identify(e.latlng)
           self.clicked = false
-        } 
+        }
       }, 400)
     }
   })
@@ -424,7 +424,7 @@ LidarViewer.prototype.setIdentifyService = function(name) {
     this.activeCounty = name
     this.zoomToCounty(name)
   }
-  
+
   if(this.activeService.indexOf('slope') >= 0) {
     this.identifyType = 'slope'
     this.statewide = true
