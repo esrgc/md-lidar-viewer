@@ -3,12 +3,12 @@
  */
 
 function GeoCoder() {
-  this.url = 'http://mdimap.us/ArcGIS/rest/services/'
-    + 'GeocodeServices/MD.State.MDCascadingLocatorWithZIPCodes/GeocodeServer/'
-    + 'findAddressCandidates'
+  this.url = 'http://geodata.md.gov'
+    + '/imap/rest/services/GeocodeServices/MD_CompositeLocatorWithZIPCodeCentroids/GeocodeServer/findAddressCandidates'
 }
 
 GeoCoder.prototype.search = function(term, next) {
+  console.log(term);
   var query = {
     SingleLine: term
     , outSR: 4326
@@ -20,6 +20,7 @@ GeoCoder.prototype.search = function(term, next) {
     , data: query
     , url : this.url
     , success: function(res) {
+      console.log(res);
       if (res.candidates.length) {
         var latlng = [
           res.candidates[0].location.y
