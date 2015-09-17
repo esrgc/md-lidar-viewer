@@ -51,13 +51,13 @@
     },
     {
         "County": "Caroline",
-        "Date": 2004,
+        "Date": 2013,
         "Point Spacing": "2m",
-        "Vertical Accuracy": "14.3cm RMSE",
+        "Vertical Accuracy": "9.25cm RMSE",
         "Horizontal Accuracy": "NSSDA accuracy for 1:2400/FEMA 2003 compliant",
         "Vertical Datum": "NAVD88",
         "Horizontal Datum": "NAD83",
-        "Project Partners": "MDDNR"
+        "Project Partners": "USGS"
     },
     {
         "County": "Carroll",
@@ -71,13 +71,13 @@
     },
     {
         "County": "Cecil",
-        "Date": 2005,
+        "Date": 2013,
         "Point Spacing": "2m",
-        "Vertical Accuracy": "9.3cm RMSE",
+        "Vertical Accuracy": "12.5cm RMSE",
         "Horizontal Accuracy": "NSSDA accuracy for 1:2400",
         "Vertical Datum": "NAVD88",
         "Horizontal Datum": "NAD83",
-        "Project Partners": "MDDNR"
+        "Project Partners": "USGS"
     },
     {
         "County": "Charles",
@@ -91,13 +91,13 @@
     },
     {
         "County": "Dorchester",
-        "Date": 2004,
+        "Date": 2013,
         "Point Spacing": "2m",
-        "Vertical Accuracy": "14.3cm RMSE",
+        "Vertical Accuracy": "9.25cm RMSE",
         "Horizontal Accuracy": "NSSDA accuracy for 1:2400",
         "Vertical Datum": "NAVD88",
         "Horizontal Datum": "NAD83",
-        "Project Partners": "MDDNR"
+        "Project Partners": "USGS"
     },
     {
         "County": "Frederick",
@@ -161,23 +161,23 @@
     },
     {
         "County": "Prince George's",
-        "Date": 2008,
+        "Date": 2014,
         "Point Spacing": "",
-        "Vertical Accuracy": "10.7cm RMSE",
+        "Vertical Accuracy": "8.5cm RMSE",
         "Horizontal Accuracy": "",
         "Vertical Datum": "NAVD88",
         "Horizontal Datum": "NAD83",
-        "Project Partners": "National Capital Region Lidar"
+        "Project Partners": "MD MNCPPC"
     },
     {
         "County": "Queen Anne's",
-        "Date": 2004,
+        "Date": 2013,
         "Point Spacing": "2m",
-        "Vertical Accuracy": "14.3cm RMSE",
+        "Vertical Accuracy": "12.5cm RMSE",
         "Horizontal Accuracy": "NSSDA accuracy for 1:2400/FEMA 2003 compliant",
         "Vertical Datum": "NAVD88",
         "Horizontal Datum": "NAD83",
-        "Project Partners": "MDDNR"
+        "Project Partners": "Queen Anne’s County"
     },
     {
         "County": "Somerset",
