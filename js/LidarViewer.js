@@ -372,13 +372,15 @@ LidarViewer.prototype.getMetadataFromPoint = function (point) {
 
 LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
   var self = this
+  console.log(service, name)
   this.lidarGroup.clearLayers()
   if(service) {
     this.layertype = service.split('/')[2]
     var layer = {}
     if (this.layertype === 'ImageServer') {
+      var layerName = 0
       this.lidarGroup.addLayer(L.tileLayer.wms(services.base_url + service + "/WMSServer", {
-          layers: service.split('/')[1]
+          layers: layerName
           , format: 'image/png'
           , transparent: true
           , opacity : opacity
