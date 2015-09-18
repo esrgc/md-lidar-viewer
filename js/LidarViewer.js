@@ -84,6 +84,7 @@ LidarViewer.prototype.makeMap = function() {
       this.center = [location[1], location[2]]
     }
   }
+
   var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png')
     , world_imagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/')
     , gray = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.hd7o0kfk/{z}/{x}/{y}.png')
@@ -200,7 +201,6 @@ LidarViewer.prototype.makeMap = function() {
     unloadInvisibleTiles: true,
     reuseTiles: true
   })
-
   this.map.setView(this.center, this.startZoom, {animate: false})
 
   self.clicked = false
@@ -392,6 +392,15 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
           errorTileUrl: 'img/emptytile.png'
           , attribution:'<a href="http://esrgc.org">ESRGC</a>'
           , opacity: opacity
+        })
+      )
+    } else if (this.layertype === 'TileServer') {
+      var layerName = service.split('/')[1]
+      this.lidarGroup.addLayer(L.tileLayer('http://apps.esrgc.org/tilestream/v2/' + layerName + '/{z}/{x}/{y}.png', {
+          tms: true,
+          errorTileUrl: 'img/emptytile.png',
+          attribution:'<a href="http://esrgc.org">ESRGC</a>',
+          opacity: opacity
         })
       )
     }
