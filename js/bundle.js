@@ -240,7 +240,7 @@ LidarViewer.prototype.makeMap = function() {
   var self = this
   if (window.location.hash) {
     var location = window.location.hash.replace('#', '').split('/').map(Number)
-    console.log(location)
+
     if (location.length === 3) {
       this.startZoom = location[0]
       this.center = [location[1], location[2]]
@@ -250,17 +250,21 @@ LidarViewer.prototype.makeMap = function() {
   var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png')
     , world_imagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/')
     , gray = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.hd7o0kfk/{z}/{x}/{y}.png')
-    , imap_6in = L.tileLayer.wms("http://imagery.geodata.md.gov/imap/services/SixInch/SixInchImagery2011_2013/MapServer/WMSServer", {
-      layers: 'Six Inch Imagery 2011-2013',
-      format: 'image/png',
-      transparent: true,
-      attribution: "MD iMAP"
+
+    var imap_6in = L.esri.dynamicMapLayer({
+      url: 'http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer'
     })
-    , imap_6in_cir = L.tileLayer.wms("http://imagery.geodata.md.gov/imap/services/SixInch/SixInchCIRImagery2011_2013/MapServer/WMSServer", {
-      layers: 'Six Inch CIR Imagery 2011-2013',
-      format: 'image/png',
-      transparent: true,
-      attribution: "MD iMAP"
+
+    var renderingRule = {
+      "rasterFunction" : "ExtractBand",
+      "rasterFunctionArguments" : {
+         "BandNames":["Band_4","Band_1","Band_2"]
+       }
+    }
+    var imap_6in_cir = L.esri.imageMapLayer({
+      url: 'http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/ImageServer',
+      renderingRule: renderingRule,
+      useCors: false
     })
 
   this.baseMaps = {
