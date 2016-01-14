@@ -379,14 +379,18 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
     var layer = {}
     if (this.layertype === 'ImageServer') {
       var layerName = 0
-      this.lidarGroup.addLayer(L.tileLayer.wms(services.base_url + service + "/WMSServer", {
-          layers: layerName
-          , format: 'image/png'
-          , transparent: true
-          , opacity : opacity
-          , pane: 'overlayPane'
-        })
-      )
+      var l = L.esri.imageMapLayer({
+        url: services.base_url_rest + service
+      })
+      this.lidarGroup.addLayer(l)
+      // this.lidarGroup.addLayer(L.tileLayer.wms(services.base_url + service + "/WMSServer", {
+      //     layers: layerName
+      //     , format: 'image/png'
+      //     , transparent: true
+      //     , opacity : opacity
+      //     , pane: 'overlayPane'
+      //   })
+      // )
     } else if (this.layertype === 'MapServer') {
       this.lidarGroup.addLayer(L.tileLayer(services.base_url_rest + service + '/tile/{z}/{y}/{x}/', {
           errorTileUrl: 'img/emptytile.png'
