@@ -30,7 +30,7 @@ module.exports = {
   "elevation": [
     {
       "name": "Allegany",
-      "service": "ShadedRelief/allegany_shadedrelief/TileServer",
+      "service": "ShadedRelief/MD_allegany_shadedRelief_RGB/ImageServer",
       "identify": "DEM_m/MD_allegany_dem_m/ImageServer"
     },
     {
