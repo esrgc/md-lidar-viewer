@@ -811,8 +811,8 @@ $(function(){
 module.exports = {
   // "base_url" : "http://lidar.salisbury.edu/ArcGIS/services/",
   // "base_url_rest": "http://lidar.salisbury.edu/ArcGIS/rest/services/",
-  "base_url" : "http://http://lidar.geodata.md.gov/imap/services/",
-  "base_url_rest": "http://http://lidar.geodata.md.gov/imap/rest/services/",
+  "base_url" : "http://lidar.geodata.md.gov/imap/services/",
+  "base_url_rest": "http://lidar.geodata.md.gov/imap/rest/services/",
   "statewide": [
     {
       "name": "Statewide Shaded Relief",
