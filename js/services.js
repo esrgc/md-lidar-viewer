@@ -1,29 +1,31 @@
 module.exports = {
-  "base_url" : "http://lidar.salisbury.edu/ArcGIS/services/",
-  "base_url_rest": "http://lidar.salisbury.edu/ArcGIS/rest/services/",
+  // "base_url" : "http://lidar.salisbury.edu/ArcGIS/services/",
+  // "base_url_rest": "http://lidar.salisbury.edu/ArcGIS/rest/services/",
+  "base_url" : "http://http://lidar.geodata.md.gov/imap/services/",
+  "base_url_rest": "http://http://lidar.geodata.md.gov/imap/rest/services/",
   "statewide": [
     {
       "name": "Statewide Shaded Relief",
-      "service": "ShadedRelief/MD_statewide_shadedRelief_RGB/ImageServer",
-      "identify": "DEM_m/MD_statewide_dem_m/ImageServer",
+      "service": "Statewide/MD_statewide_shadedRelief_RGB/ImageServer",
+      "identify": "Statewide/MD_statewide_dem_m/ImageServer",
       "type": "elevation"
     },
     {
       "name": "Statewide Aspect",
-      "service": "Aspect/MD_statewide_aspect_RGB/ImageServer",
-      "identify": "Aspect/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
+      "identify": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "type": "aspect"
     },
     {
       "name": "Statewide Slope",
-      "service": "Slope/MD_statewide_slope_RGB/ImageServer",
-      "identify": "Slope/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
+      "identify": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "type": "slope"
     },
     {
       "name": "Statewide Hillshade",
-      "service": "Hillshade/MD_statewide_hillshade_m/ImageServer",
-      "identify": "DEM_m/MD_statewide_dem_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
+      "identify": "Statewide/MD_statewide_dem_m/ImageServer",
       "type": "hillshade"
     }
   ],
