@@ -969,145 +969,145 @@ module.exports = {
   "slope": [
     {
       "name": "Allegany",
-      "service": "Allegany/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Allegany/MD_allegany_slope_m/ImageServer"
     },
     {
       "name": "Anne Arundel",
-      "service": "AnneArundel/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "AnneArundel/MD_annearundel_slope_m/ImageServer"
     },
     {
       "name": "Baltimore",
-      "service": "Baltimore/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Baltimore/MD_baltimore_slope_m/ImageServer"
     },
     {
       "name": "Baltimore City",
-      "service": "BaltimoreCity/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "BaltimoreCity/MD_baltimorecity_slope_m/ImageServer"
     },
     {
       "name": "Calvert",
-      "service": "Calvert/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Calvert/MD_calvert_slope_m/ImageServer"
     },
     {
       "name": "Caroline",
-      "service": "Caroline/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Caroline/MD_caroline_slope_m/ImageServer"
     },
     {
       "name": "Carroll",
-      "service": "Carroll/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Carroll/MD_carroll_slope_m/ImageServer"
     },
     {
       "name": "Cecil",
-      "service": "Cecil/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Cecil/MD_cecil_slope_m/ImageServer"
     },
     {
       "name": "Charles",
-      "service": "Charles/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Charles/MD_charles_slope_m/ImageServer"
     },
     {
       "name": "Dorchester",
-      "service": "Dorchester/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Dorchester/MD_dorchester_slope_m/ImageServer"
     },
     {
       "name": "Frederick",
-      "service": "Frederick/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Frederick/MD_frederick_slope_m/ImageServer"
     },
     {
       "name": "Garrett",
-      "service": "Garrett/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Garrett/MD_garrett_slope_m/ImageServer"
     },
     {
       "name": "Harford",
-      "service": "Harford/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Harford/MD_harford_slope_m/ImageServer"
     },
     {
       "name": "Howard",
-      "service": "Howard/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Howard/MD_howard_slope_m/ImageServer"
     },
     {
       "name": "Kent",
-      "service": "Kent/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Kent/MD_kent_slope_m/ImageServer"
     },
     {
       "name": "Montgomery",
-      "service": "Montgomery/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Montgomery/MD_montgomery_slope_m/ImageServer"
     },
     {
       "name": "Prince George's",
-      "service": "PrinceGeorges/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "PrinceGeorges/MD_princegeorges_slope_m/ImageServer"
     },
     {
       "name": "Queen Anne's",
-      "service": "QueenAnnes/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "QueenAnnes/MD_queenannes_slope_m/ImageServer"
     },
     {
       "name": "Somerset",
-      "service": "Somerset/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Somerset/MD_somerset_slope_m/ImageServer"
     },
     {
       "name": "St. Mary's",
-      "service": "StMarys/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "StMarys/MD_stmarys_slope_m/ImageServer"
     },
     {
       "name": "Talbot",
-      "service": "Talbot/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Talbot/MD_talbot_slope_m/ImageServer"
     },
     {
       "name": "Washington",
-      "service": "Washington/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Washington/MD_washington_slope_m/ImageServer"
     },
     {
       "name": "Washington D.C.",
-      "service": "WashingtonDC/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "WashingtonDC/MD_washingtonDC_slope_m/ImageServer"
     },
     {
       "name": "Wicomico",
-      "service": "Wicomico/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Wicomico/MD_wicomico_slope_m/ImageServer"
     },
     {
       "name": "Worcester",
-      "service": "Worcester/MD_statewide_slope_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_slope_RGB/ImageServer",
       "identify": "Worcester/MD_worcester_slope_m/ImageServer"
     }
   ],
   "aspect": [
     {
       "name": "Allegany",
-      "service": "Aspect/MD_statewide_aspect_RGB/ImageServer",
-      "identify": "Aspect/MD_allegany_aspect_m/ImageServer"
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
+      "identify": "Allegany/MD_allegany_aspect_m/ImageServer"
     },
     {
       "name": "Anne Arundel",
-      "service": "Aspect/MD_statewide_aspect_RGB/ImageServer",
-      "identify": "Aspect/MD_annearundel_aspect_m/ImageServer"
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
+      "identify": "AnneArundel/MD_annearundel_aspect_m/ImageServer"
     },
     {
       "name": "Baltimore",
-      "service": "Allegany/MD_statewide_aspect_RGB/ImageServer",
-      "identify": "Allegany/MD_baltimore_aspect_m/ImageServer"
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
+      "identify": "Baltimore/MD_baltimore_aspect_m/ImageServer"
     },
     {
       "name": "Baltimore City",
@@ -1116,17 +1116,17 @@ module.exports = {
     },
     {
       "name": "Calvert",
-      "service": "Calvert/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "Calvert/MD_calvert_aspect_m/ImageServer"
     },
     {
       "name": "Caroline",
-      "service": "Caroline/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "Caroline/MD_caroline_aspect_m/ImageServer"
     },
     {
       "name": "Carroll",
-      "service": "Carroll/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "Carroll/MD_carroll_aspect_m/ImageServer"
     },
     {
@@ -1136,214 +1136,214 @@ module.exports = {
     },
     {
       "name": "Charles",
-      "service": "Charles/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "Charles/MD_charles_aspect_m/ImageServer"
     },
     {
       "name": "Dorchester",
-      "service": "Dorchester/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "Dorchester/MD_dorchester_aspect_m/ImageServer"
     },
     {
       "name": "Frederick",
-      "service": "Frederick/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "Frederick/MD_frederick_aspect_m/ImageServer"
     },
     {
       "name": "Garrett",
-      "service": "Garrett/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "Garrett/MD_garrett_aspect_m/ImageServer"
     },
     {
       "name": "Harford",
-      "service": "Harford/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "Harford/MD_harford_aspect_m/ImageServer"
     },
     {
       "name": "Howard",
-      "service": "Howard/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "Howard/MD_howard_aspect_m/ImageServer"
     },
     {
       "name": "Kent",
-      "service": "Kent/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "Kent/MD_kent_aspect_m/ImageServer"
     },
     {
       "name": "Montgomery",
-      "service": "Montgomery/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "Montgomery/MD_montgomery_aspect_m/ImageServer"
     },
     {
       "name": "Prince George's",
-      "service": "PrinceGeorges/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "PrinceGeorges/MD_princegeorges_aspect_m/ImageServer"
     },
     {
       "name": "Queen Anne's",
-      "service": "QueenAnnes/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "QueenAnnes/MD_queenannes_aspect_m/ImageServer"
     },
     {
       "name": "Somerset",
-      "service": "Somerset/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "Somerset/MD_somerset_aspect_m/ImageServer"
     },
     {
       "name": "St. Mary's",
-      "service": "StMarys/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "StMarys/MD_stmarys_aspect_m/ImageServer"
     },
     {
       "name": "Talbot",
-      "service": "Talbot/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "Talbot/MD_talbot_aspect_m/ImageServer"
     },
     {
       "name": "Washington",
-      "service": "Washington/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "Washington/MD_washington_aspect_m/ImageServer"
     },
     {
       "name": "Washington D.C.",
-      "service": "Washington/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "Washington/MD_washingtonDC_aspect_m/ImageServer"
     },
     {
       "name": "Wicomico",
-      "service": "Wicomico/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "Wicomico/MD_wicomico_aspect_m/ImageServer"
     },
     {
       "name": "Worcester",
-      "service": "Worcester/MD_statewide_aspect_RGB/ImageServer",
+      "service": "Statewide/MD_statewide_aspect_RGB/ImageServer",
       "identify": "Worcester/MD_worcester_aspect_m/ImageServer"
     }
   ],
   "hillshade": [
     {
       "name": "Allegany",
-      "service": "Allegany/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Allegany/MD_allegany_hillshade_m/ImageServer"
     },
     {
       "name": "Anne Arundel",
-      "service": "AnneArundel/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Anne Arundel/MD_annearundel_hillshade_m/ImageServer"
     },
     {
       "name": "Baltimore",
-      "service": "Baltimore/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Baltimore/MD_baltimore_hillshade_m/ImageServer"
     },
     {
       "name": "Baltimore City",
-      "service": "BaltimoreCity/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "BaltimoreCity/MD_baltimorecity_hillshade_m/ImageServer"
     },
     {
       "name": "Calvert",
-      "service": "Calvert/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Calvert/MD_calvert_hillshade_m/ImageServer"
     },
     {
       "name": "Caroline",
-      "service": "Caroline/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Caroline/MD_caroline_hillshade_m/ImageServer"
     },
     {
       "name": "Carroll",
-      "service": "Carroll/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Carroll/MD_carroll_hillshade_m/ImageServer"
     },
     {
       "name": "Cecil",
-      "service": "Cecil/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Cecil/MD_cecil_hillshade_m/ImageServer"
     },
     {
       "name": "Charles",
-      "service": "Charles/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Charles/MD_charles_hillshade_m/ImageServer"
     },
     {
       "name": "Dorchester",
-      "service": "Dorchester/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Dorchester/MD_dorchester_hillshade_m/ImageServer"
     },
     {
       "name": "Frederick",
-      "service": "Frederick/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Frederick/MD_frederick_hillshade_m/ImageServer"
     },
     {
       "name": "Garrett",
-      "service": "Garrett/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Garrett/MD_garrett_hillshade_m/ImageServer"
     },
     {
       "name": "Harford",
-      "service": "Harford/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Harford/MD_harford_hillshade_m/ImageServer"
     },
     {
       "name": "Howard",
-      "service": "Howard/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Howard/MD_howard_hillshade_m/ImageServer"
     },
     {
       "name": "Kent",
-      "service": "Kent/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Kent/MD_kent_hillshade_m/ImageServer"
     },
     {
       "name": "Montgomery",
-      "service": "Montgomery/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Montgomery/MD_montgomery_hillshade_m/ImageServer"
     },
     {
       "name": "Prince George's",
-      "service": "PrinceGeorges/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "PrinceGeorges/MD_princegeorges_hillshade_m/ImageServer"
     },
     {
       "name": "Queen Anne's",
-      "service": "QueenAnnes/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "QueenAnnes/MD_queenannes_hillshade_m/ImageServer"
     },
     {
       "name": "Somerset",
-      "service": "Somerset/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Somerset/MD_somerset_hillshade_m/ImageServer"
     },
     {
       "name": "St. Mary's",
-      "service": "StMarys/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "StMarys/MD_stmarys_hillshade_m/ImageServer"
     },
     {
       "name": "Talbot",
-      "service": "Talbot/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Talbot/MD_talbot_hillshade_m/ImageServer"
     },
     {
       "name": "Washington",
-      "service": "Washington/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Washington/MD_washington_hillshade_m/ImageServer"
     },
     {
       "name": "Washington D.C.",
-      "service": "WashingtonDC/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "WashingtonDC/MD_washingtonDC_hillshade_m/ImageServer"
     },
     {
       "name": "Wicomico",
-      "service": "Wicomico/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Wicomico/MD_wicomico_hillshade_m/ImageServer"
     },
     {
       "name": "Worcester",
-      "service": "Worcester/MD_statewide_hillshade_m/ImageServer",
+      "service": "Statewide/MD_statewide_hillshade_m/ImageServer",
       "identify": "Worcester/MD_worcester_hillshade_m/ImageServer"
     }
   ]
