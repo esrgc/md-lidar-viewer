@@ -291,16 +291,31 @@ LidarViewer.prototype.makeMap = function() {
     self.watershedoverlay.bringToFront()
   })
 
-  var template_current = '<h6>County: {COUNTY}</h6>'+
-    '<h6>Date: {DATE}</h6>'+
-    '<h6>Partners: {PROJ_PARTN}</h6>'+
-    '<h6>Point spacing: {POINT_SPAC}</h6>'+
-    '<h6>Vertical Accuracy: {VERT_ACC}</h6>'+
-    '<h6>Vertical Datum: {VERT_DATUM}</h6>'
+  //old template
+  // var template_current = '<h6>County: {COUNTY}</h6>'+
+  //   '<h6>Date: {DATE}</h6>'+
+  //   '<h6>Partners: {PROJ_PARTN}</h6>'+
+  //   '<h6>Point spacing: {POINT_SPAC}</h6>'+
+  //   '<h6>Vertical Accuracy: {VERT_ACC}</h6>'+
+  //   '<h6>Vertical Datum: {VERT_DATUM}</h6>'
 
-  var template_future = '<h6>County: {NAME}</h6>'+
-    '<h6>Delivery: {DELIVERY}</h6>' +
-    '<h6>Acquistion: {ACQ_DETAIL}</h6>'
+  var template_current = 
+    //'<h6>County: {COUNTY}</h6>'+
+    '<h6>Date: {DATE}</h6>'+
+    '<h6>Partners: {PARTNERS}</h6>'+
+    '<h6>Point spacing: {NPS}</h6>'+
+    '<h6>Vertical Accuracy: {ACCURACY}</h6>'+
+    '<h6>Vertical Datum: {VERTICAL_D}</h6>';
+
+  var template_future = 
+    //'<h6>County: {NAME}</h6>'+
+    // '<h6>Delivery: {DELIVERY}</h6>' +
+    // '<h6>Acquistion: {ACQ_DETAIL}</h6>'
+    '<h6>Date: {DATE}</h6>'+
+    '<h6>Collection: {Collection}</h6>' +
+    '<h6>Accuracy: {ACCURACY}</h6>' +
+    '<h6>Point spacing: {NPS}</h6>'+
+    '<h6>Partners: {PARTNERS}</h6>';
 
   var statuscolors = {
     '2012': '#018571',
