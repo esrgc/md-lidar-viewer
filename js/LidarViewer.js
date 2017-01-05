@@ -50,7 +50,7 @@ LidarViewer.prototype.start = function() {
       })
     }
     , function(next) {
-      $.getJSON('data/currentstatus.geojson', function(res) {
+      $.getJSON('data/mostRecentAcquisitions.geojson', function(res) {
         self.currentstatusgeojson = res
         next(null)
       })
@@ -62,7 +62,7 @@ LidarViewer.prototype.start = function() {
       })
     }
     , function(next) {
-      $.getJSON('data/futurestatus.geojson', function(res) {
+      $.getJSON('data/futureAcquisitions.geojson', function(res) {
         self.futurestatusgeojson = res
         next(null)
       })
