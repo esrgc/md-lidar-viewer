@@ -158,11 +158,11 @@ LidarViewer.prototype.makeMap = function() {
   var statuscolors = {
     '2012': '#018571',
     '2011': '#52AA9D',
-    '2008': '#A4D0C9',
-    '2007': '#F5F5F5',
-    '2006': '#DBC4AC',
-    '2005': '#C09263',
-    '2004': '#A6611A'
+    '2013': '#A4D0C9',
+    '2014': '#F5F5F5',
+    '2015': '#DBC4AC'
+    // '2005': '#C09263',
+    // '2004': '#A6611A'
   }
 
   this.currentstatus = L.geoJson(this.currentstatusgeojson, {
