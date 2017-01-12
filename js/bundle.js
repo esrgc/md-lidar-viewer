@@ -67,7 +67,7 @@ Legend.prototype.showLidar = function(){
 
 Legend.prototype.showStatus = function(){
   $('.legend .lidar-legend').hide()
-  $('.legend .status-legend').show().html('<img src="img/status.png" />')
+  $('.legend .status-legend').show();//.html('<img src="img/status.png" />')
 }
 
 Legend.prototype.update = function(type, service) {
@@ -297,7 +297,7 @@ LidarViewer.prototype.makeMap = function() {
     '<h6>Partners: {PROJ_PARTN}</h6>'+
     '<h6>Point spacing: {POINT_SPAC}</h6>'+
     '<h6>Vertical Accuracy: {VERT_ACC}</h6>'+
-    '<h6>Vertical Datum: {VERT_DATUM}</h6>'
+    '<h6>Vertical Datum: {VERT_DATUM}</h6>';
 
   // var template_current = 
     //'<h6>County: {COUNTY}</h6>'+
@@ -325,7 +325,7 @@ LidarViewer.prototype.makeMap = function() {
     '2015': '#DBC4AC'
     // '2005': '#C09263',
     // '2004': '#A6611A'
-  }
+  };
 
   this.currentstatus = L.geoJson(this.currentstatusgeojson, {
     style: function (feature) {

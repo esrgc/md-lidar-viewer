@@ -20,6 +20,41 @@
   top: -0.6em;
   margin-left: -0.6em;
 }
+.status-legend .legend-item {
+  margin-bottom: 5px;
+  position: relative;
+}
+.status-legend .legend-item .watch {
+  float: left;
+  width: 20px;
+  height: 20px;
+  margin-right: 50px;
+  border: 1px solid #636363;
+}
+.status-legend .legend-item .clear {
+  clear: both;
+}
+.status-legend .legend-item #future {
+  background-color: #FFD700;
+}
+.status-legend .legend-item #w2011 {
+  background-color: #52AA9D;
+}
+.status-legend .legend-item #w2012 {
+  background-color: #018571;
+}
+.status-legend .legend-item #w2013 {
+  background-color: #A4D0C9;
+}
+.status-legend .legend-item #w2014 {
+  background-color: #F5F5F5;
+}
+.status-legend .legend-item #w2015 {
+  background-color: #DBC4AC;
+}
+.status-legend .legend-item #w2016 {
+  background-color: #52AA9D;
+}
 html,
 body {
   height: 100%;

@@ -27,7 +27,7 @@ Legend.prototype.showLidar = function(){
 
 Legend.prototype.showStatus = function(){
   $('.legend .lidar-legend').hide()
-  $('.legend .status-legend').show().html('<img src="img/status.png" />')
+  $('.legend .status-legend').show();//.html('<img src="img/status.png" />')
 }
 
 Legend.prototype.update = function(type, service) {
