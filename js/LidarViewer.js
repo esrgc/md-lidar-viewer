@@ -8,7 +8,8 @@ var geocoder = require('./Geocoder'),
   services = require('./services'),
   async = require('async'),
   Mustache = require('mustache'),
-  proj4 = require('proj4')
+  proj4 = require('proj4'),
+  _ = require('lodash');
 
 function LidarViewer() {
   this.lidarGroup = new L.layerGroup()
@@ -161,7 +162,12 @@ LidarViewer.prototype.makeMap = function() {
   // '<h6>Partners: {PARTNERS}</h6>';
 
   var blkDownloadTpl = [
-    '<h6>blkDownload</h6>'
+    '<h6>{YEAR}</h6>',
+    '<h6>County: {COUNTY}</h6>',
+    '<h6>Collection: {COLLECTION}</h6>',
+    '<a target="_blank" href="{DOWNLOAD}">Download</a>',
+    '&nbsp;|&nbsp;',
+    '<a target="_blank" href="{COUNTYWIDE}">Download Countywide</a>'
   ].join('');
 
   var statuscolors = {
@@ -223,17 +229,32 @@ LidarViewer.prototype.makeMap = function() {
       return { fillColor: color, weight: 1, color: '#333', fillOpacity: 1 }
     },
     onEachFeature: function(feature, layer) {
-      layer.bindPopup(L.Util.template(blkDownloadTpl, feature.properties))
+      var color = '#FFD700';
+      layer.bindPopup(L.Util.template(blkDownloadTpl, feature.properties));
+      layer.on('mouseover', function(e){
+         //set selected style
+          var layer = e.target;
+          _.each(self.blkDownload.getLayers(), function(l){
+            l.setStyle({fillOpacity: 0.3});
+          });
+          layer.setStyle({fillOpacity: 1, fillColor: '#35AB32'});
+          layer.bringToFront();
+          // layer.openPopup();
+      });
+      layer.on('mouseout', function(e){
+         //set selected style
+          var layer = e.target;
+          _.each(self.blkDownload.getLayers(), function(l){
+            l.setStyle({fillOpacity: .9, fillColor: color});
+          });
+          // layer.setStyle({opacity: 1});
+          // layer.closePopup();
+      });
     }
   }).on('add', function(e) {
-    self.futurestatus.bringToFront()
-    legend.showFutureAcq();
-    legend.hideLidar();
+    self.blkDownload.bringToFront()
   }).on('remove', function(e) {
-    if (!self.map.hasLayer(self.currentstatus)) {
-      legend.showLidar()
-    }
-    legend.hideFutureAcq();
+    if (!self.map.hasLayer(self.currentstatus)) {}
   })
 
   this.overlays = {
