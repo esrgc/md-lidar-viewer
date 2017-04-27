@@ -66,6 +66,12 @@ LidarViewer.prototype.start = function() {
         self.futurestatusgeojson = res
         next(null)
       })
+    },
+    function(next) {
+      $.getJSON('data/blkDownload.geojson', function(res) {
+        self.blkDownloadGeojson = res;
+        next(null);
+      });
     }
   ], function(err, res) {
     $.ajaxSetup({ cache: true })
@@ -154,6 +160,10 @@ LidarViewer.prototype.makeMap = function() {
   // '<h6>Point spacing: {NPS}</h6>'+
   // '<h6>Partners: {PARTNERS}</h6>';
 
+  var blkDownloadTpl = [
+    '<h6>blkDownload</h6>'
+  ].join('');
+
   var statuscolors = {
     '2012': '#018571',
     '2011': '#52AA9D',
@@ -203,13 +213,35 @@ LidarViewer.prototype.makeMap = function() {
     }
     legend.hideFutureAcq();
   })
-  this.futurestatusgeojson = null
+  this.futurestatusgeojson = null;
+  ////
+  ///BULK download layer
+  ///
+  this.blkDownload = L.geoJson(this.blkDownloadGeojson, {
+    style: function(feature) {
+      var color = '#FFD700';
+      return { fillColor: color, weight: 1, color: '#333', fillOpacity: 1 }
+    },
+    onEachFeature: function(feature, layer) {
+      layer.bindPopup(L.Util.template(blkDownloadTpl, feature.properties))
+    }
+  }).on('add', function(e) {
+    self.futurestatus.bringToFront()
+    legend.showFutureAcq();
+    legend.hideLidar();
+  }).on('remove', function(e) {
+    if (!self.map.hasLayer(self.currentstatus)) {
+      legend.showLidar()
+    }
+    legend.hideFutureAcq();
+  })
 
   this.overlays = {
     "Counties": this.countyoverlay,
     "Watersheds": this.watershedoverlay,
     "Future Acquisitions": this.futurestatus,
-    "Most Recent Acquisitions": this.currentstatus
+    "Most Recent Acquisitions": this.currentstatus,
+    "Bulk Downloads": this.blkDownload
   }
 
   this.map = new L.Map('map', {
