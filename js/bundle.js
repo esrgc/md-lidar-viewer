@@ -347,10 +347,11 @@ LidarViewer.prototype.makeMap = function() {
   // '<h6>Partners: {PARTNERS}</h6>';
 
   var blkDownloadTpl = [
+    '<h6>County: {COUNTY} - {BLK}</h6>',
     '<h6>{YEAR}</h6>',
-    '<h6>County: {COUNTY}</h6>',
+    '<h6>EPSG: {EPSG}</h6>',
     '<h6>Collection: {COLLECTION}</h6>',
-    '<a target="_blank" href="{DOWNLOAD}">Download</a>',
+    '<a target="_blank" href="{DOWNLOAD}">Download {BLK}</a>',
     '&nbsp;|&nbsp;',
     '<a target="_blank" href="{COUNTYWIDE}">Download Countywide</a>'
   ].join('');
