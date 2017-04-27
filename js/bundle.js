@@ -42,15 +42,15 @@ var services = require('./services')
 
 function Legend() {
   var self = this
-  $.get('templates/legend.tmpl', function(res){
+  $.get('templates/legend.tmpl', function(res) {
     self.create(res)
   })
 }
 
 Legend.prototype.create = function(template) {
   var self = this
-  this.legendControl = L.control({position: 'bottomleft'})
-  this.legendControl.onAdd = function (map) {
+  this.legendControl = L.control({ position: 'bottomleft' })
+  this.legendControl.onAdd = function(map) {
     this._div = L.DomUtil.create('div', 'info legend')
     this._div.className = this._div.className + ' hidden-xs'
     this._div.innerHTML += template
@@ -60,18 +60,26 @@ Legend.prototype.create = function(template) {
   }
 }
 
-Legend.prototype.showLidar = function(){
+Legend.prototype.showLidar = function() {
   $('.legend .status-legend').hide()
+  $('.legend .futureAcq-legend').hide();
   $('.legend .lidar-legend').show()
 }
 
-Legend.prototype.showStatus = function(){
+Legend.prototype.showStatus = function() {
   $('.legend .lidar-legend').hide()
-  $('.legend .status-legend').show();//.html('<img src="img/status.png" />')
+  $('.legend .futureAcq-legend').hide();
+  $('.legend .status-legend').show(); //.html('<img src="img/status.png" />')
 }
 
+Legend.prototype.showFutureAcq = function() {
+  $('.legend .status-legend').hide()
+  $('.legend .lidar-legend').hide()
+  $('.legend .futureAcq-legend').show()
+};
+
 Legend.prototype.update = function(type, service) {
-  if(type == 'elevation') {
+  if (type == 'elevation') {
     this.elevation(service)
   } else if (type === 'slope') {
     this.slope()
@@ -82,7 +90,7 @@ Legend.prototype.update = function(type, service) {
   }
 }
 
-Legend.prototype.elevation = function(service){
+Legend.prototype.elevation = function(service) {
   $('.legend').removeClass('hidden')
   console.log(service)
   if (service.indexOf('statewide') >= 0) {
@@ -93,7 +101,7 @@ Legend.prototype.elevation = function(service){
   this.updateElevation(service)
 }
 
-Legend.prototype.slope = function(){
+Legend.prototype.slope = function() {
   $('.legend').removeClass('hidden')
   $('.legend .lidar-legend img').attr('src', 'img/slopeLegend.jpg')
   $(this.legendControl._div).find('.legendDesc').html('Slope (Percent Rise)')
@@ -102,7 +110,7 @@ Legend.prototype.slope = function(){
   $(this.legendControl._div).find('.legendMax').html('70')
 }
 
-Legend.prototype.aspect = function(){
+Legend.prototype.aspect = function() {
   $('.legend').removeClass('hidden')
   $('.legend .lidar-legend img').attr('src', 'img/aspectLegend.jpg')
   $(this.legendControl._div).find('.legendDesc').html('Aspect (Azimuth)')
@@ -111,16 +119,16 @@ Legend.prototype.aspect = function(){
   $(this.legendControl._div).find('.legendMax').html('360')
 }
 
-Legend.prototype.hillshade = function(){
+Legend.prototype.hillshade = function() {
   console.log('hillshade legend')
   $('.legend').addClass('hidden')
 }
 
-Legend.prototype.updateElevation = function (service) {
+Legend.prototype.updateElevation = function(service) {
   var self = this
   var max, min, mid
   var update = function(min, max) {
-    mid = (min+max)/2.0
+    mid = (min + max) / 2.0
 
     min = min.toFixed(2)
     max = max.toFixed(2)
@@ -131,46 +139,45 @@ Legend.prototype.updateElevation = function (service) {
     $(self.legendControl._div).find('.legendMid').html(mid)
     $(self.legendControl._div).find('.legendMax').html(max)
   }
-  if(service.length == 0 || service == services.statewide[0].identify){
+  if (service.length == 0 || service == services.statewide[0].identify) {
     max = 1024
     min = -51
     update(min, max)
   } else {
-    url = services.base_url_rest
-      + service
-      + '?f=pjson'
+    url = services.base_url_rest + service + '?f=pjson'
 
     $.ajax({
       url: url,
       type: "GET",
       dataType: 'json',
-    }).done(function(res){
-      if(res.error) {
+    }).done(function(res) {
+      if (res.error) {
         $('.legend').addClass('hidden')
       } else {
         min = res.minValues[0]
         max = res.maxValues[0]
         update(min, max)
       }
-    }).fail(function(res){
+    }).fail(function(res) {
       $('.legend').addClass('hidden')
     })
   }
 }
 
 module.exports = new Legend()
+
 },{"./services":6}],3:[function(require,module,exports){
 /*
  * Author: Frank Rowe, ESRGC
  */
 
-var geocoder = require('./Geocoder')
-  , legend = require('./Legend')
-  , menu = require('./Menu')
-  , services = require('./services')
-  , async = require('async')
-  , Mustache = require('mustache')
-  , proj4 = require('proj4')
+var geocoder = require('./Geocoder'),
+  legend = require('./Legend'),
+  menu = require('./Menu'),
+  services = require('./services'),
+  async = require('async'),
+  Mustache = require('mustache'),
+  proj4 = require('proj4')
 
 function LidarViewer() {
   this.lidarGroup = new L.layerGroup()
@@ -180,10 +187,10 @@ function LidarViewer() {
   this.errorText = 'No information available.'
   this.identifyIcon = L.DivIcon.extend({
     options: {
-        className: 'identify-div-icon',
-        html: '',
-        iconSize: [25, 55],
-        iconAnchor: [12, 55]
+      className: 'identify-div-icon',
+      html: '',
+      iconSize: [25, 55],
+      iconAnchor: [12, 55]
     }
   })
 
@@ -198,39 +205,38 @@ LidarViewer.prototype.start = function() {
         self.mdcnty = res
         next(null)
       })
-    }
-    , function(next) {
+    },
+    function(next) {
       $.getJSON('data/mdbuffer.geojson', function(res) {
         self.mdbuffer = res
         next(null)
       })
-    }
-    , function(next) {
+    },
+    function(next) {
       $.getJSON('data/metadata.json', function(res) {
         self.metadata = res
         next(null)
       })
-    }
-    , function(next) {
+    },
+    function(next) {
       $.getJSON('data/mostRecentAcquisitions.geojson', function(res) {
         self.currentstatusgeojson = res
         next(null)
       })
-    }
-    , function(next) {
+    },
+    function(next) {
       $.get('templates/identifyPopup.tmpl', function(res) {
         self.identifyPopupTemplate = res
         next(null)
       })
-    }
-    , function(next) {
+    },
+    function(next) {
       $.getJSON('data/futureAcquisitions.geojson', function(res) {
         self.futurestatusgeojson = res
         next(null)
       })
     }
-  ]
-  , function(err, res) {
+  ], function(err, res) {
     $.ajaxSetup({ cache: true })
     self.makeMap()
   })
@@ -247,32 +253,32 @@ LidarViewer.prototype.makeMap = function() {
     }
   }
 
-  var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png')
-    , world_imagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/')
-    , gray = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.hd7o0kfk/{z}/{x}/{y}.png')
+  var mapboxsat = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.map-0y6ifl91/{z}/{x}/{y}.png'),
+    world_imagery = L.tileLayer('http://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}/'),
+    gray = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.hd7o0kfk/{z}/{x}/{y}.png')
 
-    var imap_6in = L.esri.dynamicMapLayer({
-      url: 'http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer'
-    })
+  var imap_6in = L.esri.dynamicMapLayer({
+    url: 'http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer'
+  })
 
-    var renderingRule = {
-      "rasterFunction" : "ExtractBand",
-      "rasterFunctionArguments" : {
-         "BandNames":["Band_4","Band_1","Band_2"]
-       }
+  var renderingRule = {
+    "rasterFunction": "ExtractBand",
+    "rasterFunctionArguments": {
+      "BandNames": ["Band_4", "Band_1", "Band_2"]
     }
-    var imap_6in_cir = L.esri.imageMapLayer({
-      url: 'http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/ImageServer',
-      renderingRule: renderingRule,
-      useCors: false
-    })
+  }
+  var imap_6in_cir = L.esri.imageMapLayer({
+    url: 'http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/ImageServer',
+    renderingRule: renderingRule,
+    useCors: false
+  })
 
   this.baseMaps = {
-    "Gray": gray
-    , "World Imagery": world_imagery
-    , "World Imagery with Labels": mapboxsat
-    , 'MD iMAP 6 Inch Imagery': imap_6in
-    , 'MD iMAP 6 Inch CIR Imagery': imap_6in_cir
+    "Gray": gray,
+    "World Imagery": world_imagery,
+    "World Imagery with Labels": mapboxsat,
+    'MD iMAP 6 Inch Imagery': imap_6in,
+    'MD iMAP 6 Inch CIR Imagery': imap_6in_cir
   }
 
   this.countylayer = L.geoJson(this.mdcnty)
@@ -281,41 +287,41 @@ LidarViewer.prototype.makeMap = function() {
   this.countyoverlay = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.CountyCompare/{z}/{x}/{y}.png', {
     pane: 'overlayPane',
     errorTileUrl: 'img/emptytile.png'
-  }).on('add', function(e){
+  }).on('add', function(e) {
     self.countyoverlay.bringToFront()
   })
   this.watershedoverlay = L.tileLayer('http://{s}.tiles.mapbox.com/v3/esrgc.watersheds2/{z}/{x}/{y}.png', {
     pane: 'overlayPane',
     errorTileUrl: 'img/emptytile.png'
-  }).on('add', function(e){
+  }).on('add', function(e) {
     self.watershedoverlay.bringToFront()
   })
 
   //old template
-  var template_current = '<h6>County: {COUNTY}</h6>'+
-    '<h6>Date: {DATE}</h6>'+
-    '<h6>Partners: {PROJ_PARTN}</h6>'+
-    '<h6>Point spacing: {POINT_SPAC}</h6>'+
-    '<h6>Vertical Accuracy: {VERT_ACC}</h6>'+
+  var template_current = '<h6>County: {COUNTY}</h6>' +
+    '<h6>Date: {DATE}</h6>' +
+    '<h6>Partners: {PROJ_PARTN}</h6>' +
+    '<h6>Point spacing: {POINT_SPAC}</h6>' +
+    '<h6>Vertical Accuracy: {VERT_ACC}</h6>' +
     '<h6>Vertical Datum: {VERT_DATUM}</h6>';
 
   // var template_current = 
-    //'<h6>County: {COUNTY}</h6>'+
-    // '<h6>Date: {DATE}</h6>'+
-    // '<h6>Partners: {PARTNERS}</h6>'+
-    // '<h6>Point spacing: {NPS}</h6>'+
-    // '<h6>Vertical Accuracy: {ACCURACY}</h6>'+
-    // '<h6>Vertical Datum: {VERTICAL_D}</h6>';
+  //'<h6>County: {COUNTY}</h6>'+
+  // '<h6>Date: {DATE}</h6>'+
+  // '<h6>Partners: {PARTNERS}</h6>'+
+  // '<h6>Point spacing: {NPS}</h6>'+
+  // '<h6>Vertical Accuracy: {ACCURACY}</h6>'+
+  // '<h6>Vertical Datum: {VERTICAL_D}</h6>';
 
-  var template_future = 
-    '<h6>County: {NAME}</h6>'+
+  var template_future =
+    '<h6>County: {NAME}</h6>' +
     '<h6>Delivery: {DELIVERY}</h6>' +
     '<h6>Acquistion: {ACQ_DETAIL}</h6>';
-    // '<h6>Date: {DATE}</h6>'+
-    // '<h6>Collection: {Collection}</h6>' +
-    // '<h6>Accuracy: {ACCURACY}</h6>' +
-    // '<h6>Point spacing: {NPS}</h6>'+
-    // '<h6>Partners: {PARTNERS}</h6>';
+  // '<h6>Date: {DATE}</h6>'+
+  // '<h6>Collection: {Collection}</h6>' +
+  // '<h6>Accuracy: {ACCURACY}</h6>' +
+  // '<h6>Point spacing: {NPS}</h6>'+
+  // '<h6>Partners: {PARTNERS}</h6>';
 
   var statuscolors = {
     '2012': '#018571',
@@ -323,76 +329,74 @@ LidarViewer.prototype.makeMap = function() {
     '2013': '#A4D0C9',
     '2014': '#F5F5F5',
     '2015': '#DBC4AC'
-    // '2005': '#C09263',
-    // '2004': '#A6611A'
+      // '2005': '#C09263',
+      // '2004': '#A6611A'
   };
 
   this.currentstatus = L.geoJson(this.currentstatusgeojson, {
-    style: function (feature) {
+    style: function(feature) {
       var color = statuscolors[feature.properties.DATE]
       return { fillColor: color, weight: 1, color: '#333', fillOpacity: 1 }
     },
-    onEachFeature: function (feature, layer) {
+    onEachFeature: function(feature, layer) {
       layer.bindPopup(L.Util.template(template_current, feature.properties))
     }
-  }).on('add', function(e){
-    if(self.map.hasLayer(self.futurestatus)){
+  }).on('add', function(e) {
+    if (self.map.hasLayer(self.futurestatus)) {
       self.futurestatus.bringToFront()
     }
     legend.showStatus()
-  }).on('remove', function(e){
-    if(!self.map.hasLayer(self.futurestatus)){
+  }).on('remove', function(e) {
+    if (!self.map.hasLayer(self.futurestatus)) {
       legend.showLidar()
     }
   })
   this.currentstatusgeojson = null
 
   this.futurestatus = L.geoJson(this.futurestatusgeojson, {
-    style: function (feature) {
+    style: function(feature) {
       return { fillColor: '#FFD700', weight: 1, color: '#333', fillOpacity: 1 }
     },
-    onEachFeature: function (feature, layer) {
+    onEachFeature: function(feature, layer) {
       layer.bindPopup(L.Util.template(template_future, feature.properties))
     }
-  }).on('add', function(e){
+  }).on('add', function(e) {
     self.futurestatus.bringToFront()
-    legend.showStatus()
-  }).on('remove', function(e){
-    if(!self.map.hasLayer(self.currentstatus)){
+    legend.showFutureAcq()
+  }).on('remove', function(e) {
+    if (!self.map.hasLayer(self.currentstatus)) {
       legend.showLidar()
     }
   })
   this.futurestatusgeojson = null
 
   this.overlays = {
-    "Counties": this.countyoverlay
-    , "Watersheds": this.watershedoverlay
-    , "Future Acquisitions": this.futurestatus
-    , "Most Recent Acquisitions": this.currentstatus
+    "Counties": this.countyoverlay,
+    "Watersheds": this.watershedoverlay,
+    "Future Acquisitions": this.futurestatus,
+    "Most Recent Acquisitions": this.currentstatus
   }
 
   this.map = new L.Map('map', {
     layers: [
-      gray
-      , this.lidarGroup
-      , this.markerlayer
+      gray, this.lidarGroup, this.markerlayer
     ],
     zoomControl: false,
     minZoom: 8,
     unloadInvisibleTiles: true,
     reuseTiles: true
   })
-  this.map.setView(this.center, this.startZoom, {animate: false})
+  this.map.setView(this.center, this.startZoom, { animate: false })
 
   self.clicked = false
   this.map.on('click', function(e) {
-    if(self.clicked) {
+    if (self.clicked) {
       self.clicked = false
       return false
     } else {
       self.clicked = true
-      setTimeout(function(){
-        if(self.clicked) {
+      setTimeout(function() {
+        if (self.clicked) {
           self.identify(e.latlng)
           self.clicked = false
         }
@@ -401,7 +405,7 @@ LidarViewer.prototype.makeMap = function() {
   })
 
   this.map.on('baselayerchange', function(e) {
-    self.lidarGroup.eachLayer(function(layer){
+    self.lidarGroup.eachLayer(function(layer) {
       layer.bringToFront()
     })
   })
@@ -410,7 +414,7 @@ LidarViewer.prototype.makeMap = function() {
   menu.menuControl.addTo(this.map)
   menu.addEventListeners()
   menu.resizeMenu()
-  if(window.location.hash.indexOf('embed') >= 0) {
+  if (window.location.hash.indexOf('embed') >= 0) {
     menu.close()
   }
   legend.legendControl.addTo(this.map)
@@ -423,8 +427,8 @@ LidarViewer.prototype.makeMap = function() {
   }).addTo(this.map)
 
   L.control.layersCustom(this.baseMaps, this.overlays, {
-    collapsed: false
-    , click: false
+    collapsed: false,
+    click: false
   }).addTo(this.map, $('.custom-layer-menu .section-content')[0])
 
   self.activeService = services.statewide[0].service
@@ -433,14 +437,14 @@ LidarViewer.prototype.makeMap = function() {
 
 LidarViewer.prototype.identify = function(point) {
   var self = this
-  var marker = new L.marker(point, {icon: new this.identifyIcon({html: '<div class="value"></div>'})})
+  var marker = new L.marker(point, { icon: new this.identifyIcon({ html: '<div class="value"></div>' }) })
   self.markerlayer.addLayer(marker)
-  marker.bindPopup(L.popup({offset: [0,-20]}).setContent('<img src="img/ajax.gif">'))
-  if(this.statewide) {
+  marker.bindPopup(L.popup({ offset: [0, -20] }).setContent('<img src="img/ajax.gif">'))
+  if (this.statewide) {
     self.identifyContent(point, function(content) {
-      if(content) {
+      if (content) {
         marker.getPopup().setContent(content)
-        self._identifyValue(point, function(value, err){
+        self._identifyValue(point, function(value, err) {
           var popup_value = self.createIdentifyValueForPopup(value, err)
           self.insertIdentifyValueIntoPopup(popup_value, marker)
         })
@@ -450,13 +454,13 @@ LidarViewer.prototype.identify = function(point) {
       }
     })
   } else {
-    self._identifyValue(point, function(value, err){
-      if(value === 'NoData' || err) {
+    self._identifyValue(point, function(value, err) {
+      if (value === 'NoData' || err) {
         marker.getPopup().setContent(self.errorText)
         marker.openPopup()
       } else {
         self.identifyContent(point, function(content) {
-          if(content) {
+          if (content) {
             marker.getPopup().setContent(content)
             var popup_value = self.createIdentifyValueForPopup(value, err)
             self.insertIdentifyValueIntoPopup(popup_value, marker)
@@ -475,46 +479,46 @@ LidarViewer.prototype.insertIdentifyValueIntoPopup = function(value, marker) {
   var popupContent = $('<div/>').html(content).contents()
   $(popupContent.find('.identify-value')[0]).html(value)
   marker.getPopup().setContent(popupContent[0].outerHTML)
-  var icon = new this.identifyIcon({html: '<div class="value">' + value.split('<br>')[0] + '</div>'})
+  var icon = new this.identifyIcon({ html: '<div class="value">' + value.split('<br>')[0] + '</div>' })
   marker.setIcon(icon)
   $(marker._icon).width('auto')
   var width = $(marker._icon).width()
-  $(marker._icon).css('margin-left', (width/2)*-1)
+  $(marker._icon).css('margin-left', (width / 2) * -1)
 }
 
 LidarViewer.prototype.createIdentifyValueForPopup = function(value, err) {
-  var self = this
-    , popup_value = ''
-  if(err) {
+  var self = this,
+    popup_value = ''
+  if (err) {
     popup_value = err
   } else {
-    if(self.identifyType === 'elevation' || self.identifyType === 'hillshade') {
-      if(!parseFloat(value)) {
+    if (self.identifyType === 'elevation' || self.identifyType === 'hillshade') {
+      if (!parseFloat(value)) {
         popup_value = value
       } else {
-        var m = Math.round(parseFloat(value) * 100) / 100
-          , ft =  Math.round((m * 3.28084) * 100) / 100
+        var m = Math.round(parseFloat(value) * 100) / 100,
+          ft = Math.round((m * 3.28084) * 100) / 100
         m += 'm'
         ft += 'ft'
         popup_value = m + '<br>' + ft
       }
-    } else if(self.identifyType === 'slope') {
+    } else if (self.identifyType === 'slope') {
       popup_value = value + '%'
-    } else if(self.identifyType === 'aspect') {
+    } else if (self.identifyType === 'aspect') {
       popup_value = value + '&deg;'
     }
   }
   return popup_value
 }
 
-LidarViewer.prototype.identifyContent = function (latlng, next) {
+LidarViewer.prototype.identifyContent = function(latlng, next) {
   var self = this
   var metadata = self.getMetadataFromPoint(latlng)
-  if(metadata) {
+  if (metadata) {
     for (var i = 0; i < services.elevation.length; i++) {
       if (metadata.County === services.elevation[i].name) {
         var type = self.identifyType
-        if(type === 'hillshade') type = 'elevation'
+        if (type === 'hillshade') type = 'elevation'
         metadata.identifyType = type.charAt(0).toUpperCase() + type.slice(1)
         metadata.lat = latlng.lat.toFixed(3)
         metadata.lng = latlng.lng.toFixed(3)
@@ -527,11 +531,11 @@ LidarViewer.prototype.identifyContent = function (latlng, next) {
   }
 }
 
-LidarViewer.prototype.getMetadataFromPoint = function (point) {
+LidarViewer.prototype.getMetadataFromPoint = function(point) {
   var inMaryland = leafletPip.pointInLayer(point, this.mdbuffer)
-  if(inMaryland.length) {
+  if (inMaryland.length) {
     var countyname = ''
-    if(this.statewide) {
+    if (this.statewide) {
       var results = leafletPip.pointInLayer(point, this.countylayer)
       if (results.length) {
         countyname = results[0].feature.properties.name
@@ -551,11 +555,11 @@ LidarViewer.prototype.getMetadataFromPoint = function (point) {
   }
 }
 
-LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
+LidarViewer.prototype.addServiceLayer = function(service, name, opacity) {
   var self = this
   console.log(service, name)
   this.lidarGroup.clearLayers()
-  if(service) {
+  if (service) {
     this.layertype = service.split('/')[2]
     var layer = {}
     if (this.layertype === 'ImageServer') {
@@ -564,30 +568,28 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
         url: services.base_url_rest + service
       })
       this.lidarGroup.addLayer(l)
-      // this.lidarGroup.addLayer(L.tileLayer.wms(services.base_url + service + "/WMSServer", {
-      //     layers: layerName
-      //     , format: 'image/png'
-      //     , transparent: true
-      //     , opacity : opacity
-      //     , pane: 'overlayPane'
-      //   })
-      // )
+        // this.lidarGroup.addLayer(L.tileLayer.wms(services.base_url + service + "/WMSServer", {
+        //     layers: layerName
+        //     , format: 'image/png'
+        //     , transparent: true
+        //     , opacity : opacity
+        //     , pane: 'overlayPane'
+        //   })
+        // )
     } else if (this.layertype === 'MapServer') {
       this.lidarGroup.addLayer(L.tileLayer(services.base_url_rest + service + '/tile/{z}/{y}/{x}/', {
-          errorTileUrl: 'img/emptytile.png'
-          , attribution:'<a href="http://esrgc.org">ESRGC</a>'
-          , opacity: opacity
-        })
-      )
+        errorTileUrl: 'img/emptytile.png',
+        attribution: '<a href="http://esrgc.org">ESRGC</a>',
+        opacity: opacity
+      }))
     } else if (this.layertype === 'TileServer') {
       var layerName = service.split('/')[1]
       this.lidarGroup.addLayer(L.tileLayer('http://apps.esrgc.org/tilestream/v2/' + layerName + '/{z}/{x}/{y}.png', {
-          tms: true,
-          errorTileUrl: 'img/emptytile.png',
-          attribution:'<a href="http://esrgc.org">ESRGC</a>',
-          opacity: opacity
-        })
-      )
+        tms: true,
+        errorTileUrl: 'img/emptytile.png',
+        attribution: '<a href="http://esrgc.org">ESRGC</a>',
+        opacity: opacity
+      }))
     }
     this.activeService = service
     this.identifyService = this.setIdentifyService(name)
@@ -600,19 +602,19 @@ LidarViewer.prototype.addServiceLayer = function (service, name, opacity) {
 
 LidarViewer.prototype.zoomToCounty = function(name) {
   var self = this
-  this.countylayer.eachLayer(function(layer){
-    if(layer.feature.properties.name === name){
+  this.countylayer.eachLayer(function(layer) {
+    if (layer.feature.properties.name === name) {
       self.map.fitBounds(layer.getBounds(), { animate: false })
     }
   })
 }
 
 LidarViewer.prototype.zoomToState = function() {
-  this.map.setView(this.center, this.startZoom, {animate: false})
+  this.map.setView(this.center, this.startZoom, { animate: false })
 }
 
 LidarViewer.prototype.setIdentifyService = function(name) {
-  if(name.indexOf('Statewide') >= 0) {
+  if (name.indexOf('Statewide') >= 0) {
     this.statewide = true
     this.zoomToState()
   } else {
@@ -621,41 +623,41 @@ LidarViewer.prototype.setIdentifyService = function(name) {
     this.zoomToCounty(name)
   }
 
-  if(this.activeService.indexOf('slope') >= 0) {
+  if (this.activeService.indexOf('slope') >= 0) {
     this.identifyType = 'slope'
     this.statewide = true
-  } else if(this.activeService.indexOf('aspect') >= 0) {
+  } else if (this.activeService.indexOf('aspect') >= 0) {
     this.identifyType = 'aspect'
     this.statewide = true
-  } else if(this.activeService.indexOf('hillshade') >= 0) {
+  } else if (this.activeService.indexOf('hillshade') >= 0) {
     this.identifyType = 'hillshade'
     this.statewide = true
   } else {
     this.identifyType = 'elevation'
   }
   //use statewide layers for querying all but county elevation
-  if(this.identifyType !== 'elevation' || this.statewide){
-    for(var i = 0; i < services.statewide.length; i++){
-      if(services.statewide[i].type === this.identifyType) {
+  if (this.identifyType !== 'elevation' || this.statewide) {
+    for (var i = 0; i < services.statewide.length; i++) {
+      if (services.statewide[i].type === this.identifyType) {
         return services.statewide[i].identify
       }
     }
   } else {
-    for(var i = 0; i < services[this.identifyType].length; i++){
-      if(services[this.identifyType][i].name === name) {
+    for (var i = 0; i < services[this.identifyType].length; i++) {
+      if (services[this.identifyType][i].name === name) {
         return services[this.identifyType][i].identify
       }
     }
   }
 }
 
-LidarViewer.prototype._identifyValue = function (latlng, next) {
-  var self = this
-    , service
+LidarViewer.prototype._identifyValue = function(latlng, next) {
+  var self = this,
+    service
   var id_url = services.base_url_rest + self.identifyService + '/identify'
 
   var stateplane = '+proj=lcc +lat_1=39.45 +lat_2=38.3 +lat_0=37.66666666666666 +lon_0=-77 +x_0=400000 +y_0=0 +ellps=GRS80 +datum=NAD83 +units=m +no_defs'
-  var coords = proj4(stateplane,[latlng.lng, latlng.lat])
+  var coords = proj4(stateplane, [latlng.lng, latlng.lat])
 
   var data = {
     f: 'json',
@@ -672,14 +674,14 @@ LidarViewer.prototype._identifyValue = function (latlng, next) {
     type: "GET",
     data: data,
     dataType: 'json'
-  }).done(function(res){
-    if(res.error) {
+  }).done(function(res) {
+    if (res.error) {
       next(false, true)
     } else {
       var value = res.value
       next(value, false)
     }
-  }).fail(function(res){
+  }).fail(function(res) {
     next(false, true)
   })
 }
