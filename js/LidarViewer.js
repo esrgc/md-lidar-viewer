@@ -163,7 +163,7 @@ LidarViewer.prototype.makeMap = function() {
 
   var blkDownloadTpl = [
     '<h6>County: {COUNTY} - {BLK}</h6>',
-    '<h6>{YEAR}</h6>',
+    '<h6>Year: {YEAR}</h6>',
     '<h6>EPSG: {EPSG}</h6>',
     '<h6>Collection: {COLLECTION}</h6>',
     '<a target="_blank" href="{DOWNLOAD}">Download {BLK}</a>',
