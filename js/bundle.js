@@ -61,23 +61,39 @@ Legend.prototype.create = function(template) {
 }
 
 Legend.prototype.showLidar = function() {
-  $('.legend .status-legend').hide()
-  $('.legend .futureAcq-legend').hide();
+  // $('.legend .status-legend').hide()
+  // $('.legend .futureAcq-legend').hide();
   $('.legend .lidar-legend').show()
 }
 
 Legend.prototype.showStatus = function() {
-  $('.legend .lidar-legend').hide()
-  $('.legend .futureAcq-legend').hide();
+  // $('.legend .lidar-legend').hide()
+  // $('.legend .futureAcq-legend').hide();
   $('.legend .status-legend').show(); //.html('<img src="img/status.png" />')
 }
 
 Legend.prototype.showFutureAcq = function() {
-  $('.legend .status-legend').hide()
-  $('.legend .lidar-legend').hide()
+  // $('.legend .status-legend').hide()
+  // $('.legend .lidar-legend').hide()
   $('.legend .futureAcq-legend').show()
 };
+Legend.prototype.hideLidar = function() {
+  // $('.legend .status-legend').hide()
+  // $('.legend .futureAcq-legend').hide();
+  $('.legend .lidar-legend').hide()
+}
 
+Legend.prototype.hideStatus = function() {
+  // $('.legend .lidar-legend').hide()
+  // $('.legend .futureAcq-legend').hide();
+  $('.legend .status-legend').hide(); //.html('<img src="img/status.png" />')
+}
+
+Legend.prototype.hideFutureAcq = function() {
+  // $('.legend .status-legend').hide()
+  // $('.legend .lidar-legend').hide()
+  $('.legend .futureAcq-legend').hide()
+};
 Legend.prototype.update = function(type, service) {
   if (type == 'elevation') {
     this.elevation(service)
@@ -345,11 +361,13 @@ LidarViewer.prototype.makeMap = function() {
     if (self.map.hasLayer(self.futurestatus)) {
       self.futurestatus.bringToFront()
     }
-    legend.showStatus()
+    legend.showStatus();
+    legend.hideLidar();
   }).on('remove', function(e) {
     if (!self.map.hasLayer(self.futurestatus)) {
-      legend.showLidar()
+      legend.showLidar();
     }
+    legend.hideStatus();
   })
   this.currentstatusgeojson = null
 
@@ -362,11 +380,13 @@ LidarViewer.prototype.makeMap = function() {
     }
   }).on('add', function(e) {
     self.futurestatus.bringToFront()
-    legend.showFutureAcq()
+    legend.showFutureAcq();
+    legend.hideLidar();
   }).on('remove', function(e) {
     if (!self.map.hasLayer(self.currentstatus)) {
       legend.showLidar()
     }
+    legend.hideFutureAcq();
   })
   this.futurestatusgeojson = null
 

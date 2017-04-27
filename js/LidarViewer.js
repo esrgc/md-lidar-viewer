@@ -176,11 +176,13 @@ LidarViewer.prototype.makeMap = function() {
     if (self.map.hasLayer(self.futurestatus)) {
       self.futurestatus.bringToFront()
     }
-    legend.showStatus()
+    legend.showStatus();
+    legend.hideLidar();
   }).on('remove', function(e) {
     if (!self.map.hasLayer(self.futurestatus)) {
-      legend.showLidar()
+      legend.showLidar();
     }
+    legend.hideStatus();
   })
   this.currentstatusgeojson = null
 
@@ -193,11 +195,13 @@ LidarViewer.prototype.makeMap = function() {
     }
   }).on('add', function(e) {
     self.futurestatus.bringToFront()
-    legend.showFutureAcq()
+    legend.showFutureAcq();
+    legend.hideLidar();
   }).on('remove', function(e) {
     if (!self.map.hasLayer(self.currentstatus)) {
       legend.showLidar()
     }
+    legend.hideFutureAcq();
   })
   this.futurestatusgeojson = null
 
