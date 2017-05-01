@@ -226,19 +226,19 @@ LidarViewer.prototype.makeMap = function() {
   ///
   this.blkDownload = L.geoJson(this.blkDownloadGeojson, {
     style: function(feature) {
-      var color = '#FFD700';
-      return { fillColor: color, weight: 1, color: '#333', fillOpacity: 1 }
+      var color = '#d53c02';
+      return { fillColor: color, weight: 1, color: '#333', fillOpacity: .75 }
     },
     onEachFeature: function(feature, layer) {
-      var color = '#FFD700';
+      var color = '#d53c02';
       layer.bindPopup(L.Util.template(blkDownloadTpl, feature.properties));
       layer.on('mouseover', function(e){
          //set selected style
           var layer = e.target;
           _.each(self.blkDownload.getLayers(), function(l){
-            l.setStyle({fillOpacity: 0.3});
+            l.setStyle({fillOpacity: 0.4});
           });
-          layer.setStyle({fillOpacity: 1, fillColor: '#35AB32'});
+          layer.setStyle({fillOpacity: .9/*, fillColor: '#35AB32'*/});
           layer.bringToFront();
           // layer.openPopup();
       });
@@ -246,7 +246,7 @@ LidarViewer.prototype.makeMap = function() {
          //set selected style
           var layer = e.target;
           _.each(self.blkDownload.getLayers(), function(l){
-            l.setStyle({fillOpacity: .9, fillColor: color});
+            l.setStyle({fillOpacity: .75, fillColor: color});
           });
           // layer.setStyle({opacity: 1});
           // layer.closePopup();
