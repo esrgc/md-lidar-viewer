@@ -61,33 +61,29 @@ Legend.prototype.create = function(template) {
 }
 
 Legend.prototype.showLidar = function() {
-  // $('.legend .status-legend').hide()
-  // $('.legend .futureAcq-legend').hide();
   $('.legend .lidar-legend').show()
 }
 
 Legend.prototype.showStatus = function() {
-  // $('.legend .lidar-legend').hide()
-  // $('.legend .futureAcq-legend').hide();
   $('.legend .status-legend').show(); //.html('<img src="img/status.png" />')
 }
 
 Legend.prototype.showFutureAcq = function() {
-  // $('.legend .status-legend').hide()
-  // $('.legend .lidar-legend').hide()
   $('.legend .futureAcq-legend').show()
 };
+
+Legend.prototype.showBlk = function() {
+  $('.legend .blk-legend').show(); //.html('<img src="img/status.png" />')
+}
 Legend.prototype.hideLidar = function() {
-  // $('.legend .status-legend').hide()
-  // $('.legend .futureAcq-legend').hide();
   $('.legend .lidar-legend').hide()
 }
-
 Legend.prototype.hideStatus = function() {
-  // $('.legend .lidar-legend').hide()
-  // $('.legend .futureAcq-legend').hide();
   $('.legend .status-legend').hide(); //.html('<img src="img/status.png" />')
 }
+Legend.prototype.hideBlk = function() {
+  $('.legend .blk-legend').hide(); //.html('<img src="img/status.png" />')
+};
 
 Legend.prototype.hideFutureAcq = function() {
   // $('.legend .status-legend').hide()
@@ -381,7 +377,7 @@ LidarViewer.prototype.makeMap = function() {
     legend.showStatus();
     legend.hideLidar();
   }).on('remove', function(e) {
-    if (!self.map.hasLayer(self.futurestatus)) {
+    if (!self.map.hasLayer(self.futurestatus) && !self.map.hasLayer(self.blkDownload)) {
       legend.showLidar();
     }
     legend.hideStatus();
@@ -400,7 +396,7 @@ LidarViewer.prototype.makeMap = function() {
     legend.showFutureAcq();
     legend.hideLidar();
   }).on('remove', function(e) {
-    if (!self.map.hasLayer(self.currentstatus)) {
+    if (!self.map.hasLayer(self.currentstatus) && !self.map.hasLayer(self.blkDownload)) {
       legend.showLidar()
     }
     legend.hideFutureAcq();
@@ -438,9 +434,14 @@ LidarViewer.prototype.makeMap = function() {
       });
     }
   }).on('add', function(e) {
-    self.blkDownload.bringToFront()
+    self.blkDownload.bringToFront();
+    legend.hideLidar();
+    legend.showBlk();
   }).on('remove', function(e) {
-    if (!self.map.hasLayer(self.currentstatus)) {}
+    if (!self.map.hasLayer(self.currentstatus) && !self.map.hasLayer(self.futurestatus)) {
+      legend.showLidar();
+    }
+    legend.hideBlk();
   })
 
   this.overlays = {

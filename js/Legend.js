@@ -21,33 +21,29 @@ Legend.prototype.create = function(template) {
 }
 
 Legend.prototype.showLidar = function() {
-  // $('.legend .status-legend').hide()
-  // $('.legend .futureAcq-legend').hide();
   $('.legend .lidar-legend').show()
 }
 
 Legend.prototype.showStatus = function() {
-  // $('.legend .lidar-legend').hide()
-  // $('.legend .futureAcq-legend').hide();
   $('.legend .status-legend').show(); //.html('<img src="img/status.png" />')
 }
 
 Legend.prototype.showFutureAcq = function() {
-  // $('.legend .status-legend').hide()
-  // $('.legend .lidar-legend').hide()
   $('.legend .futureAcq-legend').show()
 };
+
+Legend.prototype.showBlk = function() {
+  $('.legend .blk-legend').show(); //.html('<img src="img/status.png" />')
+}
 Legend.prototype.hideLidar = function() {
-  // $('.legend .status-legend').hide()
-  // $('.legend .futureAcq-legend').hide();
   $('.legend .lidar-legend').hide()
 }
-
 Legend.prototype.hideStatus = function() {
-  // $('.legend .lidar-legend').hide()
-  // $('.legend .futureAcq-legend').hide();
   $('.legend .status-legend').hide(); //.html('<img src="img/status.png" />')
 }
+Legend.prototype.hideBlk = function() {
+  $('.legend .blk-legend').hide(); //.html('<img src="img/status.png" />')
+};
 
 Legend.prototype.hideFutureAcq = function() {
   // $('.legend .status-legend').hide()

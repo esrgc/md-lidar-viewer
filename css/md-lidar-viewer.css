@@ -21,12 +21,14 @@
   margin-left: -0.6em;
 }
 .status-legend .legend-item,
-.futureAcq-legend .legend-item {
+.futureAcq-legend .legend-item,
+.blk-legend .legend-item {
   margin-bottom: 5px;
   position: relative;
 }
 .status-legend .legend-item .watch,
-.futureAcq-legend .legend-item .watch {
+.futureAcq-legend .legend-item .watch,
+.blk-legend .legend-item .watch {
   float: left;
   width: 20px;
   height: 20px;
@@ -34,36 +36,49 @@
   border: 1px solid #636363;
 }
 .status-legend .legend-item .clear,
-.futureAcq-legend .legend-item .clear {
+.futureAcq-legend .legend-item .clear,
+.blk-legend .legend-item .clear {
   clear: both;
 }
 .status-legend .legend-item #future,
-.futureAcq-legend .legend-item #future {
+.futureAcq-legend .legend-item #future,
+.blk-legend .legend-item #future {
   background-color: #FFD700;
 }
 .status-legend .legend-item #w2011,
-.futureAcq-legend .legend-item #w2011 {
+.futureAcq-legend .legend-item #w2011,
+.blk-legend .legend-item #w2011 {
   background-color: #52AA9D;
 }
 .status-legend .legend-item #w2012,
-.futureAcq-legend .legend-item #w2012 {
+.futureAcq-legend .legend-item #w2012,
+.blk-legend .legend-item #w2012 {
   background-color: #018571;
 }
 .status-legend .legend-item #w2013,
-.futureAcq-legend .legend-item #w2013 {
+.futureAcq-legend .legend-item #w2013,
+.blk-legend .legend-item #w2013 {
   background-color: #A4D0C9;
 }
 .status-legend .legend-item #w2014,
-.futureAcq-legend .legend-item #w2014 {
+.futureAcq-legend .legend-item #w2014,
+.blk-legend .legend-item #w2014 {
   background-color: #F5F5F5;
 }
 .status-legend .legend-item #w2015,
-.futureAcq-legend .legend-item #w2015 {
+.futureAcq-legend .legend-item #w2015,
+.blk-legend .legend-item #w2015 {
   background-color: #DBC4AC;
 }
 .status-legend .legend-item #w2016,
-.futureAcq-legend .legend-item #w2016 {
+.futureAcq-legend .legend-item #w2016,
+.blk-legend .legend-item #w2016 {
   background-color: #52AA9D;
+}
+.status-legend .legend-item #blk,
+.futureAcq-legend .legend-item #blk,
+.blk-legend .legend-item #blk {
+  background-color: #d53c02;
 }
 html,
 body {
@@ -218,7 +233,8 @@ body {
   margin-right: 8px;
 }
 .legend .status-legend,
-.legend .futureAcq-legend {
+.legend .futureAcq-legend,
+.legend .blk-legend {
   display: none;
 }
 .legend .legendLabel {

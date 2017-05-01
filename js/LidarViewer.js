@@ -196,7 +196,7 @@ LidarViewer.prototype.makeMap = function() {
     legend.showStatus();
     legend.hideLidar();
   }).on('remove', function(e) {
-    if (!self.map.hasLayer(self.futurestatus)) {
+    if (!self.map.hasLayer(self.futurestatus) && !self.map.hasLayer(self.blkDownload)) {
       legend.showLidar();
     }
     legend.hideStatus();
@@ -215,7 +215,7 @@ LidarViewer.prototype.makeMap = function() {
     legend.showFutureAcq();
     legend.hideLidar();
   }).on('remove', function(e) {
-    if (!self.map.hasLayer(self.currentstatus)) {
+    if (!self.map.hasLayer(self.currentstatus) && !self.map.hasLayer(self.blkDownload)) {
       legend.showLidar()
     }
     legend.hideFutureAcq();
@@ -253,9 +253,14 @@ LidarViewer.prototype.makeMap = function() {
       });
     }
   }).on('add', function(e) {
-    self.blkDownload.bringToFront()
+    self.blkDownload.bringToFront();
+    legend.hideLidar();
+    legend.showBlk();
   }).on('remove', function(e) {
-    if (!self.map.hasLayer(self.currentstatus)) {}
+    if (!self.map.hasLayer(self.currentstatus) && !self.map.hasLayer(self.futurestatus)) {
+      legend.showLidar();
+    }
+    legend.hideBlk();
   })
 
   this.overlays = {
