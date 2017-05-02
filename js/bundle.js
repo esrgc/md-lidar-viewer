@@ -332,10 +332,11 @@ LidarViewer.prototype.makeMap = function() {
   // '<h6>Vertical Accuracy: {ACCURACY}</h6>'+
   // '<h6>Vertical Datum: {VERTICAL_D}</h6>';
 
-  var template_future =
-    '<h6>County: {NAME}</h6>' +
-    '<h6>Delivery: {DELIVERY}</h6>' +
-    '<h6>Acquistion: {ACQ_DETAIL}</h6>';
+  var template_future =[
+    '<h6>Collection: {Collection}</h6>',
+    '<h6>Year: {DATE}</h6>',
+    '<h6>Accuracy: {ACCURACY}</h6>',
+    '<h6>Partners: {PARTNERS}</h6>'].join('');
   // '<h6>Date: {DATE}</h6>'+
   // '<h6>Collection: {Collection}</h6>' +
   // '<h6>Accuracy: {ACCURACY}</h6>' +
