@@ -387,7 +387,7 @@ LidarViewer.prototype.makeMap = function() {
 
   this.futurestatus = L.geoJson(this.futurestatusgeojson, {
     style: function(feature) {
-      return { fillColor: '#FFD700', weight: 1, color: '#333', fillOpacity: 1 }
+      return { fillColor: '#ffffbe', weight: 1, color: '#333', fillOpacity: 1 }
     },
     onEachFeature: function(feature, layer) {
       layer.bindPopup(L.Util.template(template_future, feature.properties))
