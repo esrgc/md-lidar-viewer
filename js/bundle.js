@@ -278,7 +278,9 @@ LidarViewer.prototype.makeMap = function() {
 
   var imap_6in = L.esri.dynamicMapLayer({
     url: 'http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer'
-  })
+  }).on('add', function(e) {
+    // self.lidar.bringToFront()
+  });
 
   var renderingRule = {
     "rasterFunction": "ExtractBand",
