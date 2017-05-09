@@ -113,7 +113,7 @@ LidarViewer.prototype.makeMap = function() {
 
   this.baseMaps = {
     "Gray": gray,
-    "World Imagery": world_imagery,
+    // "World Imagery": world_imagery,
     "World Imagery with Labels": mapboxsat,
     'MD iMAP 6 Inch Imagery': imap_6in,
     'MD iMAP 6 Inch CIR Imagery': imap_6in_cir
