@@ -98,7 +98,7 @@ LidarViewer.prototype.makeMap = function() {
   var imap_6in = L.esri.dynamicMapLayer({
     url: 'http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/MapServer'
   }).on('add', function(e) {
-    // self.lidar.bringToFront()
+    imap_6in.bringToBack();
   });
 
   var renderingRule = {
@@ -111,7 +111,9 @@ LidarViewer.prototype.makeMap = function() {
     url: 'http://geodata.md.gov/imap/rest/services/Imagery/MD_SixInchImagery/ImageServer',
     renderingRule: renderingRule,
     useCors: false
-  })
+  }).on('add', function(e) {
+    imap_6in_cir.bringToBack();
+  });
 
   this.baseMaps = {
     "Gray": gray,
@@ -145,24 +147,14 @@ LidarViewer.prototype.makeMap = function() {
     '<h6>Vertical Accuracy: {VERT_ACC}</h6>' +
     '<h6>Vertical Datum: {VERT_DATUM}</h6>';
 
-  // var template_current = 
-  //'<h6>County: {COUNTY}</h6>'+
-  // '<h6>Date: {DATE}</h6>'+
-  // '<h6>Partners: {PARTNERS}</h6>'+
-  // '<h6>Point spacing: {NPS}</h6>'+
-  // '<h6>Vertical Accuracy: {ACCURACY}</h6>'+
-  // '<h6>Vertical Datum: {VERTICAL_D}</h6>';
 
-  var template_future =[
+  var template_future = [
     '<h6>Collection: {Collection}</h6>',
     '<h6>Year: {DATE}</h6>',
     '<h6>Accuracy: {ACCURACY}</h6>',
-    '<h6>Partners: {PARTNERS}</h6>'].join('');
-  // '<h6>Date: {DATE}</h6>'+
-  // '<h6>Collection: {Collection}</h6>' +
-  // '<h6>Accuracy: {ACCURACY}</h6>' +
-  // '<h6>Point spacing: {NPS}</h6>'+
-  // '<h6>Partners: {PARTNERS}</h6>';
+    '<h6>Partners: {PARTNERS}</h6>'
+  ].join('');
+
 
   var blkDownloadTpl = [
     '<h6>County: {COUNTY} - {BLK}</h6>',
@@ -180,8 +172,6 @@ LidarViewer.prototype.makeMap = function() {
     '2013': '#92b846',
     '2014': '#6c941c',
     '2015': '#4d7300'
-      // '2005': '#C09263',
-      // '2004': '#A6611A'
   };
 
   this.currentstatus = L.geoJson(this.currentstatusgeojson, {
@@ -235,30 +225,30 @@ LidarViewer.prototype.makeMap = function() {
     onEachFeature: function(feature, layer) {
       var color = '#d53c02';
       layer.bindPopup(L.Util.template(blkDownloadTpl, feature.properties));
-      layer.on('mouseover', function(e){
-         //set selected style
-          var layer = e.target;
-          _.each(self.blkDownload.getLayers(), function(l){
-            l.setStyle({fillOpacity: 0.4});
-          });
-          layer.setStyle({fillOpacity: .9/*, fillColor: '#35AB32'*/});
-          layer.bringToFront();
-          // layer.openPopup();
+      layer.on('mouseover', function(e) {
+        //set selected style
+        var layer = e.target;
+        _.each(self.blkDownload.getLayers(), function(l) {
+          l.setStyle({ fillOpacity: 0.4 });
+        });
+        layer.setStyle({ fillOpacity: .9 /*, fillColor: '#35AB32'*/ });
+        layer.bringToFront();
+        // layer.openPopup();
       });
-      layer.on('mouseout', function(e){
-         //set selected style
-          var layer = e.target;
-          _.each(self.blkDownload.getLayers(), function(l){
-            l.setStyle({fillOpacity: .75, fillColor: color});
-          });
-          // layer.setStyle({opacity: 1});
-          // layer.closePopup();
+      layer.on('mouseout', function(e) {
+        //set selected style
+        var layer = e.target;
+        _.each(self.blkDownload.getLayers(), function(l) {
+          l.setStyle({ fillOpacity: .75, fillColor: color });
+        });
+        // layer.setStyle({opacity: 1});
+        // layer.closePopup();
       });
     }
   }).on('add', function(e) {
     self.blkDownload.bringToFront();
-    legend.hideLidar();
-    legend.showBlk();
+    legend.showLidar();
+    // legend.showBlk();
   }).on('remove', function(e) {
     if (!self.map.hasLayer(self.currentstatus) && !self.map.hasLayer(self.futurestatus)) {
       legend.showLidar();
@@ -302,8 +292,10 @@ LidarViewer.prototype.makeMap = function() {
   })
 
   this.map.on('baselayerchange', function(e) {
+    // self.lidarGroup.bringToFront();
     self.lidarGroup.eachLayer(function(layer) {
-      layer.bringToFront()
+      console.log(layer);
+      layer.bringToFront();
     })
   })
 
@@ -325,7 +317,9 @@ LidarViewer.prototype.makeMap = function() {
 
   L.control.layersCustom(this.baseMaps, this.overlays, {
     collapsed: false,
-    click: false
+    click: false,
+    autoZIndex: true,
+    sortLayers: true
   }).addTo(this.map, $('.custom-layer-menu .section-content')[0])
 
   self.activeService = services.statewide[0].service
@@ -492,7 +486,9 @@ LidarViewer.prototype.addServiceLayer = function(service, name, opacity) {
     this.identifyService = this.setIdentifyService(name)
     legend.update(this.identifyType, this.identifyService)
     this.lidarGroup.eachLayer(function(l) {
-      l.bringToFront()
+      l.bringToFront();
+      // l.setZIndex(600);
+      console.log(l);
     })
   }
 }
