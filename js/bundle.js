@@ -433,7 +433,9 @@ LidarViewer.prototype.makeMap = function() {
     }
   }).on('add', function(e) {
     self.blkDownload.bringToFront();
-    legend.showLidar();
+    if (!self.map.hasLayer(self.currentstatus) && !self.map.hasLayer(self.futurestatus)) {
+      legend.showLidar();
+    }
     // legend.showBlk();
   }).on('remove', function(e) {
     if (!self.map.hasLayer(self.currentstatus) && !self.map.hasLayer(self.futurestatus)) {
