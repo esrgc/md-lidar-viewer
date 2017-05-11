@@ -296,8 +296,13 @@ LidarViewer.prototype.makeMap = function() {
     imap_6in_cir.bringToBack();
   });
 
+  var osm = L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+    attribution: '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+  });
+
   this.baseMaps = {
     "Gray": gray,
+    "OpenStreetMap": osm,
     // "World Imagery": world_imagery,
     "World Imagery with Labels": mapboxsat,
     'MD iMAP 6 Inch Imagery': imap_6in,
