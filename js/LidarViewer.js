@@ -416,7 +416,7 @@ LidarViewer.prototype.identifyContent = function(latlng, next) {
   var metadata = self.getMetadataFromPoint(latlng)
   if (metadata) {
     for (var i = 0; i < services.elevation.length; i++) {
-      if (metadata.County.replace(/\s/g, '').split(',').indexOf(services.elevation[i].name)) {
+      if (metadata.County.replace(/\s/g, '').split(',').indexOf(services.elevation[i].name.replace(/\s/g, ''))) {
         var type = self.identifyType
         if (type === 'hillshade') type = 'elevation'
         metadata.identifyType = type.charAt(0).toUpperCase() + type.slice(1)
@@ -446,7 +446,7 @@ LidarViewer.prototype.getMetadataFromPoint = function(point) {
       countyname = this.activeCounty
     }
     for (var i = 0; i < this.metadata.length; i++) {
-      if (this.metadata[i].County.replace(/\s/g, '').split(',').indexOf(countyname) > -1) {
+      if (this.metadata[i].County.replace(/\s/g, '').split(',').indexOf(countyname.replace(/\s/g, '')) > -1) {
         return this.metadata[i]
       }
     }
