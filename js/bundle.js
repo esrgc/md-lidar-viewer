@@ -627,7 +627,7 @@ LidarViewer.prototype.getMetadataFromPoint = function(point) {
       countyname = this.activeCounty
     }
     for (var i = 0; i < this.metadata.length; i++) {
-      if (this.metadata[i].County.split(',').indexOf(countyname) > -1) {
+      if (this.metadata[i].County.replace('/\s/g').split(',').indexOf(countyname) > -1) {
         return this.metadata[i]
       }
     }
