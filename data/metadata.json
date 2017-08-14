@@ -1,252 +1,202 @@
 [
-    {
-        "County": "Allegany",
-        "Date": 2012,
-        "Point Spacing": "0.5m",
-        "Vertical Accuracy": "18.5cm RMSE",
-        "Horizontal Accuracy": "1m",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "Funded by NRCS and FEMA, contracted through USGS"
-    },
-    {
-        "County": "Anne Arundel",
-        "Date": 2011,
-        "Point Spacing": "1.4m",
-        "Vertical Accuracy": "15cm RMSE",
-        "Horizontal Accuracy": "USGS LiDAR Specifications",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83 HARN",
-        "Project Partners": "Anne Arundel County"
-    },
-    {
-        "County": "Baltimore",
-        "Date": 2005,
-        "Point Spacing": "1.5m",
-        "Vertical Accuracy": "24.3cm RMSE",
-        "Horizontal Accuracy": "",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83 HARN",
-        "Project Partners": "Baltimore County"
-    },
-    {
-        "County": "Baltimore City",
-        "Date": 2008,
-        "Point Spacing": "1m",
-        "Vertical Accuracy": "18.5cm RMSE",
-        "Horizontal Accuracy": "1m",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "Baltimore City"
-    },
-    {
-        "County": "Calvert",
-        "Date": 2011,
-        "Point Spacing": "1.4m",
-        "Vertical Accuracy": "18.5cm RMSE",
-        "Horizontal Accuracy": "0.75m",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "Calvert County"
-    },
-    {
-        "County": "Caroline",
-        "Date": 2013,
-        "Point Spacing": "2m",
-        "Vertical Accuracy": "9.25cm RMSE",
-        "Horizontal Accuracy": "NSSDA accuracy for 1:2400/FEMA 2003 compliant",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "USGS"
-    },
-    {
-        "County": "Carroll",
-        "Date": 2006,
-        "Point Spacing": "1m",
-        "Vertical Accuracy": "36.6cm RMSE",
-        "Horizontal Accuracy": "1/3000 of flight height",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83 HARN",
-        "Project Partners": "Carroll County"
-    },
-    {
-        "County": "Cecil",
-        "Date": 2013,
-        "Point Spacing": "2m",
-        "Vertical Accuracy": "12.5cm RMSE",
-        "Horizontal Accuracy": "NSSDA accuracy for 1:2400",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "USGS"
-    },
-    {
-        "County": "Charles",
-        "Date": 2004,
-        "Point Spacing": "2m",
-        "Vertical Accuracy": "14.3cm RMSE",
-        "Horizontal Accuracy": "NSSDA accuracy for 1:2400",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "MDDNR"
-    },
-    {
-        "County": "Dorchester",
-        "Date": 2013,
-        "Point Spacing": "2m",
-        "Vertical Accuracy": "9.25cm RMSE",
-        "Horizontal Accuracy": "NSSDA accuracy for 1:2400",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "USGS"
-    },
-    {
-        "County": "Frederick",
-        "Date": 2012,
-        "Point Spacing": "0.5m",
-        "Vertical Accuracy": "18.5cm RMSE",
-        "Horizontal Accuracy": "1m",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "Funded by NRCS and FEMA, contracted through USGS"
-    },
-    {
-        "County": "Garrett",
-        "Date": 2005,
-        "Point Spacing": "",
-        "Vertical Accuracy": "Information not provided",
-        "Horizontal Accuracy": "",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "Garrett County"
-    },
-    {
-        "County": "Harford",
-        "Date": 2007,
-        "Point Spacing": "0.6, 0.9, 1.4m",
-        "Vertical Accuracy": "18.5cm RMSE",
-        "Horizontal Accuracy": "+/-1.5m",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "Harford County"
-    },
-    {
-        "County": "Howard",
-        "Date": 2011,
-        "Point Spacing": "1.4m",
-        "Vertical Accuracy": "18.5cm RMSE",
-        "Horizontal Accuracy": "0.75",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "Howard County"
-    },
-    {
-        "County": "Kent",
-        "Date": 2004,
-        "Point Spacing": "2m",
-        "Vertical Accuracy": "14.3cm RMSE",
-        "Horizontal Accuracy": "NSSDA accuracy for 1:2400/FEMA 2003 compliant",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "MDDNR"
-    },
-    {
-        "County": "Montgomery",
-        "Date": 2008,
-        "Point Spacing": "",
-        "Vertical Accuracy": "15cm RMSE",
-        "Horizontal Accuracy": "",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "Montgomery County"
-    },
-    {
-        "County": "Prince George's",
-        "Date": 2014,
-        "Point Spacing": "",
-        "Vertical Accuracy": "8.5cm RMSE",
-        "Horizontal Accuracy": "",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "MD MNCPPC"
-    },
-    {
-        "County": "Queen Anne's",
-        "Date": 2013,
-        "Point Spacing": "2m",
-        "Vertical Accuracy": "12.5cm RMSE",
-        "Horizontal Accuracy": "NSSDA accuracy for 1:2400/FEMA 2003 compliant",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "Queen Anne’s County"
-    },
-    {
-        "County": "Somerset",
-        "Date": 2012,
-        "Point Spacing": "0.7m",
-        "Vertical Accuracy": "15.7cm RMSE",
-        "Horizontal Accuracy": "0.25m",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "Funded by NRCS, contracted through USGS"
-    },
-    {
-        "County": "St. Mary's",
-        "Date": 2004,
-        "Point Spacing": "2m",
-        "Vertical Accuracy": "14.3cm RMSE",
-        "Horizontal Accuracy": "NSSDA accuracy for 1:2400",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "MDDNR"
-    },
-    {
-        "County": "Talbot",
-        "Date": 2004,
-        "Point Spacing": "2m",
-        "Vertical Accuracy": "14.3cm RMSE",
-        "Horizontal Accuracy": "NSSDA accuracy for 1:2400",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "MDDNR"
-    },
-    {
-        "County": "Washington",
-        "Date": 2012,
-        "Point Spacing": "0.5m",
-        "Vertical Accuracy": "18.5cm RMSE",
-        "Horizontal Accuracy": "0.75m",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "Funded by NRCS and FEMA, contracted through USGS"
-    },
-    {
-        "County": "Washington D.C.",
-        "Date": 2008,
-        "Point Spacing": "0.5m",
-        "Vertical Accuracy": "10.7cm RMSE",
-        "Horizontal Accuracy": "0.75m",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83",
-        "Project Partners": "National Capital Region Lidar"
-    },
-    {
-        "County": "Wicomico",
-        "Date": 2012,
-        "Point Spacing": "0.7m",
-        "Vertical Accuracy": "15.7cm RMSE",
-        "Horizontal Accuracy": "0.25m",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83; NAD83 HARN",
-        "Project Partners": "2 projects: Funded by NRCS, contracted through USGS"
-    },
-    {
-        "County": "Worcester",
-        "Date": 2011,
-        "Point Spacing": "0.7m",
-        "Vertical Accuracy": "9.25cm RMSE",
-        "Horizontal Accuracy": "0.25m",
-        "Vertical Datum": "NAVD88",
-        "Horizontal Datum": "NAD83; NAD83 HARN",
-        "Project Partners": "2 projects: Funded by NRCS and FEMA, contracted through USGS"
-    }
+  {
+    "County": "Allegany, Frederick, Washington",
+    "Date": 2012,
+    "Point Spacing": "0.5m",
+    "Vertical Accuracy": "13cm RMSE",
+    "Horizontal Datum": "NAD83",
+    "Horizontal Accuracy": "13cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "Funded by NRCS and FEMA, contracted through USGS"
+  },
+  {
+    "County": "AnneArundel",
+    "Date": 2011,
+    "Point Spacing": "1.4m",
+    "Vertical Accuracy": "15cm RMSE",
+    "Horizontal Datum": "NAD83",
+    "Horizontal Accuracy": "15cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "Anne Arundel County"
+  },
+  {
+    "County": "Baltimore",
+    "Date": 2015,
+    "Point Spacing": "0.7m",
+    "Vertical Accuracy": "6.79cm RMSE",
+    "Horizontal Datum": "NAD83 HARN",
+    "Horizontal Accuracy": "6.79cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "Baltimore County"
+  },
+  {
+    "County": "Baltimore City",
+    "Date": 2015,
+    "Point Spacing": "0.7m",
+    "Vertical Accuracy": "18.5cm RMSE",
+    "Horizontal Datum": "NAD83",
+    "Horizontal Accuracy": "18.5cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "USGS, NRCS"
+  },
+  {
+    "County": "Calvert",
+    "Date": 2011,
+    "Point Spacing": "1.4m",
+    "Vertical Accuracy": "18.5cm RMSE",
+    "Horizontal Datum": "NAD83",
+    "Horizontal Accuracy": "18.5cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "Calvert County"
+  },
+  {
+    "County": "Carroll",
+    "Date": 2015,
+    "Point Spacing": "0.7m",
+    "Vertical Accuracy": "15.6cm RMSE",
+    "Horizontal Datum": "NAD83 HARN",
+    "Horizontal Accuracy": "15.6cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "USGS, NRCS"
+  },
+  {
+    "County": "Garrett",
+    "Date": 2015,
+    "Point Spacing": "0.7m",
+    "Vertical Accuracy": "7.2cm RMSE",
+    "Horizontal Datum": "NAD83",
+    "Horizontal Accuracy": "7.2cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "Garrett County, USGS"
+  },
+  {
+    "County": "Harford",
+    "Date": 2013,
+    "Point Spacing": "1.2m",
+    "Vertical Accuracy": "6.8cm RMSE",
+    "Horizontal Datum": "NAD83",
+    "Horizontal Accuracy": "6.8cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "Harford County"
+  },
+  {
+    "County": "Howard",
+    "Date": 2011,
+    "Point Spacing": "1.4m",
+    "Vertical Accuracy": "18.5cm RMSE",
+    "Horizontal Datum": "NAD83",
+    "Horizontal Accuracy": "18.5cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "Howard County"
+  },
+  {
+    "County": "Montgomery",
+    "Date": 2013,
+    "Point Spacing": "1.1m",
+    "Vertical Accuracy": "12cm RMSE",
+    "Horizontal Datum": "NAD83",
+    "Horizontal Accuracy": "12cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "Montgomery County, USGS"
+  },
+  {
+    "County": "Somerset, Wicomico",
+    "Date": 2012,
+    "Point Spacing": "0.7m",
+    "Vertical Accuracy": "15.7cm RMSE",
+    "Horizontal Datum": "NAD 1983 NSRS2007",
+    "Horizontal Accuracy": "15.7cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "Funded by NRCS, contracted through USGS"
+  },
+  {
+    "County": "Worcester, Wicomico, Somerset",
+    "Date": 2011,
+    "Point Spacing": "0.7m",
+    "Vertical Accuracy": "9.25cm RMSE",
+    "Horizontal Datum": "NAD83 HARN",
+    "Horizontal Accuracy": "9.25cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "Funded by NRCS, contracted through USGS"
+  },
+  {
+    "County": "Worcester",
+    "Date": 2011,
+    "Point Spacing": "0.5m",
+    "Vertical Accuracy": "13.1cm RMSE",
+    "Horizontal Datum": "NAD83 NSRS2007",
+    "Horizontal Accuracy": "13.1cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "Funded by FEMA, contracted through USGS"
+  },
+  {
+    "County": "Cecil",
+    "Date": 2013,
+    "Point Spacing": "0.46m",
+    "Vertical Accuracy": "12.5cm RMSE",
+    "Horizontal Datum": "NAD83",
+    "Horizontal Accuracy": "12.5cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "Cecil County, USGS"
+  },
+  {
+    "County": "Queen Anne's",
+    "Date": 2013,
+    "Point Spacing": "0.46m",
+    "Vertical Accuracy": "12.5cm RMSE",
+    "Horizontal Datum": "NAD83",
+    "Horizontal Accuracy": "12.5cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "Queen Anne's County"
+  },
+  {
+    "County": "Caroline, Dorchester",
+    "Date": 2013,
+    "Point Spacing": "0.7m",
+    "Vertical Accuracy": "16.2cm RMSE",
+    "Horizontal Datum": "NAD83",
+    "Horizontal Accuracy": "16.2cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "USGS, NRCS"
+  },
+  {
+    "County": "Talbot",
+    "Date": 2015,
+    "Point Spacing": "0.7m",
+    "Vertical Accuracy": "15.6cm RMSE",
+    "Horizontal Datum": "NAD83",
+    "Horizontal Accuracy": "15.6cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "USGS, NRCS"
+  },
+  {
+    "County": "Kent",
+    "Date": 2015,
+    "Point Spacing": "0.7m",
+    "Vertical Accuracy": "15.6cm RMSE",
+    "Horizontal Datum": "NAD83",
+    "Horizontal Accuracy": "15.6cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "USGS, NRCS"
+  },
+  {
+    "County": "Kent",
+    "Date": 2015,
+    "Point Spacing": "0.7m",
+    "Vertical Accuracy": "15.6cm RMSE",
+    "Horizontal Datum": "NAD83",
+    "Horizontal Accuracy": "15.6cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "USGS, NRCS"
+  },
+  {
+    "County": "Prince George's, St. Mary's Charles, D.C.",
+    "Date": 2014,
+    "Point Spacing": "0.7m",
+    "Vertical Accuracy": "11.5cm RMSE",
+    "Horizontal Datum": "NAD83",
+    "Horizontal Accuracy": "11.5cm RMSE",
+    "Vertical Datum": "NAVD88",
+    "Project Partners": "USGS, NRCS"
+  }
 ]

@@ -521,6 +521,7 @@ LidarViewer.prototype.identify = function(point) {
   marker.bindPopup(L.popup({ offset: [0, -20] }).setContent('<img src="img/ajax.gif">'))
   if (this.statewide) {
     self.identifyContent(point, function(content) {
+      console.log(content);
       if (content) {
         marker.getPopup().setContent(content)
         self._identifyValue(point, function(value, err) {
@@ -539,6 +540,7 @@ LidarViewer.prototype.identify = function(point) {
         marker.openPopup()
       } else {
         self.identifyContent(point, function(content) {
+          console.log(content);
           if (content) {
             marker.getPopup().setContent(content)
             var popup_value = self.createIdentifyValueForPopup(value, err)

@@ -1,0 +1,21 @@
+OBJECTID,DATE,Collection,Shape_Leng,Shape_Area,ACCURACY,NPS,PARTNERS,VERTICAL_D,HORIZONTAL,COUNTY,PROJ_PARTN,POINT_SPAC,VERT_ACC,VERT_DATUM
+1,2012,"FEMA Region 3 FY12 LiDAR - Allegany, Frederick, and Washington",611980.762778,3984084339.93,13cm RMSE,0.5m,"Funded by NRCS and FEMA, contracted through USGS",NAVD88,NAD83,"Allegany, Frederick, Washington","Funded by NRCS and FEMA, contracted through USGS",0.5m,13cm RMSE,NAVD88
+2,2011,2011 Anne Arundel County Lidar,875084.269241,1075297214.14,15cm RMSE,1.4m,Anne Arundel County,NAVD88,NAD83,AnneArundel,Anne Arundel County,1.4m,15cm RMSE,NAVD88
+3,2015,2015 Baltimore County Lidar,540729.938747,1571479986.89,6.79cm RMSE,0.7m,Baltimore County,NAVD88,NAD83 HARN,Baltimore,Baltimore County,0.7m,6.79cm RMSE,NAVD88
+4,2015,"MD/PA Sandy Supplemental LiDAR: Baltimore City, Kent, Talbot, Carroll",162715.339662,210492997.723,18.5cm RMSE,0.7m,"USGS, NRCS",NAVD88,NAD83,Baltimore City,"USGS, NRCS",0.7m,18.5cm RMSE,NAVD88
+5,2011,2011 Calvert County Lidar,320438.973635,556507101.975,18.5cm RMSE,1.4m,Calvert County,NAVD88,NAD83,Calvert,Calvert County,1.4m,18.5cm RMSE,NAVD88
+6,2015,"MD/PA Sandy Supplemental LiDAR: Baltimore City, Kent, Talbot, Carroll",199183.572885,1171503940.43,15.6cm RMSE,0.7m,"USGS, NRCS",NAVD88,NAD83 HARN,Carroll,"USGS, NRCS",0.7m,15.6cm RMSE,NAVD88
+8,2015,2015 Garrett County Lidar,211385.775824,1719694687.35,7.2cm RMSE,0.7m,"Garrett County, USGS",NAVD88,NAD83,Garrett,"Garrett County, USGS",0.7m,7.2cm RMSE,NAVD88
+9,2013,2013 Harford County Lidar,453887.814459,1135720595.55,6.8cm RMSE,1.2m,Harford County,NAVD88,NAD83,Harford,Harford County,1.2m,6.8cm RMSE,NAVD88
+10,2011,2011 Howard County Lidar,139107.000263,656311272.529,18.5cm RMSE,1.4m,Howard County,NAVD88,NAD83,Howard,Howard County,1.4m,18.5cm RMSE,NAVD88
+11,2013,2013 Montgomery County Lidar,188605.840641,1278753033.12,12cm RMSE,1.1m,"Montgomery County, USGS",NAVD88,NAD83,Montgomery,"Montgomery County, USGS",1.1m,12cm RMSE,NAVD88
+12,2012,2012 NRCS Maryland Lidar: Somerset and Wicomico,898165.253359,1465793964.73,15.7cm RMSE,0.7m,"Funded by NRCS, contracted through USGS",NAVD88,NAD 1983 NSRS2007,"Somerset, Wicomico","Funded by NRCS, contracted through USGS",0.7m,15.7cm RMSE,NAVD88
+13,2011,2011 Pocomoke and Atlantic Coastal Watersheds in Maryland,225383.046821,1276924635.56,9.25cm RMSE,0.7m,"Funded by NRCS, contracted through USGS",NAVD88,NAD83 HARN,"Worcester, Wicomico, Somerset","Funded by NRCS, contracted through USGS",0.7m,9.25cm RMSE,NAVD88
+14,2011,2011 VA FEMA LiDAR: Coastal Worcester,271609.996725,388073814.353,13.1cm RMSE,0.5m,"Funded by FEMA, contracted through USGS",NAVD88,NAD83 NSRS2007,Worcester,"Funded by FEMA, contracted through USGS",0.5m,13.1cm RMSE,NAVD88
+15,2013,2013 Cecil County Lidar,443203.958325,903662624.499,12.5cm RMSE,0.46m,"Cecil County, USGS",NAVD88,NAD83,Cecil,"Cecil County, USGS",0.46m,12.5cm RMSE,NAVD88
+16,2013,2013 Queen Anne's County Lidar,672335.638891,951748924.985,12.5cm RMSE,0.46m,Queen Anne's County,NAVD88,NAD83,Queen Anne's,Queen Anne's County,0.46m,12.5cm RMSE,NAVD88
+17,2013,"Hurricane Sandy Supplemental Lidar - Caroline, Dorchester",2270962.2257,2273240984.74,16.2cm RMSE,0.7m,"USGS, NRCS",NAVD88,NAD83,"Caroline, Dorchester","USGS, NRCS",0.7m,16.2cm RMSE,NAVD88
+18,2015,"MD/PA Sandy Supplemental LiDAR: Baltimore City, Kent, Talbot, Carroll",973212.181547,694302426.302,15.6cm RMSE,0.7m,"USGS, NRCS",NAVD88,NAD83,Talbot,"USGS, NRCS",0.7m,15.6cm RMSE,NAVD88
+19,2015,"MD/PA Sandy Supplemental LiDAR: Baltimore City, Kent, Talbot, Carroll",448968.220412,689243159.965,15.6cm RMSE,0.7m,"USGS, NRCS",NAVD88,NAD83,Kent,"USGS, NRCS",0.7m,15.6cm RMSE,NAVD88
+20,2015,"MD/PA Sandy Supplemental LiDAR: Baltimore City, Kent, Talbot, Carroll",121026.786799,36626338.978,15.6cm RMSE,0.7m,"USGS, NRCS",NAVD88,NAD83,Kent,"USGS, NRCS",0.7m,15.6cm RMSE,NAVD88
+21,2014,"Hurricane Sandy Supplemental Lidar - Prince George's, St. Mary's, Charles, D.C.",1352529.71084,3567817908.66,11.5cm RMSE,0.7m,"USGS, NRCS",NAVD88,NAD83,"Prince George's, St. Mary's Charles, D.C.","USGS, NRCS",0.7m,11.5cm RMSE,NAVD88
