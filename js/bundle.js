@@ -597,7 +597,7 @@ LidarViewer.prototype.identifyContent = function(latlng, next) {
   var metadata = self.getMetadataFromPoint(latlng)
   if (metadata) {
     for (var i = 0; i < services.elevation.length; i++) {
-      if (metadata.County === services.elevation[i].name) {
+      if (metadata.County.replace(/\s/g, '').split(',').indexOf(services.elevation[i].name)) {
         var type = self.identifyType
         if (type === 'hillshade') type = 'elevation'
         metadata.identifyType = type.charAt(0).toUpperCase() + type.slice(1)
